@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Box, Text } from '@primer/react-brand'
 import {
     CheckCircleIcon,
@@ -11,10 +11,33 @@ import {
     FilterIcon,
     XIcon,
     SortAscIcon,
-    SortDescIcon
+    SortDescIcon,
+    GearIcon
 } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md"
+import TableSettings from './TableSettings'
 import './ResultsTable.css'
+
+const DEFAULT_SETTINGS = {
+    rowHeight: 'compact', // compact, normal, comfortable
+    fontSize: 13,
+    showStripedRows: true,
+    showHoverEffect: true,
+    showBorders: true,
+    stickyHeader: true,
+    wrapText: false,
+    showNullAsText: true,
+    fontFamily: 'monospace', // monospace, sans-serif, serif
+    headerStyle: 'dark', // dark, light, colored
+    cellPadding: 'normal', // compact, normal, comfortable
+    showRowNumbers: true,
+}
+
+const ROW_HEIGHT_MAP = {
+    compact: '10px',
+    normal: '12px',
+    comfortable: '16px'
+}
 
 function ResultsTable({ results, error, isLoading, executionTime }) {
     const [currentPage, setCurrentPage] = useState(1)
@@ -23,7 +46,40 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
     const [columnFilters, setColumnFilters] = useState({})
     const [sortConfig, setSortConfig] = useState({ column: null, direction: null })
     const [showColumnFilters, setShowColumnFilters] = useState(false)
+    const [showSettings, setShowSettings] = useState(false)
+    const [settings, setSettings] = useState(() => {
+        // Load settings from localStorage
+        try {
+            const saved = localStorage.getItem('tableSettings')
+            return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS
+        } catch {
+            return DEFAULT_SETTINGS
+        }
+    })
     const rowsPerPage = 300
+
+    const settingsRef = useRef(null)
+
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+                setShowSettings(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [settingsRef])
+
+    // Save settings to localStorage
+    useEffect(() => {
+        try {
+            localStorage.setItem('tableSettings', JSON.stringify(settings))
+        } catch (err) {
+            console.error('Failed to save settings:', err)
+        }
+    }, [settings])
 
     if (isLoading) {
         return (
@@ -141,7 +197,7 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
             }
             return { ...prev, [column]: value }
         })
-        setCurrentPage(1) // Reset to first page when filtering
+        setCurrentPage(1)
     }
 
     const clearAllFilters = () => {
@@ -152,9 +208,24 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
 
     const activeFilterCount = Object.keys(columnFilters).length + (globalFilter ? 1 : 0)
 
+
+
+    // Generate dynamic styles based on settings
+    const tableClassNames = [
+        'results-table',
+        settings.showStripedRows ? 'striped' : '',
+        settings.showHoverEffect ? 'hover-effect' : '',
+        settings.showBorders ? 'with-borders' : '',
+        settings.wrapText ? 'wrap-text' : '',
+        `font-${settings.fontFamily}`,
+        `header-${settings.headerStyle}`,
+        `row-height-${settings.rowHeight}`,
+        settings.columnDividers ? 'column-dividers' : ''
+    ].filter(Boolean).join(' ')
+
     return (
         <Box className={`results-container ${isFullScreen ? 'full-screen' : ''}`}>
-            {/* Results Header - Horizontal Layout */}
+            {/* Results Header */}
             <div className="results-header">
                 <div className="results-header-left">
                     <CheckCircleIcon size={16} className="success-icon" />
@@ -213,6 +284,26 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                         </button>
                     )}
 
+                    {/* Settings Toggle */}
+                    {/* Settings Toggle */}
+                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={settingsRef}>
+                        <button
+                            className={`icon-button ${showSettings ? 'active' : ''}`}
+                            onClick={() => setShowSettings(!showSettings)}
+                            title="Table settings"
+                        >
+                            <GearIcon size={16} />
+                        </button>
+                        {showSettings && (
+                            <TableSettings
+                                settings={settings}
+                                onSettingsChange={setSettings}
+                                onClose={() => setShowSettings(false)}
+                                onReset={() => setSettings(DEFAULT_SETTINGS)}
+                            />
+                        )}
+                    </div>
+
                     {executionTime && (
                         <div className="execution-time">
                             <ClockIcon size={14} />
@@ -225,12 +316,14 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                 </div>
             </div>
 
+
+
             {/* Table Container */}
             <div className="table-wrapper">
-                <table className="results-table">
-                    <thead>
+                <table className={tableClassNames} style={{ fontSize: `${settings.fontSize}px` }}>
+                    <thead className={settings.stickyHeader ? 'sticky' : ''}>
                         <tr>
-                            <th className="row-index-header">#</th>
+                            {settings.showRowNumbers && <th className="row-index-header">#</th>}
                             {columns.map((column, index) => (
                                 <th key={index} className="column-header">
                                     <div className="column-header-content">
@@ -259,7 +352,7 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                         {/* Column Filters Row */}
                         {showColumnFilters && (
                             <tr className="filter-row">
-                                <td className="filter-cell-index"></td>
+                                {settings.showRowNumbers && <td className="filter-cell-index"></td>}
                                 {columns.map((column, index) => (
                                     <td key={index} className="filter-cell">
                                         <div className="filter-input-wrapper">
@@ -288,14 +381,24 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                     <tbody>
                         {currentRows.length > 0 ? (
                             currentRows.map((row, rowIndex) => (
-                                <tr key={startIndex + rowIndex} className="table-row">
-                                    <td className="row-index">{startIndex + rowIndex + 1}</td>
+                                <tr
+                                    key={startIndex + rowIndex}
+                                    className={`table-row ${settings.highlightOnHover ? 'highlight-hover' : ''}`}
+                                >
+                                    {settings.showRowNumbers && (
+                                        <td className="row-index">{startIndex + rowIndex + 1}</td>
+                                    )}
                                     {columns.map((column, colIndex) => (
-                                        <td key={colIndex} className="table-cell">
+                                        <td
+                                            key={colIndex}
+                                            className="table-cell"
+                                        >
                                             <div className="cell-content">
                                                 {row[column] !== null && row[column] !== undefined
                                                     ? String(row[column])
-                                                    : <span className="null-value">NULL</span>
+                                                    : settings.showNullAsText
+                                                        ? <span className="null-value">NULL</span>
+                                                        : ''
                                                 }
                                             </div>
                                         </td>
@@ -304,7 +407,7 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={columns.length + 1} className="no-results">
+                                <td colSpan={(settings.showRowNumbers ? 1 : 0) + columns.length} className="no-results">
                                     <div className="no-results-content">
                                         <SearchIcon size={32} className="no-results-icon" />
                                         <p>No results match your filters</p>

@@ -2,7 +2,7 @@
     background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
     border-radius: 12px;
     border: 1px solid rgba(110, 118, 129, 0.3);
-    overflow: hidden;
+    /* overflow: hidden; - Removed to allow dropdowns to overflow */
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
     display: flex;
@@ -23,12 +23,16 @@
     border: none;
     display: flex;
     flex-direction: column;
+    background: #0d1117;
+    /* Ensure background is solid */
 }
 
 .results-container.full-screen .table-wrapper {
     flex: 1;
     max-height: none;
 }
+
+/* ... */
 
 /* Header */
 .results-header {
@@ -38,6 +42,8 @@
     padding: 6px 12px;
     background: rgba(22, 27, 34, 0.8);
     border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
 }
 
 .results-header-left,
@@ -209,11 +215,109 @@
     font-size: 13px;
 }
 
-.results-table thead {
+.results-table.font-monospace .table-cell {
+    font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.results-table.font-sans-serif .table-cell {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.results-table.font-serif .table-cell {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.results-table.font-arial .table-cell {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.results-table.font-verdana .table-cell {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.results-table.font-courier .table-cell {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.results-table.font-georgia .table-cell {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Row Height Options */
+.results-table.row-height-compact .table-cell {
+    padding: 6px 12px !important;
+}
+
+.results-table.row-height-normal .table-cell {
+    padding: 10px 14px !important;
+}
+
+.results-table.row-height-comfortable .table-cell {
+    padding: 14px 16px !important;
+}
+
+/* Borders */
+.results-table.with-borders .table-cell {
+    border-right: 1px solid rgba(110, 118, 129, 0.1);
+}
+
+.results-table.column-dividers .table-cell {
+    border-right: 1px solid rgba(110, 118, 129, 0.15);
+}
+
+/* Text Wrapping */
+.results-table.wrap-text .cell-content {
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Hover Effects */
+.results-table.hover-effect .table-row:hover {
+    background: rgba(110, 118, 129, 0.12) !important;
+}
+
+.results-table .table-row.highlight-hover:hover {
+    background: rgba(88, 166, 255, 0.08) !important;
+}
+
+/* Striped Rows */
+.results-table.striped .table-row:nth-child(even) {
+    background: rgba(110, 118, 129, 0.03);
+}
+
+.results-table.striped .table-row:nth-child(even):hover {
+    background: rgba(110, 118, 129, 0.1) !important;
+}
+
+.results-table thead.sticky {
     position: sticky;
     top: 0;
     z-index: 10;
     background: #161b22;
+}
+
+/* Header Style Options */
+.results-table.header-dark thead {
+    background: #161b22;
+}
+
+.results-table.header-light thead {
+    background: #21262d;
+}
+
+.results-table.header-light .column-header,
+.results-table.header-light .row-index-header {
+    background: #21262d;
+}
+
+.results-table.header-colored thead {
+    background: linear-gradient(135deg, #1a1e27 0%, #21262d 100%);
+}
+
+.results-table.header-colored .column-header,
+.results-table.header-colored .row-index-header {
+    background: linear-gradient(135deg, #1a1e27 0%, #21262d 100%);
+    border-bottom: 2px solid #58a6ff;
 }
 
 .row-index-header,
