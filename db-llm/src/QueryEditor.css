@@ -242,8 +242,6 @@
 .theme-dropdown {
     min-width: 300px;
     /* Wider for horizontal layout */
-    left: 0;
-    right: auto;
     border-radius: 6px;
     border: 1px solid rgba(110, 118, 129, 0.3);
     margin-top: 2px;
@@ -393,5 +391,10 @@
 
     .keyboard-hint {
         display: none;
+    }
+
+    .theme-dropdown {
+        left: 0;
+        right: auto;
     }
 }

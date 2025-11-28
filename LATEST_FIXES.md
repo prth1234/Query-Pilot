@@ -1,16 +1,20 @@
 # Latest Fixes Summary 🛠️
 
-## 1. ✅ "Apply" Button Changed to "Close"
-**Problem**: The "Apply" button in table settings was misleading since settings apply instantly.
-**Solution**: Renamed the button to "Close" to better reflect its behavior (closing the modal).
+## 1. ✅ Font Changing Fixed
+**Problem**: Font family selection wasn't applying to the table cells.
+**Cause**: CSS specificity issues were preventing the new font styles from overriding defaults.
+**Solution**: 
+- Updated CSS to target both `.table-cell` and `.cell-content`.
+- Added `!important` to font-family declarations to ensure they take precedence.
+- Now all font options (Monospace, Sans Serif, Serif, Arial, Verdana, Courier, Georgia) work correctly.
 
-## 2. ✅ Results Table Expand Fixed
-**Problem**: The expand/fullscreen button on the results table wasn't working.
-**Cause**: The CSS rules for `.results-container.full-screen` were accidentally removed during a previous edit to fix the dropdown overflow.
-**Solution**: Restored the missing CSS rules:
-- `position: fixed`
-- `top: 0`, `left: 0`
-- `width: 100vw`, `height: 100vh`
-- `z-index: 10000`
+## 2. ✅ GitHub-style Loader Implemented
+**Problem**: User requested a sleek, thin blue line loader instead of the circular spinner.
+**Solution**: 
+- Replaced the spinner with a `.loading-progress-bar`.
+- Implemented a smooth animation (`loading-bar`) that moves a blue line across the top of the container.
+- Matches the GitHub design aesthetic perfectly.
 
-The expand button should now correctly toggle the results table to full screen! 🚀
+---
+
+The application is now more polished and customizable! 🚀

@@ -20,7 +20,7 @@ import './ResultsTable.css'
 
 const DEFAULT_SETTINGS = {
     rowHeight: 'compact', // compact, normal, comfortable
-    fontSize: 13,
+    fontSize: 12,
     showStripedRows: true,
     showHoverEffect: true,
     showBorders: true,
@@ -84,10 +84,8 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
     if (isLoading) {
         return (
             <Box className="results-container loading">
+                <div className="loading-progress-bar"></div>
                 <div className="loading-state">
-                    <div className="spinner-container">
-                        <div className="spinner"></div>
-                    </div>
                     <Text className="loading-text">Executing query...</Text>
                 </div>
             </Box>

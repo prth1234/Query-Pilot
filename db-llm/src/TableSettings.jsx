@@ -18,7 +18,7 @@ function TableSettings({ settings, onSettingsChange, onClose, onReset }) {
             <div className="settings-content">
                 {/* Row Height */}
                 <div className="setting-group">
-                    <label className="setting-label">Row Height</label>
+                    <label className="setting-label">Size</label>
                     <div className="radio-group">
                         {['compact', 'normal', 'comfortable'].map(option => (
                             <label key={option} className="radio-option">

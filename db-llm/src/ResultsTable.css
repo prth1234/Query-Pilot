@@ -215,32 +215,116 @@
     font-size: 13px;
 }
 
-.results-table.font-monospace .table-cell {
-    font-family: 'SF Mono', 'Monaco', monospace;
+/* Font Family Options - Using !important to ensure override */
+.results-table.font-monospace .table-cell,
+.results-table.font-monospace .cell-content {
+    font-family: 'SF Mono', 'Monaco', monospace !important;
 }
 
-.results-table.font-sans-serif .table-cell {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+.results-table.font-sans-serif .table-cell,
+.results-table.font-sans-serif .cell-content {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif !important;
 }
 
-.results-table.font-serif .table-cell {
-    font-family: 'Georgia', 'Times New Roman', serif;
+.results-table.font-serif .table-cell,
+.results-table.font-serif .cell-content {
+    font-family: 'Georgia', 'Times New Roman', serif !important;
 }
 
-.results-table.font-arial .table-cell {
-    font-family: Arial, Helvetica, sans-serif;
+.results-table.font-arial .table-cell,
+.results-table.font-arial .cell-content {
+    font-family: Arial, Helvetica, sans-serif !important;
 }
 
-.results-table.font-verdana .table-cell {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+.results-table.font-verdana .table-cell,
+.results-table.font-verdana .cell-content {
+    font-family: Verdana, Geneva, Tahoma, sans-serif !important;
 }
 
-.results-table.font-courier .table-cell {
-    font-family: 'Courier New', Courier, monospace;
+.results-table.font-courier .table-cell,
+.results-table.font-courier .cell-content {
+    font-family: 'Courier New', Courier, monospace !important;
 }
 
-.results-table.font-georgia .table-cell {
-    font-family: Georgia, 'Times New Roman', Times, serif;
+.results-table.font-georgia .table-cell,
+.results-table.font-georgia .cell-content {
+    font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+
+/* Loading State - GitHub Style Line */
+.results-container.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: rgba(88, 166, 255, 0.2);
+    /* Track color */
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.loading-progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #58a6ff;
+    animation: loading-bar 1.5s infinite ease-in-out;
+}
+
+@keyframes loading-bar {
+    0% {
+        left: -50%;
+        width: 30%;
+    }
+
+    50% {
+        left: 30%;
+        width: 60%;
+    }
+
+    100% {
+        left: 100%;
+        width: 30%;
+    }
+}
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #7d8590;
+    gap: 16px;
+}
+
+.loading-text {
+    font-size: 13px;
+    color: #7d8590;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
 }
 
 /* Row Height Options */
