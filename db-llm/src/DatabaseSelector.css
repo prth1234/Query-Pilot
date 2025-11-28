@@ -1,0 +1,179 @@
+/* Database Selector Container */
+.database-selector {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.selector-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.selector-header h2 {
+    font-size: 42px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #999;
+    margin: 0;
+}
+
+/* Database Grid - 5 columns */
+.database-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+}
+
+/* Responsive Grid */
+@media (max-width: 1400px) {
+    .database-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .database-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .database-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .database-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Database Card */
+.database-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 2px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.database-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(135deg, #956afa, #5e3aff);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.database-card:hover::before {
+    opacity: 1;
+}
+
+.database-card:hover {
+    transform: translateY(-8px);
+    border-color: #956afa;
+    box-shadow: 0 12px 40px rgba(149, 106, 250, 0.3);
+}
+
+.database-card.selected {
+    border-color: #956afa;
+    background: linear-gradient(135deg, #2a1a4a 0%, #1a0d3a 100%);
+    box-shadow: 0 8px 32px rgba(149, 106, 250, 0.4);
+}
+
+.database-card.selected::before {
+    opacity: 1;
+}
+
+.database-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #151515 0%, #0a0a0a 100%);
+}
+
+.database-card.disabled:hover {
+    transform: none;
+    border-color: #2a2a2a;
+    box-shadow: none;
+}
+
+.database-card.disabled::before {
+    display: none;
+}
+
+/* Database Icon */
+.db-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    filter: grayscale(0);
+    transition: filter 0.3s ease;
+}
+
+.database-card.disabled .db-icon {
+    filter: grayscale(1) opacity(0.5);
+}
+
+/* Database Name */
+.db-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 8px 0;
+}
+
+/* Database Category */
+.db-category {
+    font-size: 12px;
+    color: #956afa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+}
+
+/* Database Description */
+.db-description {
+    font-size: 13px;
+    color: #999;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #956afa;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}

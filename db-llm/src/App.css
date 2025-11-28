@@ -1,0 +1,226 @@
+/* App Container */
+.app-container {
+  min-height: 100vh;
+  background: #0d1117;
+  opacity: 0;
+  transition: opacity 0.8s ease-in;
+}
+
+.app-container.fade-in {
+  opacity: 1;
+}
+
+/* Typewriter Heading */
+.heading-container {
+  text-align: left;
+  /* Changed from center to left */
+  margin-bottom: 24px;
+}
+
+.typewriter-heading {
+  font-size: 56px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.02em;
+}
+
+.cursor {
+  color: #58a6ff;
+  animation: blink 1s step-end infinite;
+}
+
+.cursor.blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Logo */
+.app-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Database Grid */
+.database-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  /* Forced 5 columns */
+  gap: 16px !important;
+  width: 100%;
+  margin-top: 48px;
+}
+
+/* Database Card Wrapper */
+.database-card-wrapper {
+  width: 100% !important;
+}
+
+.database-card-wrapper.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Database Card */
+.database-card {
+  background: transparent;
+  /* Transparent background */
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  height: 90px;
+  /* Slightly taller for bigger content */
+  display: flex;
+  align-items: center;
+}
+
+.database-card:hover {
+  border-color: #58a6ff;
+  /* background: rgba(255, 255, 255, 0.03); */
+  /* Subtle hover effect */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.1);
+}
+
+.database-card.coming-soon {
+  background: transparent;
+  border-color: #21262d;
+  opacity: 0.6;
+}
+
+.database-card.coming-soon:hover {
+  transform: none;
+  border-color: #21262d;
+  background: #0d1117;
+  box-shadow: none;
+}
+
+/* Card Content */
+.card-content {
+  width: 100%;
+}
+
+/* Database Logo */
+.db-logo-container {
+  width: 56px;
+  /* Bigger logo container */
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  /* Transparent background */
+  border-radius: 6px;
+  padding: 0;
+  /* Remove padding to maximize logo size */
+  flex-shrink: 0;
+}
+
+.db-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.db-icon {
+  font-size: 32px !important;
+  /* Bigger icon */
+}
+
+/* Database Name */
+.db-name {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  /* Bolder */
+  margin: 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px !important;
+  /* Bigger text */
+  letter-spacing: -0.01em;
+}
+
+/* Database Category */
+.db-category {
+  color: #58a6ff !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  text-align: center;
+}
+
+/* Database Description */
+.db-description {
+  color: #8b949e !important;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 13px !important;
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+  margin-left: auto;
+  background: #238636;
+  color: #ffffff !important;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.coming-soon-badge span {
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .database-grid {
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .database-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .typewriter-heading {
+    font-size: 40px !important;
+  }
+
+  .database-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .typewriter-heading {
+    font-size: 32px !important;
+  }
+
+  .database-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -1,0 +1,381 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(1, 4, 9, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal Container */
+.modal-container {
+    position: relative;
+    width: 90%;
+    max-width: 600px;
+    animation: modalSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideIn {
+    0% {
+        transform: scale(0.98) translateY(10px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ... (Genie effect hidden) ... */
+
+/* Timeline Step */
+.timeline-step {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    /* Ultra smooth slide in, no bounce */
+    animation: slideInStep 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes slideInStep {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+        /* Changed from translateX for subtler effect */
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Timeline Connector */
+.timeline-connector {
+    position: absolute;
+    left: 15px;
+    top: 32px;
+    width: 2px;
+    height: calc(100% + 24px);
+    background: #21262d;
+    transition: background 0.4s ease;
+}
+
+.timeline-connector.active {
+    background: linear-gradient(to bottom, #238636, #21262d);
+    animation: connectorGrow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes connectorGrow {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+
+    to {
+        height: calc(100% + 24px);
+        opacity: 1;
+    }
+}
+
+/* Timeline Icon */
+.timeline-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #21262d;
+    border: 2px solid #30363d;
+    position: relative;
+    z-index: 1;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.timeline-step.in-progress .timeline-icon {
+    background: #1f6feb;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.1);
+    /* Subtle pulse */
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.timeline-step.completed .timeline-icon {
+    background: #238636;
+    border-color: #2ea043;
+    box-shadow: 0 0 0 4px rgba(35, 134, 54, 0.1);
+    /* Smooth scale, no overshoot */
+    animation: successScale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes successScale {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.timeline-step.failed .timeline-icon {
+    background: #da3633;
+    border-color: #f85149;
+    box-shadow: 0 0 0 4px rgba(248, 81, 73, 0.1);
+    animation: errorShake 0.4s ease;
+}
+
+@keyframes errorShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+.timeline-icon svg {
+    color: #ffffff;
+}
+
+/* Spinner Small */
+.spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Timeline Content */
+.timeline-content {
+    flex: 1;
+    padding-top: 4px;
+}
+
+.step-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #c9d1d9;
+    margin-bottom: 4px;
+}
+
+.timeline-step.in-progress .step-label {
+    color: #ffffff;
+}
+
+.step-error {
+    font-size: 13px;
+    color: #f85149;
+    margin-top: 4px;
+    padding: 8px 12px;
+    background: rgba(248, 81, 73, 0.1);
+    border-left: 2px solid #f85149;
+    border-radius: 4px;
+    animation: fadeIn 0.3s ease;
+}
+
+.step-info {
+    font-size: 13px;
+    color: #8b949e;
+    margin-top: 4px;
+}
+
+.close-button:hover {
+    background: #da3633;
+    transform: scale(1.1);
+    color: #ffffff;
+}
+
+/* Result Section */
+.result-section {
+    padding: 32px;
+    border-top: 1px solid #21262d;
+    text-align: center;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-icon {
+    margin: 0 auto 16px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.result-section.success .result-icon {
+    background: rgba(35, 134, 54, 0.15);
+    color: #2ea043;
+}
+
+.result-section.error .result-icon {
+    background: rgba(248, 81, 73, 0.15);
+    color: #f85149;
+}
+
+.result-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+.result-section.success .result-title {
+    color: #2ea043;
+}
+
+.result-section.error .result-title {
+    color: #f85149;
+}
+
+.result-message {
+    color: #8b949e;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Result Actions */
+.result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-button {
+    min-width: 120px;
+}
+
+.action-button.primary {
+    background: #238636 !important;
+    border-color: rgba(240, 246, 252, 0.1) !important;
+    color: #ffffff !important;
+}
+
+.result-section.error .action-button.primary {
+    background: #da3633 !important;
+}
+
+.action-button.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+}
+
+.result-section.error .action-button.primary:hover {
+    box-shadow: 0 4px 12px rgba(248, 81, 73, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 95%;
+        margin: 20px;
+    }
+
+    .modal-header,
+    .timeline-container,
+    .result-section {
+        padding: 20px;
+    }
+
+    .result-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-button {
+        width: 100%;
+    }
+}
+
+/* Fallback loader when no detailed steps are available */
+.fallback-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 20px;
+    gap: 12px;
+    color: #c9d1d9;
+}
+
+.spinner-large {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #ffffff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    box-shadow: 0 4px 20px rgba(2,6,23,0.6);
+}
+
+.testing-text {
+    font-size: 15px;
+    color: #8b949e;
+}
