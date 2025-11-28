@@ -3,7 +3,7 @@ import CodeMirror from '@uiw/react-codemirror'
 import { sql } from '@codemirror/lang-sql'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
-import { PlayIcon, ChevronDownIcon, GearIcon } from '@primer/octicons-react'
+import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { githubDark } from '@uiw/codemirror-theme-github'
@@ -36,13 +36,36 @@ const FONT_FAMILIES = [
 ]
 
 function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
-    const [query, setQuery] = useState('SELECT * FROM your_table;')
-    const [selectedLimit, setSelectedLimit] = useState(RUN_OPTIONS[0])
+    const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
+
+    useEffect(() => {
+        localStorage.setItem('savedQuery', query)
+    }, [query])
+    const [selectedLimit, setSelectedLimit] = useState(() => {
+        const saved = parseInt(localStorage.getItem('runLimit'))
+        return RUN_OPTIONS.find(o => o.value === saved) || RUN_OPTIONS[0]
+    })
+
+    useEffect(() => {
+        localStorage.setItem('runLimit', selectedLimit.value)
+    }, [selectedLimit])
+
     const [showLimitDropdown, setShowLimitDropdown] = useState(false)
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
-    const [selectedTheme, setSelectedTheme] = useState(THEMES[0])
-    const [fontSize, setFontSize] = useState(13)
-    const [fontFamily, setFontFamily] = useState(FONT_FAMILIES[0])
+
+    const [selectedTheme, setSelectedTheme] = useState(() => {
+        const saved = localStorage.getItem('editorTheme')
+        return THEMES.find(t => t.value === saved) || THEMES[0]
+    })
+
+    const [fontSize, setFontSize] = useState(() => {
+        return parseInt(localStorage.getItem('editorFontSize')) || 13
+    })
+
+    const [fontFamily, setFontFamily] = useState(() => {
+        const saved = localStorage.getItem('editorFontFamily')
+        return FONT_FAMILIES.find(f => f.value === saved) || FONT_FAMILIES[0]
+    })
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -73,6 +96,19 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
             document.removeEventListener('keydown', handleEscapeKey)
         }
     }, [isFullscreen])
+
+    // Persist settings
+    useEffect(() => {
+        localStorage.setItem('editorFontSize', fontSize)
+    }, [fontSize])
+
+    useEffect(() => {
+        localStorage.setItem('editorFontFamily', fontFamily.value)
+    }, [fontFamily])
+
+    useEffect(() => {
+        localStorage.setItem('editorTheme', selectedTheme.value)
+    }, [selectedTheme])
 
     const viewRef = useRef(null)
 
@@ -156,7 +192,20 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
                         {isFullscreen ? <MdFullscreenExit size={16} /> : <MdFullscreen size={16} />}
                     </button>
 
-                    {/* Theme Selector */}
+                    {/* Theme Toggle */}
+                    <button
+                        className="icon-button"
+                        onClick={() => {
+                            const currentIndex = THEMES.findIndex(t => t.value === selectedTheme.value)
+                            const nextIndex = (currentIndex + 1) % THEMES.length
+                            setSelectedTheme(THEMES[nextIndex])
+                        }}
+                        title={`Current Theme: ${selectedTheme.name} (Click to change)`}
+                    >
+                        <PaintbrushIcon size={16} />
+                    </button>
+
+                    {/* Settings Selector */}
                     <div className="theme-selector" ref={themeDropdownRef}>
                         <button
                             className="theme-button"
@@ -207,24 +256,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
                                         </select>
                                     </div>
 
-                                    {/* Theme */}
-                                    <div className="setting-group">
-                                        <label className="setting-label">Theme</label>
-                                        <select
-                                            value={selectedTheme.value}
-                                            onChange={(e) => {
-                                                const selected = THEMES.find(t => t.value === e.target.value)
-                                                setSelectedTheme(selected)
-                                            }}
-                                            className="select-input"
-                                        >
-                                            {THEMES.map(theme => (
-                                                <option key={theme.value} value={theme.value}>
-                                                    {theme.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                    {/* Theme section removed */}
 
                                 </div>
                             </div>

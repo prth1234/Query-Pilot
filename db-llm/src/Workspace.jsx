@@ -5,10 +5,16 @@ import ResultsTable from './ResultsTable'
 import './Workspace.css'
 
 function Workspace({ database, connectionDetails, onDisconnect }) {
-    const [queryResults, setQueryResults] = useState(null)
+    const [queryResults, setQueryResults] = useState(() => {
+        const saved = localStorage.getItem('queryResults')
+        return saved ? JSON.parse(saved) : null
+    })
     const [queryError, setQueryError] = useState(null)
     const [isExecuting, setIsExecuting] = useState(false)
-    const [executionTime, setExecutionTime] = useState(null)
+    const [executionTime, setExecutionTime] = useState(() => {
+        const saved = localStorage.getItem('executionTime')
+        return saved ? JSON.parse(saved) : null
+    })
     const [editorHeight, setEditorHeight] = useState(250) // Default height in pixels
     const [isResizing, setIsResizing] = useState(false)
     const containerRef = useRef(null)
@@ -92,6 +98,23 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
             document.removeEventListener('mouseup', handleMouseUp)
         }
     }, [isResizing])
+
+    // Persist results and execution time
+    useEffect(() => {
+        if (queryResults) {
+            localStorage.setItem('queryResults', JSON.stringify(queryResults))
+        } else {
+            localStorage.removeItem('queryResults')
+        }
+    }, [queryResults])
+
+    useEffect(() => {
+        if (executionTime) {
+            localStorage.setItem('executionTime', JSON.stringify(executionTime))
+        } else {
+            localStorage.removeItem('executionTime')
+        }
+    }, [executionTime])
 
     return (
         <Box className="workspace-container">
