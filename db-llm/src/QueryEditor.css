@@ -1,0 +1,325 @@
+.query-editor-container {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(110, 118, 129, 0.3);
+    /* overflow: hidden; Removed to allow dropdowns */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    margin-bottom: 12px;
+    /* Reduced gap from 24px */
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 100;
+    /* Ensure it's above results table */
+}
+
+.query-editor-container:hover {
+    border-color: rgba(110, 118, 129, 0.5);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(22, 27, 34, 0.8);
+    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+}
+
+.editor-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #e6edf3;
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Theme Selector */
+.theme-selector {
+    position: relative;
+}
+
+.theme-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    background: transparent !important;
+    /* Removed background */
+    border: none !important;
+    /* Removed border */
+    border-radius: 6px;
+    color: #7d8590;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.theme-button:hover {
+    color: #e6edf3;
+    background: rgba(110, 118, 129, 0.1) !important;
+    /* Subtle hover effect */
+}
+
+/* Run Button Group */
+.run-button-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Added gap */
+}
+
+.execute-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px !important;
+    background: #238636 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    font-size: 11px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    color: white !important;
+}
+
+.dropdown-wrapper {
+    position: relative;
+}
+
+.execute-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0 !important;
+    background: #238636 !important;
+    border: none !important;
+    border-radius: 50% !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    color: white !important;
+}
+
+.execute-dropdown-trigger svg {
+    color: white !important;
+    fill: white !important;
+}
+
+.execute-button:hover:not(:disabled),
+.execute-dropdown-trigger:hover:not(:disabled) {
+    background: #2ea043 !important;
+}
+
+.execute-button:active:not(:disabled),
+.execute-dropdown-trigger:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.execute-button:disabled,
+.execute-dropdown-trigger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.execute-text {
+    color: white;
+}
+
+.execute-button svg {
+    color: white;
+    fill: white;
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    margin-top: 0;
+    background: #161b22;
+    border: 1px solid rgba(110, 118, 129, 0.3);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    min-width: 180px;
+    z-index: 10000;
+    /* Increased z-index */
+    overflow: hidden;
+}
+
+.run-dropdown {
+    min-width: 160px;
+    right: 0;
+    left: auto;
+    border-top: 1px solid rgba(110, 118, 129, 0.3);
+    /* Restore border */
+    border-radius: 6px;
+    /* Restore radius */
+}
+
+.theme-dropdown {
+    min-width: 300px;
+    /* Wider for horizontal layout */
+    left: 0;
+    right: auto;
+    border-radius: 6px;
+    border: 1px solid rgba(110, 118, 129, 0.3);
+    margin-top: 2px;
+}
+
+.dropdown-content-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.dropdown-section {
+    padding: 8px 0;
+    flex: 1;
+}
+
+.dropdown-divider-vertical {
+    width: 1px;
+    background: rgba(110, 118, 129, 0.2);
+    margin: 8px 0;
+}
+
+.theme-section {
+    min-width: 140px;
+}
+
+.font-section {
+    min-width: 80px;
+}
+
+.dropdown-label {
+    padding: 4px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #7d8590;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.dropdown-item {
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #e6edf3;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.dropdown-item:hover {
+    background: rgba(110, 118, 129, 0.2);
+}
+
+.dropdown-item.active {
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+    font-weight: 500;
+}
+
+.dropdown-item.active::before {
+    content: '✓ ';
+    margin-right: 4px;
+}
+
+.keyboard-hint {
+    font-size: 11px;
+    color: #7d8590;
+    font-family: 'SF Mono', 'Courier New', monospace;
+    padding: 3px 6px;
+    background: rgba(110, 118, 129, 0.1);
+    border-radius: 3px;
+    border: 1px solid rgba(110, 118, 129, 0.2);
+}
+
+.editor-wrapper {
+    background: #0d1117;
+}
+
+.code-editor * {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace !important;
+    font-size: 12px !important;
+}
+
+.code-editor .cm-editor {
+    background: #0d1117 !important;
+    color: #e6edf3 !important;
+}
+
+.code-editor .cm-gutters {
+    background: #161b22 !important;
+    border-right: 1px solid rgba(110, 118, 129, 0.2) !important;
+    color: #7d8590 !important;
+}
+
+.code-editor .cm-activeLineGutter {
+    background: rgba(110, 118, 129, 0.1) !important;
+}
+
+.code-editor .cm-activeLine {
+    background: rgba(110, 118, 129, 0.05) !important;
+}
+
+.code-editor .cm-selectionBackground {
+    background: rgba(88, 166, 255, 0.3) !important;
+}
+
+.code-editor .cm-cursor {
+    border-left-color: #58a6ff !important;
+}
+
+.code-editor .cm-line {
+    padding-left: 8px;
+}
+
+/* SQL Syntax Highlighting */
+.code-editor .cm-keyword {
+    color: #ff7b72 !important;
+    font-weight: 600;
+}
+
+.code-editor .cm-string {
+    color: #a5d6ff !important;
+}
+
+.code-editor .cm-comment {
+    color: #8b949e !important;
+    font-style: italic;
+}
+
+.code-editor .cm-number {
+    color: #79c0ff !important;
+}
+
+.code-editor .cm-operator {
+    color: #ff7b72 !important;
+}
+
+.code-editor .cm-function {
+    color: #d2a8ff !important;
+}
+
+@media (max-width: 768px) {
+    .editor-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .keyboard-hint {
+        display: none;
+    }
+}

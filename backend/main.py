@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 import time
 
 app = FastAPI(title="Database LLM Connection Service")
@@ -33,6 +33,23 @@ class ConnectionResponse(BaseModel):
     success: bool
     message: str
     steps: list[dict]
+    error: Optional[str] = None
+
+class QueryRequest(BaseModel):
+    query: str
+    host: str
+    port: int
+    database: str
+    user: str
+    password: str
+    db_type: str  # 'mysql' or 'postgresql'
+
+class QueryResponse(BaseModel):
+    success: bool
+    columns: Optional[List[str]] = None
+    rows: Optional[List[Dict[str, Any]]] = None
+    rowCount: Optional[int] = None
+    executionTime: Optional[int] = None  # in milliseconds
     error: Optional[str] = None
 
 @app.get("/")
@@ -449,6 +466,164 @@ async def test_postgresql_connection(request: MySQLConnectionRequest):
             error=str(e)
         )
 
+@app.post("/api/execute-query", response_model=QueryResponse)
+async def execute_query(request: QueryRequest):
+    """
+    Execute a SQL query on the connected database.
+    Returns query results with columns, rows, and execution time.
+    """
+    start_time = time.time()
+    
+    try:
+        # Validate query
+        if not request.query or not request.query.strip():
+            return QueryResponse(
+                success=False,
+                error="Query cannot be empty"
+            )
+        
+        # Check for dangerous operations
+        query_upper = request.query.strip().upper()
+        dangerous_keywords = ['DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'CREATE', 'INSERT', 'UPDATE']
+        if any(keyword in query_upper.split()[0] for keyword in dangerous_keywords):
+            return QueryResponse(
+                success=False,
+                error=f"Only SELECT queries are allowed for safety"
+            )
+        
+        if request.db_type == 'mysql':
+            try:
+                import pymysql
+                
+                connection = pymysql.connect(
+                    host=request.host,
+                    port=request.port,
+                    user=request.user,
+                    password=request.password,
+                    database=request.database,
+                    connect_timeout=10,
+                    read_timeout=30,
+                    write_timeout=30,
+                    cursorclass=pymysql.cursors.DictCursor
+                )
+                
+                cursor = connection.cursor()
+                cursor.execute(request.query)
+                rows = cursor.fetchall()
+                
+                # Get column names
+                columns = [desc[0] for desc in cursor.description] if cursor.description else []
+                
+                # Convert rows to list of dicts with string keys
+                formatted_rows = []
+                for row in rows:
+                    formatted_row = {}
+                    for key, value in row.items():
+                        # Convert any non-serializable types to strings
+                        if value is None:
+                            formatted_row[key] = None
+                        elif isinstance(value, (int, float, str, bool)):
+                            formatted_row[key] = value
+                        else:
+                            formatted_row[key] = str(value)
+                    formatted_rows.append(formatted_row)
+                
+                cursor.close()
+                connection.close()
+                
+                execution_time = int((time.time() - start_time) * 1000)
+                
+                return QueryResponse(
+                    success=True,
+                    columns=columns,
+                    rows=formatted_rows,
+                    rowCount=len(formatted_rows),
+                    executionTime=execution_time
+                )
+                
+            except ImportError:
+                return QueryResponse(
+                    success=False,
+                    error="PyMySQL not installed"
+                )
+            except pymysql.err.Error as e:
+                return QueryResponse(
+                    success=False,
+                    error=f"MySQL Error: {str(e)}"
+                )
+                
+        elif request.db_type == 'postgresql':
+            try:
+                import psycopg2
+                import psycopg2.extras
+                
+                connection = psycopg2.connect(
+                    host=request.host,
+                    port=request.port,
+                    user=request.user,
+                    password=request.password,
+                    dbname=request.database,
+                    connect_timeout=10
+                )
+                
+                cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cursor.execute(request.query)
+                rows = cursor.fetchall()
+                
+                # Get column names
+                columns = [desc[0] for desc in cursor.description] if cursor.description else []
+                
+                # Convert rows to list of dicts
+                formatted_rows = []
+                for row in rows:
+                    formatted_row = {}
+                    for key in columns:
+                        value = row[key]
+                        # Convert any non-serializable types to strings
+                        if value is None:
+                            formatted_row[key] = None
+                        elif isinstance(value, (int, float, str, bool)):
+                            formatted_row[key] = value
+                        else:
+                            formatted_row[key] = str(value)
+                    formatted_rows.append(formatted_row)
+                
+                cursor.close()
+                connection.close()
+                
+                execution_time = int((time.time() - start_time) * 1000)
+                
+                return QueryResponse(
+                    success=True,
+                    columns=columns,
+                    rows=formatted_rows,
+                    rowCount=len(formatted_rows),
+                    executionTime=execution_time
+                )
+                
+            except ImportError:
+                return QueryResponse(
+                    success=False,
+                    error="psycopg2 not installed"
+                )
+            except psycopg2.Error as e:
+                return QueryResponse(
+                    success=False,
+                    error=f"PostgreSQL Error: {str(e)}"
+                )
+        else:
+            return QueryResponse(
+                success=False,
+                error=f"Unsupported database type: {request.db_type}"
+            )
+            
+    except Exception as e:
+        return QueryResponse(
+            success=False,
+            error=f"Unexpected error: {str(e)}"
+        )
+
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
