@@ -9,7 +9,14 @@ app = FastAPI(title="Database LLM Connection Service")
 # CORS middleware to allow frontend requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Vite default port
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+        "http://localhost:5177",
+        "http://localhost:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -228,6 +235,208 @@ async def test_mysql_connection(request: MySQLConnectionRequest):
         return ConnectionResponse(
             success=True,
             message=f"Successfully connected to MySQL database '{request.database}'",
+            steps=steps
+        )
+        
+    except Exception as e:
+        # Catch any unexpected errors
+        return ConnectionResponse(
+            success=False,
+            message=f"Unexpected error: {str(e)}",
+            steps=steps,
+            error=str(e)
+        )
+
+@app.post("/api/test-connection/postgresql", response_model=ConnectionResponse)
+async def test_postgresql_connection(request: MySQLConnectionRequest):
+    """
+    Test PostgreSQL database connection with provided credentials.
+    Returns success status and detailed steps of the connection process.
+    """
+    steps = []
+    
+    try:
+        # Step 1: Validate credentials format
+        steps.append({
+            "id": 1,
+            "label": "Validating credentials format",
+            "status": "in_progress",
+            "timestamp": time.time()
+        })
+        
+        # Basic validation
+        if not request.host or not request.user or not request.database:
+            steps[-1]["status"] = "failed"
+            steps[-1]["error"] = "Missing required credentials"
+            return ConnectionResponse(
+                success=False,
+                message="Invalid credentials format",
+                steps=steps,
+                error="Missing required credentials"
+            )
+        
+        time.sleep(0.3)  # Simulate processing
+        steps[-1]["status"] = "completed"
+        
+        # Step 2: Establishing connection
+        steps.append({
+            "id": 2,
+            "label": "Establishing connection",
+            "status": "in_progress",
+            "timestamp": time.time()
+        })
+        
+        try:
+            import psycopg2
+            
+            # Attempt to connect to PostgreSQL
+            # Postgres requires a database to connect to, usually 'postgres' is the default maintenance db
+            # But we can try connecting directly to the requested database
+            connection = psycopg2.connect(
+                host=request.host,
+                port=request.port,
+                user=request.user,
+                password=request.password,
+                dbname=request.database,
+                connect_timeout=10
+            )
+            
+            steps[-1]["status"] = "completed"
+            
+        except ImportError:
+            steps[-1]["status"] = "failed"
+            steps[-1]["error"] = "psycopg2 not installed"
+            return ConnectionResponse(
+                success=False,
+                message="psycopg2 driver not found. Please install: pip install psycopg2-binary",
+                steps=steps,
+                error="psycopg2 not installed"
+            )
+        except psycopg2.OperationalError as e:
+            steps[-1]["status"] = "failed"
+            error_msg = str(e)
+            steps[-1]["error"] = error_msg.split('\n')[0] # Keep it brief
+            
+            return ConnectionResponse(
+                success=False,
+                message=f"Connection failed: {error_msg.split(chr(10))[0]}", # First line only
+                steps=steps,
+                error=error_msg
+            )
+        except Exception as e:
+            steps[-1]["status"] = "failed"
+            steps[-1]["error"] = str(e)
+            return ConnectionResponse(
+                success=False,
+                message=f"Connection error: {str(e)}",
+                steps=steps,
+                error=str(e)
+            )
+        
+        # Step 3: Authenticating user
+        steps.append({
+            "id": 3,
+            "label": "Authenticating user",
+            "status": "completed",
+            "timestamp": time.time()
+        })
+        
+        # Step 4: Checking database access
+        steps.append({
+            "id": 4,
+            "label": "Checking database access",
+            "status": "in_progress",
+            "timestamp": time.time()
+        })
+        
+        # In Postgres, if we connected successfully above with dbname=request.database, 
+        # we already have access. But let's verify.
+        try:
+            cursor = connection.cursor()
+            cursor.execute("SELECT current_database()")
+            current_db = cursor.fetchone()[0]
+            
+            if current_db != request.database:
+                steps[-1]["status"] = "failed"
+                steps[-1]["error"] = f"Connected to '{current_db}' instead of '{request.database}'"
+                connection.close()
+                return ConnectionResponse(
+                    success=False,
+                    message=f"Cannot access database '{request.database}'",
+                    steps=steps,
+                    error=f"Database '{request.database}' not found or not accessible"
+                )
+            
+            steps[-1]["status"] = "completed"
+            
+        except Exception as e:
+            steps[-1]["status"] = "failed"
+            steps[-1]["error"] = str(e)
+            connection.close()
+            return ConnectionResponse(
+                success=False,
+                message=f"Database access error: {str(e)}",
+                steps=steps,
+                error=str(e)
+            )
+        
+        # Step 5: Testing SELECT privileges
+        steps.append({
+            "id": 5,
+            "label": "Testing SELECT privileges",
+            "status": "in_progress",
+            "timestamp": time.time()
+        })
+        
+        try:
+            # Test basic SELECT query
+            cursor.execute("SELECT 1")
+            result = cursor.fetchone()
+            
+            if result[0] != 1:
+                steps[-1]["status"] = "failed"
+                steps[-1]["error"] = "SELECT query failed"
+                connection.close()
+                return ConnectionResponse(
+                    success=False,
+                    message="Cannot execute SELECT queries",
+                    steps=steps,
+                    error="SELECT privilege test failed"
+                )
+            
+            # Test table listing
+            cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+            tables = cursor.fetchall()
+            
+            steps[-1]["status"] = "completed"
+            steps[-1]["tables_found"] = len(tables)
+            
+        except Exception as e:
+            steps[-1]["status"] = "failed"
+            steps[-1]["error"] = str(e)
+            connection.close()
+            return ConnectionResponse(
+                success=False,
+                message=f"SELECT privilege test failed: {str(e)}",
+                steps=steps,
+                error=str(e)
+            )
+        
+        # Step 6: Connection successful
+        steps.append({
+            "id": 6,
+            "label": "Connection successful",
+            "status": "completed",
+            "timestamp": time.time()
+        })
+        
+        # Clean up
+        cursor.close()
+        connection.close()
+        
+        return ConnectionResponse(
+            success=True,
+            message=f"Successfully connected to PostgreSQL database '{request.database}'",
             steps=steps
         )
         
