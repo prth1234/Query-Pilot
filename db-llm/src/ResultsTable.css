@@ -76,6 +76,12 @@
     color: #58a6ff;
 }
 
+.results-badge.filtered {
+    background: rgba(187, 128, 9, 0.15);
+    border-color: rgba(187, 128, 9, 0.3);
+    color: #d29922;
+}
+
 .header-right {
     display: flex;
     align-items: center;
@@ -114,10 +120,85 @@
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.2s ease;
+    position: relative;
 }
 
 .icon-button:hover {
     background: rgba(110, 118, 129, 0.1);
+    color: #e6edf3;
+}
+
+.icon-button.active {
+    background: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+}
+
+.filter-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #f85149;
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: 8px;
+    min-width: 14px;
+    text-align: center;
+}
+
+/* Global Search */
+.global-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(22, 27, 34, 0.8);
+    border: 1px solid rgba(110, 118, 129, 0.3);
+    border-radius: 4px;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+}
+
+.global-search:focus-within {
+    border-color: #58a6ff;
+    background: rgba(22, 27, 34, 1);
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+.global-search svg {
+    color: #7d8590;
+    flex-shrink: 0;
+}
+
+.global-search-input {
+    background: transparent;
+    border: none;
+    color: #e6edf3;
+    font-size: 12px;
+    outline: none;
+    width: 150px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.global-search-input::placeholder {
+    color: #7d8590;
+}
+
+.clear-search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    background: transparent;
+    border: none;
+    color: #7d8590;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.clear-search-button:hover {
+    background: rgba(110, 118, 129, 0.2);
     color: #e6edf3;
 }
 
@@ -137,13 +218,13 @@
 
 .row-index-header,
 .column-header {
-    padding: 10px 14px;
+    padding: 8px 12px;
     background: #161b22;
     border-bottom: 1px solid rgba(110, 118, 129, 0.2);
     text-align: left;
     font-weight: 500;
     color: #8b949e;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: none;
     letter-spacing: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
@@ -165,10 +246,45 @@
     gap: 4px;
 }
 
+.column-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
 .column-name {
     color: #e6edf3;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
+    flex: 1;
+}
+
+.sort-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    color: #7d8590;
+}
+
+.sort-button:hover {
+    background: rgba(110, 118, 129, 0.2);
+    color: #e6edf3;
+}
+
+.sort-icon {
+    opacity: 0.3;
+}
+
+.sort-icon.active {
+    opacity: 1;
+    color: #58a6ff;
 }
 
 .column-type {
@@ -249,16 +365,37 @@
     z-index: 11;
 }
 
-.filter-input {
-    width: 100%;
-    padding: 4px 8px;
+.filter-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     background: rgba(22, 27, 34, 0.8);
     border: 1px solid rgba(110, 118, 129, 0.3);
     border-radius: 4px;
+    padding: 2px 6px;
+    transition: all 0.2s ease;
+}
+
+.filter-input-wrapper:focus-within {
+    border-color: #58a6ff;
+    background: rgba(22, 27, 34, 1);
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+.filter-icon {
+    color: #7d8590;
+    flex-shrink: 0;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 2px 4px;
+    background: transparent;
+    border: none;
     color: #e6edf3;
     font-size: 12px;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-    transition: all 0.2s ease;
+    outline: none;
 }
 
 .filter-input::placeholder {
@@ -266,15 +403,51 @@
     opacity: 0.6;
 }
 
-.filter-input:focus {
-    outline: none;
-    border-color: #58a6ff;
-    background: rgba(22, 27, 34, 1);
-    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+.clear-filter-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    background: transparent;
+    border: none;
+    color: #7d8590;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.clear-filter-button:hover {
+    background: rgba(110, 118, 129, 0.2);
+    color: #e6edf3;
 }
 
 .filter-input:hover {
     border-color: rgba(110, 118, 129, 0.5);
+}
+
+/* No Results State */
+.no-results {
+    text-align: center;
+    padding: 40px !important;
+}
+
+.no-results-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.no-results-icon {
+    color: #7d8590;
+    opacity: 0.5;
+}
+
+.no-results-content p {
+    color: #7d8590;
+    font-size: 14px;
+    margin: 0;
 }
 
 

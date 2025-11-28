@@ -6,14 +6,23 @@ import {
     ClockIcon,
     DatabaseIcon,
     ChevronLeftIcon,
-    ChevronRightIcon
+    ChevronRightIcon,
+    SearchIcon,
+    FilterIcon,
+    XIcon,
+    SortAscIcon,
+    SortDescIcon
 } from '@primer/octicons-react'
-import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
+import { MdFullscreen, MdFullscreenExit } from "react-icons/md"
 import './ResultsTable.css'
 
 function ResultsTable({ results, error, isLoading, executionTime }) {
     const [currentPage, setCurrentPage] = useState(1)
     const [isFullScreen, setIsFullScreen] = useState(false)
+    const [globalFilter, setGlobalFilter] = useState('')
+    const [columnFilters, setColumnFilters] = useState({})
+    const [sortConfig, setSortConfig] = useState({ column: null, direction: null })
+    const [showColumnFilters, setShowColumnFilters] = useState(false)
     const rowsPerPage = 300
 
     if (isLoading) {
@@ -55,11 +64,50 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
         )
     }
 
-    const { columns, rows, rowCount } = results
-    const totalPages = Math.ceil(rows.length / rowsPerPage)
+    const { columns, rows } = results
+
+    // Apply global filter
+    let filteredRows = rows.filter(row => {
+        if (!globalFilter) return true
+        return Object.values(row).some(value =>
+            String(value).toLowerCase().includes(globalFilter.toLowerCase())
+        )
+    })
+
+    // Apply column filters
+    Object.keys(columnFilters).forEach(column => {
+        const filterValue = columnFilters[column]
+        if (filterValue) {
+            filteredRows = filteredRows.filter(row =>
+                String(row[column]).toLowerCase().includes(filterValue.toLowerCase())
+            )
+        }
+    })
+
+    // Apply sorting
+    if (sortConfig.column) {
+        filteredRows.sort((a, b) => {
+            const aValue = a[sortConfig.column]
+            const bValue = b[sortConfig.column]
+
+            if (aValue === null || aValue === undefined) return 1
+            if (bValue === null || bValue === undefined) return -1
+
+            let comparison = 0
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                comparison = aValue - bValue
+            } else {
+                comparison = String(aValue).localeCompare(String(bValue))
+            }
+
+            return sortConfig.direction === 'asc' ? comparison : -comparison
+        })
+    }
+
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage)
     const startIndex = (currentPage - 1) * rowsPerPage
     const endIndex = startIndex + rowsPerPage
-    const currentRows = rows.slice(startIndex, endIndex)
+    const currentRows = filteredRows.slice(startIndex, endIndex)
 
     const handlePreviousPage = () => {
         setCurrentPage(prev => Math.max(1, prev - 1))
@@ -73,6 +121,37 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
         setIsFullScreen(!isFullScreen)
     }
 
+    const handleSort = (column) => {
+        let direction = 'asc'
+        if (sortConfig.column === column && sortConfig.direction === 'asc') {
+            direction = 'desc'
+        } else if (sortConfig.column === column && sortConfig.direction === 'desc') {
+            direction = null
+        }
+
+        setSortConfig({ column: direction ? column : null, direction })
+    }
+
+    const handleColumnFilterChange = (column, value) => {
+        setColumnFilters(prev => {
+            if (!value) {
+                const newFilters = { ...prev }
+                delete newFilters[column]
+                return newFilters
+            }
+            return { ...prev, [column]: value }
+        })
+        setCurrentPage(1) // Reset to first page when filtering
+    }
+
+    const clearAllFilters = () => {
+        setGlobalFilter('')
+        setColumnFilters({})
+        setCurrentPage(1)
+    }
+
+    const activeFilterCount = Object.keys(columnFilters).length + (globalFilter ? 1 : 0)
+
     return (
         <Box className={`results-container ${isFullScreen ? 'full-screen' : ''}`}>
             {/* Results Header - Horizontal Layout */}
@@ -80,9 +159,60 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                 <div className="results-header-left">
                     <CheckCircleIcon size={16} className="success-icon" />
                     <Text className="results-title">Query Results</Text>
-                    <div className="results-badge">{rows.length} rows</div>
+                    <div className="results-badge">{filteredRows.length} rows</div>
+                    {filteredRows.length !== rows.length && (
+                        <div className="results-badge filtered">
+                            {rows.length} total
+                        </div>
+                    )}
                 </div>
                 <div className="results-header-right">
+                    {/* Global Search */}
+                    <div className="global-search">
+                        <SearchIcon size={14} />
+                        <input
+                            type="text"
+                            placeholder="Search all columns..."
+                            value={globalFilter}
+                            onChange={(e) => {
+                                setGlobalFilter(e.target.value)
+                                setCurrentPage(1)
+                            }}
+                            className="global-search-input"
+                        />
+                        {globalFilter && (
+                            <button
+                                className="clear-search-button"
+                                onClick={() => setGlobalFilter('')}
+                            >
+                                <XIcon size={12} />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Filter Toggle */}
+                    <button
+                        className={`icon-button ${showColumnFilters ? 'active' : ''}`}
+                        onClick={() => setShowColumnFilters(!showColumnFilters)}
+                        title="Toggle column filters"
+                    >
+                        <FilterIcon size={16} />
+                        {activeFilterCount > 0 && (
+                            <span className="filter-badge">{activeFilterCount}</span>
+                        )}
+                    </button>
+
+                    {/* Clear Filters */}
+                    {activeFilterCount > 0 && (
+                        <button
+                            className="icon-button"
+                            onClick={clearAllFilters}
+                            title="Clear all filters"
+                        >
+                            <XIcon size={16} />
+                        </button>
+                    )}
+
                     {executionTime && (
                         <div className="execution-time">
                             <ClockIcon size={14} />
@@ -104,28 +234,84 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
                             {columns.map((column, index) => (
                                 <th key={index} className="column-header">
                                     <div className="column-header-content">
-                                        <span className="column-name">{column}</span>
+                                        <div className="column-header-row">
+                                            <span className="column-name">{column}</span>
+                                            <button
+                                                className="sort-button"
+                                                onClick={() => handleSort(column)}
+                                                title={`Sort by ${column}`}
+                                            >
+                                                {sortConfig.column === column ? (
+                                                    sortConfig.direction === 'asc' ? (
+                                                        <SortAscIcon size={14} className="sort-icon active" />
+                                                    ) : (
+                                                        <SortDescIcon size={14} className="sort-icon active" />
+                                                    )
+                                                ) : (
+                                                    <SortAscIcon size={14} className="sort-icon" />
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                 </th>
                             ))}
                         </tr>
-                    </thead>
-                    <tbody>
-                        {currentRows.map((row, rowIndex) => (
-                            <tr key={startIndex + rowIndex} className="table-row">
-                                <td className="row-index">{startIndex + rowIndex + 1}</td>
-                                {columns.map((column, colIndex) => (
-                                    <td key={colIndex} className="table-cell">
-                                        <div className="cell-content">
-                                            {row[column] !== null && row[column] !== undefined
-                                                ? String(row[column])
-                                                : <span className="null-value">NULL</span>
-                                            }
+                        {/* Column Filters Row */}
+                        {showColumnFilters && (
+                            <tr className="filter-row">
+                                <td className="filter-cell-index"></td>
+                                {columns.map((column, index) => (
+                                    <td key={index} className="filter-cell">
+                                        <div className="filter-input-wrapper">
+                                            <SearchIcon size={12} className="filter-icon" />
+                                            <input
+                                                type="text"
+                                                placeholder={`Filter ${column}...`}
+                                                value={columnFilters[column] || ''}
+                                                onChange={(e) => handleColumnFilterChange(column, e.target.value)}
+                                                className="filter-input"
+                                            />
+                                            {columnFilters[column] && (
+                                                <button
+                                                    className="clear-filter-button"
+                                                    onClick={() => handleColumnFilterChange(column, '')}
+                                                >
+                                                    <XIcon size={10} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 ))}
                             </tr>
-                        ))}
+                        )}
+                    </thead>
+                    <tbody>
+                        {currentRows.length > 0 ? (
+                            currentRows.map((row, rowIndex) => (
+                                <tr key={startIndex + rowIndex} className="table-row">
+                                    <td className="row-index">{startIndex + rowIndex + 1}</td>
+                                    {columns.map((column, colIndex) => (
+                                        <td key={colIndex} className="table-cell">
+                                            <div className="cell-content">
+                                                {row[column] !== null && row[column] !== undefined
+                                                    ? String(row[column])
+                                                    : <span className="null-value">NULL</span>
+                                                }
+                                            </div>
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={columns.length + 1} className="no-results">
+                                    <div className="no-results-content">
+                                        <SearchIcon size={32} className="no-results-icon" />
+                                        <p>No results match your filters</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -134,7 +320,8 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
             {totalPages > 1 && (
                 <div className="pagination">
                     <div className="pagination-info">
-                        {startIndex + 1}-{Math.min(endIndex, rows.length)} of {rows.length}
+                        {startIndex + 1}-{Math.min(endIndex, filteredRows.length)} of {filteredRows.length}
+                        {filteredRows.length !== rows.length && ` (filtered from ${rows.length})`}
                     </div>
                     <div className="pagination-controls">
                         <button

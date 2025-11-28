@@ -110,10 +110,79 @@
     flex: 1;
     padding: 24px 32px;
     overflow: hidden;
-    /* Prevent scroll here, let children handle it */
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0;
+    /* Remove gap, use resizer between */
+    min-height: 0;
+    /* Important for flex children */
+}
+
+/* Editor Section */
+.editor-section {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: height 0.05s ease-out;
+}
+
+/* Resizer */
+.resizer {
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: ns-resize;
+    position: relative;
+    z-index: 200;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.resizer:hover,
+.resizer.resizing {
+    background-color: rgba(88, 166, 255, 0.05);
+}
+
+.resizer:hover .resizer-handle,
+.resizer.resizing .resizer-handle {
+    background-color: rgba(88, 166, 255, 0.2);
+    color: #58a6ff;
+}
+
+.resizer-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(110, 118, 129, 0.2);
+    pointer-events: none;
+}
+
+.resizer-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 12px;
+    background-color: rgba(110, 118, 129, 0.1);
+    border-radius: 4px;
+    color: #7d8590;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+/* Results Section */
+.results-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    /* Important for flex children */
+    margin-top: 12px;
 }
 
 @keyframes fadeIn {

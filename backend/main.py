@@ -123,13 +123,16 @@ async def test_mysql_connection(request: MySQLConnectionRequest):
         except pymysql.err.OperationalError as e:
             steps[-1]["status"] = "failed"
             error_msg = str(e)
-            steps[-1]["error"] = error_msg
+            steps[-1]["error"] = "Authentication failed"
             
             # Provide user-friendly error messages
             if "Can't connect" in error_msg or "Unknown MySQL server host" in error_msg:
                 message = f"Cannot reach host '{request.host}:{request.port}'. Check host/port and network."
             elif "Access denied" in error_msg:
-                message = f"Access denied for user '{request.user}'. Check username/password."
+                message = "Access denied. Please check your username and password."
+            elif "cryptography" in error_msg.lower() or "caching_sha2_password" in error_msg.lower() or "sha256_password" in error_msg.lower():
+                # This usually means wrong password with MySQL 8.0+ authentication
+                message = "Authentication failed. Please verify your credentials (username/password)."
             else:
                 message = f"Connection failed: {error_msg}"
             
@@ -137,16 +140,28 @@ async def test_mysql_connection(request: MySQLConnectionRequest):
                 success=False,
                 message=message,
                 steps=steps,
-                error=error_msg
+                error="Authentication failed"
             )
         except Exception as e:
             steps[-1]["status"] = "failed"
-            steps[-1]["error"] = str(e)
+            error_msg = str(e)
+            
+            # Check if it's a cryptography-related error
+            if "cryptography" in error_msg.lower() or "sha256_password" in error_msg.lower() or "caching_sha2_password" in error_msg.lower():
+                steps[-1]["error"] = "Authentication failed"
+                return ConnectionResponse(
+                    success=False,
+                    message="Authentication failed. Please verify your credentials (username/password).",
+                    steps=steps,
+                    error="Authentication failed"
+                )
+            
+            steps[-1]["error"] = error_msg
             return ConnectionResponse(
                 success=False,
-                message=f"Connection error: {str(e)}",
+                message=f"Connection error: {error_msg}",
                 steps=steps,
-                error=str(e)
+                error=error_msg
             )
         
         # Step 3: Authenticating user

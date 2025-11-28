@@ -124,7 +124,18 @@ const validationRules = {
 }
 
 function ConnectionForm({ database, onBack, onConnect }) {
-    const [formData, setFormData] = useState({})
+    const storageKey = `connectionForm_${database.id}`
+
+    const [formData, setFormData] = useState(() => {
+        // Load from localStorage on initial mount
+        try {
+            const savedData = localStorage.getItem(storageKey)
+            return savedData ? JSON.parse(savedData) : {}
+        } catch (error) {
+            console.error('Error loading form data from localStorage:', error)
+            return {}
+        }
+    })
     const [validationState, setValidationState] = useState({})
     const [isTesting, setIsTesting] = useState(false)
     const [showModal, setShowModal] = useState(false)
@@ -132,6 +143,29 @@ function ConnectionForm({ database, onBack, onConnect }) {
     const [testSuccess, setTestSuccess] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [currentStep, setCurrentStep] = useState(-1)
+
+    // Load saved data on mount and validate
+    useEffect(() => {
+        // Validate any loaded data
+        Object.keys(formData).forEach(fieldName => {
+            if (formData[fieldName]) {
+                const validation = validateField(fieldName, formData[fieldName])
+                setValidationState(prev => ({
+                    ...prev,
+                    [fieldName]: validation
+                }))
+            }
+        })
+    }, []) // Run only on mount
+
+    // Save to localStorage whenever formData changes
+    useEffect(() => {
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(formData))
+        } catch (error) {
+            console.error('Error saving form data to localStorage:', error)
+        }
+    }, [formData, storageKey])
 
     const validateField = (fieldName, value) => {
         const dbRules = validationRules[database.id]
@@ -354,6 +388,7 @@ function ConnectionForm({ database, onBack, onConnect }) {
                         type="text"
                         placeholder={`e.g. ${database.id}://user:password@localhost:${database.id === 'mysql' ? '3306' : '5432'}/dbname`}
                         className="form-input connection-string-input"
+                        value={formData.connectionUrl || ''}
                         onChange={(e) => {
                             const val = e.target.value
 
@@ -418,7 +453,7 @@ function ConnectionForm({ database, onBack, onConnect }) {
                                     }
                                 }
 
-                                const newFormData = { ...formData }
+                                const newFormData = { ...formData, connectionUrl: val }
                                 if (host) newFormData.host = host
                                 if (port) newFormData.port = port
                                 if (user) newFormData.user = user

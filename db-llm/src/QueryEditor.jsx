@@ -4,6 +4,7 @@ import { sql } from '@codemirror/lang-sql'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
 import { PlayIcon, ChevronDownIcon, GearIcon } from '@primer/octicons-react'
+import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { githubDark } from '@uiw/codemirror-theme-github'
 import { dracula } from '@uiw/codemirror-theme-dracula'
@@ -25,13 +26,15 @@ const THEMES = [
     { name: 'Tokyo Night', value: 'tokyo', theme: tokyoNight }
 ]
 
-function QueryEditor({ onExecuteQuery, isExecuting }) {
-    const [query, setQuery] = useState('SELECT * FROM your_table;') // Removed LIMIT 10
+function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
+    const [query, setQuery] = useState('SELECT * FROM your_table;')
     const [selectedLimit, setSelectedLimit] = useState(RUN_OPTIONS[0])
     const [showLimitDropdown, setShowLimitDropdown] = useState(false)
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
     const [selectedTheme, setSelectedTheme] = useState(THEMES[0])
     const [fontSize, setFontSize] = useState(13)
+    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isFullscreen, setIsFullscreen] = useState(false)
 
     const limitDropdownRef = useRef(null)
     const themeDropdownRef = useRef(null)
@@ -47,11 +50,19 @@ function QueryEditor({ onExecuteQuery, isExecuting }) {
             }
         }
 
+        const handleEscapeKey = (event) => {
+            if (event.key === 'Escape' && isFullscreen) {
+                setIsFullscreen(false)
+            }
+        }
+
         document.addEventListener('mousedown', handleClickOutside)
+        document.addEventListener('keydown', handleEscapeKey)
         return () => {
             document.removeEventListener('mousedown', handleClickOutside)
+            document.removeEventListener('keydown', handleEscapeKey)
         }
-    }, [])
+    }, [isFullscreen])
 
     const viewRef = useRef(null)
 
@@ -111,11 +122,40 @@ function QueryEditor({ onExecuteQuery, isExecuting }) {
         }
     })
 
+    // Calculate editor height (subtract header height ~42px)
+    const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)}px`
+
     return (
-        <Box className="query-editor-container">
+        <Box className={`query-editor-container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
             <div className="editor-header">
-                <div className="editor-title">SQL Query</div>
+                <div className="editor-title-row">
+                    <button
+                        className="collapse-button"
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        title={isCollapsed ? "Expand editor" : "Collapse editor"}
+                    >
+                        <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+                        >
+                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                    <div className="editor-title">SQL Query</div>
+                </div>
                 <div className="editor-actions">
+                    {/* Fullscreen Toggle */}
+                    <button
+                        className="icon-button"
+                        onClick={() => setIsFullscreen(!isFullscreen)}
+                        title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                    >
+                        {isFullscreen ? <MdFullscreenExit size={16} /> : <MdFullscreen size={16} />}
+                    </button>
+
                     {/* Theme Selector */}
                     <div className="theme-selector" ref={themeDropdownRef}>
                         <button
@@ -211,39 +251,41 @@ function QueryEditor({ onExecuteQuery, isExecuting }) {
                     <div className="keyboard-hint">⌘ + ↵</div>
                 </div>
             </div>
-            <div className="editor-wrapper" onKeyDown={handleKeyDown}>
-                <CodeMirror
-                    value={query}
-                    height="200px"
-                    theme={selectedTheme.theme}
-                    extensions={[sql(), fontSizeExtension]}
-                    onChange={(value) => setQuery(value)}
-                    onCreateEditor={onCreateEditor}
-                    className="code-editor"
-                    basicSetup={{
-                        lineNumbers: true,
-                        highlightActiveLineGutter: true,
-                        highlightSpecialChars: true,
-                        foldGutter: true,
-                        drawSelection: true,
-                        dropCursor: true,
-                        allowMultipleSelections: true,
-                        indentOnInput: true,
-                        bracketMatching: true,
-                        closeBrackets: true,
-                        autocompletion: true,
-                        rectangularSelection: true,
-                        crosshairCursor: true,
-                        highlightActiveLine: true,
-                        highlightSelectionMatches: true,
-                        closeBracketsKeymap: true,
-                        searchKeymap: true,
-                        foldKeymap: true,
-                        completionKeymap: true,
-                        lintKeymap: true,
-                    }}
-                />
-            </div>
+            {!isCollapsed && (
+                <div className="editor-wrapper" onKeyDown={handleKeyDown}>
+                    <CodeMirror
+                        value={query}
+                        height={editorHeight}
+                        theme={selectedTheme.theme}
+                        extensions={[sql(), fontSizeExtension]}
+                        onChange={(value) => setQuery(value)}
+                        onCreateEditor={onCreateEditor}
+                        className="code-editor"
+                        basicSetup={{
+                            lineNumbers: true,
+                            highlightActiveLineGutter: true,
+                            highlightSpecialChars: true,
+                            foldGutter: true,
+                            drawSelection: true,
+                            dropCursor: true,
+                            allowMultipleSelections: true,
+                            indentOnInput: true,
+                            bracketMatching: true,
+                            closeBrackets: true,
+                            autocompletion: true,
+                            rectangularSelection: true,
+                            crosshairCursor: true,
+                            highlightActiveLine: true,
+                            highlightSelectionMatches: true,
+                            closeBracketsKeymap: true,
+                            searchKeymap: true,
+                            foldKeymap: true,
+                            completionKeymap: true,
+                            lintKeymap: true,
+                        }}
+                    />
+                </div>
+            )}
         </Box>
     )
 }
