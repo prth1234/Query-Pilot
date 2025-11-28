@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { sql } from '@codemirror/lang-sql'
 import { EditorView } from "@codemirror/view"
@@ -26,6 +26,15 @@ const THEMES = [
     { name: 'Tokyo Night', value: 'tokyo', theme: tokyoNight }
 ]
 
+const FONT_FAMILIES = [
+    { name: 'SF Mono', value: 'sf-mono', family: "'SF Mono', 'Monaco', 'Courier New', monospace" },
+    { name: 'Fira Code', value: 'fira', family: "'Fira Code', 'Courier New', monospace" },
+    { name: 'JetBrains Mono', value: 'jetbrains', family: "'JetBrains Mono', 'Courier New', monospace" },
+    { name: 'Consolas', value: 'consolas', family: "'Consolas', 'Courier New', monospace" },
+    { name: 'Monaco', value: 'monaco', family: "'Monaco', 'Courier New', monospace" },
+    { name: 'Courier New', value: 'courier', family: "'Courier New', monospace" }
+]
+
 function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
     const [query, setQuery] = useState('SELECT * FROM your_table;')
     const [selectedLimit, setSelectedLimit] = useState(RUN_OPTIONS[0])
@@ -33,6 +42,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
     const [selectedTheme, setSelectedTheme] = useState(THEMES[0])
     const [fontSize, setFontSize] = useState(13)
+    const [fontFamily, setFontFamily] = useState(FONT_FAMILIES[0])
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [isFullscreen, setIsFullscreen] = useState(false)
 
@@ -109,18 +119,8 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
         }
     }
 
-    // Create a theme extension for font size
-    const fontSizeExtension = EditorView.theme({
-        "&": {
-            fontSize: `${fontSize}px !important`
-        },
-        ".cm-content": {
-            fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace !important"
-        },
-        ".cm-gutters": {
-            fontFamily: "'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace !important"
-        }
-    })
+    // Memoize extensions array
+    const extensions = useMemo(() => [sql()], [])
 
     // Calculate editor height (subtract header height ~42px)
     const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)}px`
@@ -169,37 +169,63 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
                         </button>
                         {showThemeDropdown && (
                             <div className="dropdown-menu theme-dropdown">
-                                <div className="dropdown-content-row">
-                                    <div className="dropdown-section font-section">
-                                        <div className="dropdown-label">Font Size</div>
-                                        {[11, 12, 13, 14, 15, 16].map(size => (
-                                            <div
-                                                key={size}
-                                                className={`dropdown-item ${fontSize === size ? 'active' : ''}`}
-                                                onClick={() => {
-                                                    setFontSize(size)
-                                                }}
-                                            >
-                                                {size}px
-                                            </div>
-                                        ))}
+                                <div className="dropdown-header-title">Editor Settings</div>
+                                <div className="dropdown-content-column">
+
+                                    {/* Font Size */}
+                                    <div className="setting-group">
+                                        <div className="setting-label-row">
+                                            <label className="setting-label">Font Size</label>
+                                            <span className="setting-value">{fontSize}px</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="11"
+                                            max="20"
+                                            value={fontSize}
+                                            onChange={(e) => setFontSize(parseInt(e.target.value))}
+                                            className="slider"
+                                        />
                                     </div>
-                                    <div className="dropdown-divider-vertical"></div>
-                                    <div className="dropdown-section theme-section">
-                                        <div className="dropdown-label">Theme</div>
-                                        {THEMES.map(theme => (
-                                            <div
-                                                key={theme.value}
-                                                className={`dropdown-item ${selectedTheme.value === theme.value ? 'active' : ''}`}
-                                                onClick={() => {
-                                                    setSelectedTheme(theme)
-                                                    // Don't close, allow font selection
-                                                }}
-                                            >
-                                                {theme.name}
-                                            </div>
-                                        ))}
+
+                                    {/* Font Family */}
+                                    <div className="setting-group">
+                                        <label className="setting-label">Font Family</label>
+                                        <select
+                                            value={fontFamily.value}
+                                            onChange={(e) => {
+                                                const selected = FONT_FAMILIES.find(f => f.value === e.target.value)
+                                                setFontFamily(selected)
+                                            }}
+                                            className="select-input"
+                                        >
+                                            {FONT_FAMILIES.map(font => (
+                                                <option key={font.value} value={font.value}>
+                                                    {font.name}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
+
+                                    {/* Theme */}
+                                    <div className="setting-group">
+                                        <label className="setting-label">Theme</label>
+                                        <select
+                                            value={selectedTheme.value}
+                                            onChange={(e) => {
+                                                const selected = THEMES.find(t => t.value === e.target.value)
+                                                setSelectedTheme(selected)
+                                            }}
+                                            className="select-input"
+                                        >
+                                            {THEMES.map(theme => (
+                                                <option key={theme.value} value={theme.value}>
+                                                    {theme.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
                                 </div>
                             </div>
                         )}
@@ -257,10 +283,14 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
                         value={query}
                         height={editorHeight}
                         theme={selectedTheme.theme}
-                        extensions={[sql(), fontSizeExtension]}
+                        extensions={extensions}
                         onChange={(value) => setQuery(value)}
                         onCreateEditor={onCreateEditor}
                         className="code-editor"
+                        style={{
+                            '--editor-font-size': `${fontSize}px`,
+                            '--editor-font-family': fontFamily.family
+                        }}
                         basicSetup={{
                             lineNumbers: true,
                             highlightActiveLineGutter: true,

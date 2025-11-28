@@ -224,8 +224,8 @@
     border-radius: 6px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     min-width: 180px;
-    z-index: 10000;
-    /* Increased z-index */
+    z-index: 99999;
+    /* Very high z-index to stay above results table */
     overflow: hidden;
 }
 
@@ -240,21 +240,56 @@
 }
 
 .theme-dropdown {
-    min-width: 300px;
-    /* Wider for horizontal layout */
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    width: 320px;
+    max-height: 450px;
+    background: #161b22;
     border-radius: 6px;
     border: 1px solid rgba(110, 118, 129, 0.3);
-    margin-top: 2px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    animation: slideDown 0.1s ease-out;
 }
 
-.dropdown-content-row {
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-header-title {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    font-size: 13px;
+    font-weight: 600;
+    color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+.font-family-section {
+    min-width: 140px;
+}
+
+.dropdown-content-column {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .dropdown-section {
-    padding: 8px 0;
-    flex: 1;
+    flex: none;
 }
 
 .dropdown-divider-vertical {
@@ -305,6 +340,85 @@
     margin-right: 4px;
 }
 
+.setting-group {
+    margin-bottom: 16px;
+}
+
+.setting-group:last-child {
+    margin-bottom: 0;
+}
+
+.setting-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.setting-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #e6edf3;
+    margin-bottom: 6px;
+}
+
+.setting-value {
+    font-size: 12px;
+    color: #7d8590;
+    font-family: 'SF Mono', monospace;
+}
+
+.slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(110, 118, 129, 0.2);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #58a6ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    background: #79c0ff;
+    transform: scale(1.1);
+}
+
+.select-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(110, 118, 129, 0.1);
+    border: 1px solid rgba(110, 118, 129, 0.2);
+    border-radius: 4px;
+    color: #e6edf3;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.select-input:hover {
+    background: rgba(110, 118, 129, 0.15);
+    border-color: rgba(110, 118, 129, 0.3);
+}
+
+.select-input:focus {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
 .keyboard-hint {
     font-size: 11px;
     color: #7d8590;
@@ -319,9 +433,14 @@
     background: #0d1117;
 }
 
-.code-editor * {
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace !important;
-    font-size: 12px !important;
+.code-editor {
+    height: 100%;
+    font-size: 13px;
+    /* Default font settings */
+    --editor-font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    --editor-font-size: 13px;
+    font-family: var(--editor-font-family);
+    font-size: var(--editor-font-size);
 }
 
 .code-editor .cm-editor {
@@ -380,6 +499,26 @@
 
 .code-editor .cm-function {
     color: #d2a8ff !important;
+}
+
+/* Force font-family inheritance on all CodeMirror elements including syntax tokens */
+.code-editor *,
+.code-editor .cm-editor,
+.code-editor .cm-editor *,
+.code-editor .cm-content,
+.code-editor .cm-content *,
+.code-editor .cm-line,
+.code-editor .cm-line *,
+.code-editor .cm-scroller,
+.code-editor .cm-scroller *,
+.code-editor .cm-keyword,
+.code-editor .cm-string,
+.code-editor .cm-comment,
+.code-editor .cm-number,
+.code-editor .cm-operator,
+.code-editor .cm-function {
+    font-family: var(--editor-font-family) !important;
+    font-size: var(--editor-font-size) !important;
 }
 
 @media (max-width: 768px) {
