@@ -1,4 +1,4 @@
-#!/Users/parthsingh/Desktop/database-llm/backend/venv/bin/python3
+#!/Users/parth/Desktop/Query-Pilot/backend/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
