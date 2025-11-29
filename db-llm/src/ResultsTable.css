@@ -13,10 +13,8 @@
     /* Crucial for nested flex scrolling */
 }
 
-/* Compact mode (Editor view) - restrict size */
-.results-container.compact {
-    flex: 0 0 auto;
-}
+/* Compact mode (Editor view) - styling only, fill space */
+/* .results-container.compact inherits flex: 1 from base class */
 
 /* Non-compact mode (Notebook cells) - fill space, remove decorative styling */
 .results-container:not(.compact) {
@@ -130,12 +128,12 @@
     flex: 1;
 }
 
-/* Compact mode (Editor view) - limit height to ~5 rows */
+/* Compact mode (Editor view) - styling only */
 .results-container.compact .table-wrapper {
-    /* Constrain height to show ~5 rows by default */
-    max-height: 280px;
-    /* Remove flex grow to prevent table from expanding indefinitely */
-    flex: 0 0 auto;
+    /* Remove max-height to allow filling the page */
+    max-height: none;
+    /* Allow flex grow */
+    flex: 1;
 }
 
 /* Custom Scrollbar Styling for Table Wrapper */

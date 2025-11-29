@@ -99,7 +99,7 @@ function QueryCell({
     }, [schema, handleExecute])
 
     // Resizable Logic
-    const [editorHeight, setEditorHeight] = useState(150)
+    const [editorHeight, setEditorHeight] = useState(80) // Reduced to ~3 lines
     const [resultsHeight, setResultsHeight] = useState(null)
     const [isResizing, setIsResizing] = useState(false)
     const [resizeTarget, setResizeTarget] = useState(null) // 'middle' or 'bottom'
@@ -109,23 +109,19 @@ function QueryCell({
 
     // Auto-calculate height based on results
     useEffect(() => {
-        if (cell.results) {
-            const rowCount = cell.results.length
-            const rowHeight = 37 // Approx row height
-            const headerHeight = 42 // Header + padding
-            const footerHeight = 42 // Pagination + padding
+        if (cell.results && cell.results.rows) {
+            const rowCount = cell.results.rows.length
+            const rowHeight = 42 // Actual row height in table
+            const headerHeight = 100 // Results header + table header + filters
+            const footerHeight = 50 // Pagination footer + padding
 
-            // "minimum of 5 rows are visible if there are more than 5 rows"
-            // "otherwise if it is less than that , that many rows should be visible"
-            let targetHeight
-            if (rowCount > 5) {
-                targetHeight = headerHeight + (5 * rowHeight) + footerHeight
-            } else {
-                targetHeight = headerHeight + (rowCount * rowHeight) + footerHeight
-            }
+            // Always cap initial display at 5 rows
+            // User can resize to see more
+            const visibleRows = Math.min(rowCount, 5)
+            let targetHeight = headerHeight + (visibleRows * rowHeight) + footerHeight
 
-            // Ensure reasonable limits
-            targetHeight = Math.max(targetHeight, 150)
+            // Ensure reasonable minimum (at least 200px)
+            targetHeight = Math.max(targetHeight, 200)
             setResultsHeight(targetHeight)
         }
     }, [cell.results])
