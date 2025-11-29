@@ -3,12 +3,14 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    padding: 0 4px;
+    padding: 0 1px;
+    /* Reduced top padding to bring header closer */
 }
 
 /* Notebook Header */
 .notebook-header {
-    padding: 8px 16px;
+    padding: 4px 16px 8px 16px;
+    /* Reduced top padding from 8px to 4px */
     background: transparent;
     border-bottom: 1px solid rgba(110, 118, 129, 0.15);
     display: flex;
@@ -16,6 +18,7 @@
     align-items: center;
     flex-shrink: 0;
     margin-bottom: 4px;
+    /* Reduced margin to bring cells closer to header */
 }
 
 .notebook-title {
@@ -194,6 +197,7 @@
     border-radius: 2px;
     outline: none;
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .slider::-webkit-slider-thumb {

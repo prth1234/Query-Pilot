@@ -7,10 +7,23 @@
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
-    /* Remove flex: 1 so container doesn't expand indefinitely */
-    flex: 0 0 auto;
+    /* In notebook mode, fill available space */
+    flex: 1;
     min-height: 0;
     /* Crucial for nested flex scrolling */
+}
+
+/* Compact mode (Editor view) - restrict size */
+.results-container.compact {
+    flex: 0 0 auto;
+}
+
+/* Non-compact mode (Notebook cells) - fill space, remove decorative styling */
+.results-container:not(.compact) {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: #0d1117;
 }
 
 .results-container.full-screen {
@@ -109,12 +122,18 @@
 /* Table */
 .table-wrapper {
     overflow: auto;
-    /* Constrain height to show ~5 rows by default */
-    max-height: 280px;
     position: relative;
     /* Enable both horizontal and vertical scrolling */
     overflow-x: auto;
     overflow-y: auto;
+    /* In notebook mode, fill available space */
+    flex: 1;
+}
+
+/* Compact mode (Editor view) - limit height to ~5 rows */
+.results-container.compact .table-wrapper {
+    /* Constrain height to show ~5 rows by default */
+    max-height: 280px;
     /* Remove flex grow to prevent table from expanding indefinitely */
     flex: 0 0 auto;
 }

@@ -47,6 +47,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
 
     const limitDropdownRef = useRef(null)
     const themeDropdownRef = useRef(null)
+    const cellRefs = useRef({})
 
     // Click outside to close dropdowns
     useEffect(() => {
@@ -82,6 +83,19 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
             executionTime: null
         }
         setCells([...cells, newCell])
+
+        // Scroll to new cell and focus editor after state update
+        setTimeout(() => {
+            const cellElement = cellRefs.current[newCell.id]
+            if (cellElement) {
+                cellElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                // Focus the CodeMirror editor
+                const editorElement = cellElement.querySelector('.cm-content')
+                if (editorElement) {
+                    editorElement.focus()
+                }
+            }
+        }, 100)
     }
 
     const handleDeleteCell = (cellId) => {
@@ -179,7 +193,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         <Box className="notebook-view">
             <div className="notebook-header">
                 <div className="notebook-title">
-                    <h2>Notebook Mode</h2>
+                    <h1>Notebook Mode</h1>
                 </div>
                 <div className="notebook-actions">
                     {/* Theme & Font Settings */}
@@ -316,6 +330,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                     <QueryCell
                         key={cell.id}
                         cell={cell}
+                        cellRef={(el) => cellRefs.current[cell.id] = el}
                         onExecute={handleExecuteCell}
                         onDelete={handleDeleteCell}
                         onQueryChange={handleQueryChange}

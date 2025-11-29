@@ -20,12 +20,14 @@ function QueryCell({
     isLast,
     theme,
     fontFamily,
-    fontSize
+    fontSize,
+    cellRef // New prop for focusing
 }) {
     const [isExecuting, setIsExecuting] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
     const viewRef = useRef(null)
     const queryRef = useRef(cell.query)
+    const editorContainerRef = useRef(null)
 
     // Update query ref when cell query changes
     useEffect(() => {
@@ -146,7 +148,8 @@ function QueryCell({
             const delta = e.clientY - resizeStart.y
 
             if (resizeTarget === 'middle') {
-                // Hinged resizing: Editor grows/shrinks, Results shrink/grow
+                // Middle resizer: Adjust split between code and results
+                // Hinged behavior - one grows, other shrinks
                 let newEditorHeight = resizeStart.editor + delta
                 let newResultsHeight = resizeStart.results - delta
 
@@ -164,9 +167,24 @@ function QueryCell({
                 setEditorHeight(newEditorHeight)
                 setResultsHeight(newResultsHeight)
             } else if (resizeTarget === 'bottom') {
-                // Independent results resizing
-                let newResultsHeight = resizeStart.results + delta
-                newResultsHeight = Math.max(newResultsHeight, 100) // Min height
+                // Bottom resizer: Resize WHOLE CELL (code block + result block)
+                // Distribution: 25% to code block, 75% to result block
+                const editorGrowth = delta * 0.25
+                const resultsGrowth = delta * 0.75
+
+                let newEditorHeight = resizeStart.editor + editorGrowth
+                let newResultsHeight = resizeStart.results + resultsGrowth
+
+                const minHeight = 60
+
+                if (newEditorHeight < minHeight) {
+                    newEditorHeight = minHeight
+                }
+                if (newResultsHeight < minHeight) {
+                    newResultsHeight = minHeight
+                }
+
+                setEditorHeight(newEditorHeight)
                 setResultsHeight(newResultsHeight)
             }
         }
@@ -189,7 +207,7 @@ function QueryCell({
 
 
     return (
-        <div className={`query-cell ${isFullScreen ? 'fullscreen' : ''}`}>
+        <div className={`query-cell ${isFullScreen ? 'fullscreen' : ''}`} ref={cellRef}>
             <div className="cell-header">
                 <div className="cell-left-actions">
                     <button
@@ -222,7 +240,7 @@ function QueryCell({
                 </div>
             </div>
 
-            <div className="cell-editor-wrapper">
+            <div className="cell-editor-wrapper" ref={editorContainerRef}>
                 <CodeMirror
                     value={cell.query}
                     height={isFullScreen ? "100%" : `${editorHeight}px`}
@@ -266,7 +284,7 @@ function QueryCell({
                     <div
                         className={`cell-resizer ${isResizing && resizeTarget === 'middle' ? 'resizing' : ''}`}
                         onMouseDown={(e) => handleMouseDown(e, 'middle')}
-                        title="Drag to adjust split"
+                        title="Drag to adjust split between code and results"
                     >
                         <div className="cell-resizer-handle"></div>
                     </div>
@@ -283,12 +301,13 @@ function QueryCell({
                                 error={cell.error}
                                 isLoading={isExecuting}
                                 executionTime={cell.executionTime}
+                                compact={false}
                             />
                         </div>
                         <div
                             className={`cell-resizer bottom ${isResizing && resizeTarget === 'bottom' ? 'resizing' : ''}`}
                             onMouseDown={(e) => handleMouseDown(e, 'bottom')}
-                            title="Drag to resize results"
+                            title="Drag to expand entire cell (code + results)"
                         >
                             <div className="cell-resizer-handle horizontal"></div>
                         </div>

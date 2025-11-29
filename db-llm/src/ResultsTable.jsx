@@ -39,7 +39,7 @@ const ROW_HEIGHT_MAP = {
     comfortable: '16px'
 }
 
-function ResultsTable({ results, error, isLoading, executionTime }) {
+function ResultsTable({ results, error, isLoading, executionTime, compact = true }) {
     const [currentPage, setCurrentPage] = useState(1)
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -222,7 +222,7 @@ function ResultsTable({ results, error, isLoading, executionTime }) {
     ].filter(Boolean).join(' ')
 
     return (
-        <Box className={`results-container ${isFullScreen ? 'full-screen' : ''}`}>
+        <Box className={`results-container ${isFullScreen ? 'full-screen' : ''} ${compact ? 'compact' : ''}`}>
             {/* Results Header */}
             <div className="results-header">
                 <div className="results-header-left">
