@@ -4,7 +4,7 @@ import { sql } from '@codemirror/lang-sql'
 import { autocompletion } from '@codemirror/autocomplete'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
-import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon } from '@primer/octicons-react'
+import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { githubDark } from '@uiw/codemirror-theme-github'
@@ -81,8 +81,21 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [isFullscreen, setIsFullscreen] = useState(false)
 
+    // Query name and saved queries
+    const [queryName, setQueryName] = useState(() => {
+        return localStorage.getItem('queryName') || 'Untitled Query'
+    })
+    const [isEditingName, setIsEditingName] = useState(false)
+    const [savedQueries, setSavedQueries] = useState(() => {
+        const saved = localStorage.getItem('savedQueries')
+        return saved ? JSON.parse(saved) : []
+    })
+    const [showSavedQueries, setShowSavedQueries] = useState(false)
+
     const limitDropdownRef = useRef(null)
     const themeDropdownRef = useRef(null)
+    const savedQueriesRef = useRef(null)
+    const nameInputRef = useRef(null)
 
     // Click outside to close dropdowns
     useEffect(() => {
@@ -92,6 +105,9 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
             }
             if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
                 setShowThemeDropdown(false)
+            }
+            if (savedQueriesRef.current && !savedQueriesRef.current.contains(event.target)) {
+                setShowSavedQueries(false)
             }
         }
 
@@ -108,6 +124,19 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
             document.removeEventListener('keydown', handleEscapeKey)
         }
     }, [isFullscreen])
+
+    // Persist query name
+    useEffect(() => {
+        localStorage.setItem('queryName', queryName)
+    }, [queryName])
+
+    // Focus name input when editing
+    useEffect(() => {
+        if (isEditingName && nameInputRef.current) {
+            nameInputRef.current.focus()
+            nameInputRef.current.select()
+        }
+    }, [isEditingName])
 
     // Persist settings
     useEffect(() => {
@@ -167,6 +196,117 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
         }
     }
 
+    // Query name handlers
+    const handleNameSubmit = () => {
+        if (!queryName.trim()) {
+            setQueryName('Untitled Query')
+        }
+        setIsEditingName(false)
+    }
+
+    const handleNameKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleNameSubmit()
+        }
+    }
+
+    // Check if query has changes compared to saved version with same name
+    const hasQueryChanged = () => {
+        if (savedQueries.length === 0) return true
+
+        const sameNameQuery = savedQueries.find(q => q.name === queryName)
+        if (!sameNameQuery) return true // Different name = new version
+
+        // Compare query content and settings
+        if (sameNameQuery.query !== query) return true
+        if (JSON.stringify(sameNameQuery.settings) !== JSON.stringify({
+            theme: selectedTheme,
+            fontSize,
+            fontFamily,
+            limit: selectedLimit
+        })) return true
+
+        return false
+    }
+
+    // Save query with versioning
+    const handleSaveQuery = () => {
+        if (!hasQueryChanged()) {
+            alert('No changes detected. Query is already up to date.')
+            return
+        }
+
+        const timestamp = new Date().toISOString()
+        const newQueryData = {
+            id: crypto.randomUUID(),
+            name: queryName,
+            savedAt: timestamp,
+            query: query,
+            settings: {
+                theme: selectedTheme,
+                fontSize,
+                fontFamily,
+                limit: selectedLimit
+            }
+        }
+
+        const existingIndex = savedQueries.findIndex(q => q.name === queryName)
+
+        let updatedQueries
+        if (existingIndex !== -1) {
+            // Update existing version
+            updatedQueries = [...savedQueries]
+            updatedQueries[existingIndex] = newQueryData
+            alert(`Query "${queryName}" updated!`)
+        } else {
+            // Create new version
+            updatedQueries = [newQueryData, ...savedQueries]
+            alert(`New query "${queryName}" saved!`)
+        }
+
+        setSavedQueries(updatedQueries)
+        localStorage.setItem('savedQueries', JSON.stringify(updatedQueries))
+    }
+
+    // Load a saved query
+    const handleLoadQuery = (savedQuery) => {
+        if (window.confirm(`Load "${savedQuery.name}"? Current query will be replaced.`)) {
+            setQuery(savedQuery.query)
+            setQueryName(savedQuery.name)
+            if (savedQuery.settings) {
+                setSelectedTheme(savedQuery.settings.theme)
+                setFontSize(savedQuery.settings.fontSize)
+                setFontFamily(savedQuery.settings.fontFamily)
+                setSelectedLimit(savedQuery.settings.limit)
+            }
+            setShowSavedQueries(false)
+            alert(`Query "${savedQuery.name}" loaded!`)
+        }
+    }
+
+    // Delete a saved query
+    const handleDeleteSavedQuery = (queryId, e) => {
+        e.stopPropagation()
+        const savedQuery = savedQueries.find(q => q.id === queryId)
+        if (window.confirm(`Delete saved query "${savedQuery.name}"?`)) {
+            const updatedQueries = savedQueries.filter(q => q.id !== queryId)
+            setSavedQueries(updatedQueries)
+            localStorage.setItem('savedQueries', JSON.stringify(updatedQueries))
+        }
+    }
+
+    // Format date for display
+    const formatDate = (isoString) => {
+        const date = new Date(isoString)
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
     // Memoize extensions array with schema-aware autocomplete
     const extensions = useMemo(() => {
         const exts = [sql()]
@@ -207,7 +347,85 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                             <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </button>
-                    <div className="editor-title">SQL Query</div>
+
+                    {/* Editable Query Name */}
+                    {isEditingName ? (
+                        <input
+                            ref={nameInputRef}
+                            type="text"
+                            className="query-name-input"
+                            value={queryName}
+                            onChange={(e) => setQueryName(e.target.value)}
+                            onBlur={handleNameSubmit}
+                            onKeyDown={handleNameKeyDown}
+                        />
+                    ) : (
+                        <div className="query-name-wrapper" onClick={() => setIsEditingName(true)} title="Click to rename">
+                            <div className="editor-title">{queryName}</div>
+                            <PencilIcon size={14} className="edit-icon" />
+                        </div>
+                    )}
+
+                    {/* Save and Saved buttons next to title */}
+                    <div className="query-title-actions">
+                        {/* Save Button - Icon Only */}
+                        <button
+                            className="query-save-button icon-only"
+                            onClick={handleSaveQuery}
+                            title="Save current query"
+                        >
+                            <DownloadIcon size={14} />
+                        </button>
+
+                        {/* Saved Queries Button - Icon Only with Badge */}
+                        <div className="dropdown-wrapper" style={{ position: 'relative' }} ref={savedQueriesRef}>
+                            <button
+                                className="query-saved-button icon-only"
+                                onClick={() => setShowSavedQueries(!showSavedQueries)}
+                                title="View saved queries"
+                            >
+                                <ClockIcon size={14} />
+                                {savedQueries.length > 0 && (
+                                    <span className="saved-count-badge">{savedQueries.length}</span>
+                                )}
+                            </button>
+                            {showSavedQueries && (
+                                <div className="saved-queries-dropdown">
+                                    <div className="dropdown-header-title">Saved Queries</div>
+                                    <div className="saved-queries-list">
+                                        {savedQueries.length === 0 ? (
+                                            <div className="no-saved-queries">
+                                                <p>No saved queries yet</p>
+                                                <small>Click the save icon to save this query</small>
+                                            </div>
+                                        ) : (
+                                            savedQueries.map(savedQuery => (
+                                                <div
+                                                    key={savedQuery.id}
+                                                    className="saved-query-item"
+                                                    onClick={() => handleLoadQuery(savedQuery)}
+                                                >
+                                                    <div className="saved-query-info">
+                                                        <div className="saved-query-name">{savedQuery.name}</div>
+                                                        <div className="saved-query-meta">
+                                                            <span>{formatDate(savedQuery.savedAt)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        className="delete-saved-query"
+                                                        onClick={(e) => handleDeleteSavedQuery(savedQuery.id, e)}
+                                                        title="Delete this query"
+                                                    >
+                                                        <TrashIcon size={12} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
                 <div className="editor-actions">
                     {/* Fullscreen Toggle */}
