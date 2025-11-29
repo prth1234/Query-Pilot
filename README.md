@@ -1,217 +1,176 @@
-# Query Pilot 
+# Query Pilot  
 
-A modern database connection interface with beautiful UI and real-time connection testing.
+An AI-powered universal database assistant that delivers intelligent SQL generation, schema-aware reasoning, cross-database compatibility, and automatic query correction. Designed for engineers who want a smarter and faster way to work with data.
 
-## ✨ Features
+## Core Focus
 
-- 🎨 **Modern UI** - Built with GitHub Primer components with stunning animations
-- 🔄 **Real-time Connection Testing** - Watch each step of the connection process
-- 🎭 **Genie Animation** - Beautiful modal with smooth animations
-- ✅ **Live Validation** - Instant feedback on your credentials
-- 🗄️ **MySQL Support** - Currently supports MySQL (more databases coming soon)
-- 🎯 **Timeline Visualization** - See connection progress step-by-step
+Query Pilot is built around an internal SQL-Specialized Language Model (SQL-SLM) capable of:
 
-## 🚀 Quick Start
+- Schema-aware SQL generation  
+- Natural language to SQL conversion  
+- Automatic SQL autocorrect and fix-and-retry  
+- Query optimization insights  
+- Error explanation and intelligent debugging  
+- Cross-database SQL rewriting (MySQL → PostgreSQL → Snowflake → BigQuery, etc.)  
+- Context-aware autocomplete  
+- AI-guided schema exploration  
+- Intelligent JOIN and relationship inference  
+- AI-generated query templates based on schema  
+
+## Features
+
+- Modern UI built using GitHub Primer  
+- Real-time connection testing with detailed timeline  
+- AI reasoning panel with explanations, corrections, and suggestions  
+- Schema-aware autocomplete in the workspace  
+- Multi-database support through modular backends  
+- Instant validation and clean animations  
+- Smooth transitions and responsive design  
+
+## Supported Databases
+
+Query Pilot supports a wide range of engines:
+
+- MySQL  
+- PostgreSQL  
+- MariaDB  
+- SQLite  
+- SQL Server  
+- Oracle  
+- Snowflake  
+- BigQuery  
+- MongoDB (aggregation pipeline generation)  
+- Databricks / Spark SQL  
+
+New databases can be added easily through the provider system.
+
+## Quick Start
 
 ### Prerequisites
+- Node.js 18+  
+- Python 3.8+  
+- Any supported database
 
-- Node.js 18+ 
-- Python 3.8+
-- MySQL database (for testing connections)
+### Option 1: Auto Start
 
-### Option 1: Auto Start (Recommended)
 
-Run both frontend and backend together:
-
-```bash
 ./start.sh
-```
 
-This will:
-- Set up Python virtual environment (first time only)
-- Install backend dependencies (first time only)
-- Start FastAPI backend on port 8000
-- Start React frontend on port 5173
+This script:
+	•	Creates virtual environment
+	•	Installs backend dependencies
+	•	Starts FastAPI backend (port 8000)
+	•	Starts React frontend (port 5173)
 
-### Option 2: Manual Start
+Option 2: Manual Start
 
-#### Backend Setup
+Backend
 
-```bash
 cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
-```
 
-#### Frontend Setup
+Frontend
 
-```bash
 cd db-llm
-npm install  # If not already done
+npm install
 npm run dev
-```
 
-## 🎯 Usage
+Usage
+	1.	Select the database engine
+	2.	Enter connection details
+	3.	Run the connection test
+	4.	View the animated timeline
+	5.	Access the workspace
+	6.	Use natural language or SQL
+	7.	Leverage the AI engine for generation, debugging, optimization, and corrections
 
-1. **Select Database**: Choose MySQL from the database selector
-2. **Enter Credentials**: Fill in your database connection details
-   - Host (e.g., localhost)
-   - Port (e.g., 3306)
-   - Database name
-   - Username
-   - Password
-3. **Test Connection**: Click "Test Connection" button
-4. **Watch Magic**: See the beautiful genie animation and connection timeline
-5. **Success**: Navigate to workspace if connection is successful
-6. **Retry**: If connection fails, adjust credentials and try again
+SQL-SLM Capabilities (Top 10)
+	•	Schema-aware SQL generation
+	•	Multi-database SQL rewriting
+	•	Intelligent autocorrect for invalid SQL
+	•	Natural-language to SQL generation
+	•	Automatic join inference
+	•	SQL debugging and explanations
+	•	Query optimization suggestions
+	•	Automatic formatting and aliasing
+	•	Schema summarization and exploration
+	•	Context-aware autocomplete
 
-## 🏗️ Project Structure
+Project Structure
 
-```
 database-llm/
 ├── backend/
-│   ├── main.py              # FastAPI application
-│   ├── requirements.txt     # Python dependencies
-│   └── README.md           # Backend docs
+│   ├── main.py
+│   ├── requirements.txt
+│   └── README.md
 ├── db-llm/
 │   ├── src/
-│   │   ├── App.jsx                    # Main application
-│   │   ├── ConnectionForm.jsx         # Connection form
-│   │   ├── ConnectionTestModal.jsx    # Animated modal
-│   │   ├── Workspace.jsx              # Post-connection workspace
-│   │   ├── DatabaseSelector.jsx       # DB selection
+│   │   ├── App.jsx
+│   │   ├── SQLAIEngine.jsx
+│   │   ├── DatabaseSelector.jsx
+│   │   ├── ConnectionForm.jsx
+│   │   ├── Workspace.jsx
 │   │   └── ...
 │   └── package.json
-└── start.sh                # Quick start script
-```
+└── start.sh
 
-## 🎨 UI Features
+Backend API
 
-### Connection Test Modal
+Test database connection
 
-- **Genie Animation**: Smooth appearance from button
-- **Timeline Steps**: Each connection step appears sequentially
-- **Status Indicators**: 
-  - 🔵 In Progress (pulsing animation)
-  - ✅ Completed (success pop)
-  - ❌ Failed (shake animation)
-- **Error Details**: Clear error messages for troubleshooting
+POST /api/test-connection/{engine}
 
-### Form Validation
+Generate SQL
 
-- Real-time validation as you type
-- Green checkmark for valid fields
-- Red border and message for invalid fields
-- Shake animation on errors
+POST /api/ai/generate-sql
 
-## 🔧 Backend API
+Fix invalid SQL
 
-### Endpoints
+POST /api/ai/fix-sql
 
-**POST** `/api/test-connection/mysql`
+Explain SQL
 
-Test MySQL database connection.
+POST /api/ai/explain-sql
 
-**Request:**
-```json
-{
-  "host": "localhost",
-  "port": 3306,
-  "database": "mydb",
-  "user": "root",
-  "password": "password"
-}
-```
+Documentation:
+	•	Swagger: http://localhost:8000/docs
+	•	ReDoc: http://localhost:8000/redoc
 
-**Response (Success):**
-```json
-{
-  "success": true,
-  "message": "Successfully connected to MySQL database 'mydb'",
-  "steps": [
-    {
-      "id": 1,
-      "label": "Validating credentials format",
-      "status": "completed",
-      "timestamp": 1234567890.123
-    },
-    ...
-  ],
-  "error": null
-}
-```
+Animations and UI
+	•	Smooth modals and transitions
+	•	Step-by-step connection timeline
+	•	State-based UI feedback
+	•	Clean, minimal interface
 
-**Response (Failure):**
-```json
-{
-  "success": false,
-  "message": "Access denied for user 'root'",
-  "steps": [...],
-  "error": "Access denied..."
-}
-```
+Troubleshooting
 
-### API Documentation
+Backend not starting
 
-When backend is running, visit:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+Activate virtual environment and reinstall dependencies.
 
-## 🎭 Animations
+AI routes not working
 
-- **Genie Effect**: Modal appears with a genie-from-bottle animation
-- **Timeline Steps**: Sequentially animate in (400ms intervals)
-- **Pulse Animation**: Active step indicator pulses
-- **Success Pop**: Checkmark pops in on completion
-- **Error Shake**: Failed steps shake to draw attention
-- **Smooth Transitions**: All state changes are smoothly animated
+Check if backend is running on port 8000.
 
-## 🐛 Troubleshooting
+SQL generation issues
 
-### Backend Not Starting
+Verify database connection and schema accessibility.
 
-```bash
-# Make sure you're in the virtual environment
-cd backend
-source venv/bin/activate
-pip install -r requirements.txt
-```
+Roadmap
+	•	Vector-based schema memory
+	•	Local/offline SLM inference
+	•	Agent-based advanced SQL generation
+	•	Saved queries and history
+	•	Visual query planning and DAG viewer
+	•	Index recommendations
 
-### Frontend Not Showing Modal
-
-Check browser console for errors. Ensure backend is running on port 8000.
-
-### Connection Fails
-
-Common issues:
-- MySQL server not running
-- Incorrect credentials
-- Firewall blocking connection
-- Database doesn't exist
-
-Check the error message in the modal for specific details.
-
-## 🚧 Roadmap
-
-- [ ] PostgreSQL support
-- [ ] MongoDB support
-- [ ] Snowflake support
-- [ ] BigQuery support
-- [ ] Databricks support
-- [ ] Connection history
-- [ ] Saved connections
-- [ ] Query editor in workspace
-
-## 📝 License
+License
 
 MIT License
 
-## 🤝 Contributing
+Contributing
 
-Contributions welcome! Please feel free to submit a Pull Request.
-
----
-
-Made with ❤️ using React, FastAPI, and GitHub Primer
+Contributions are welcome. Submit an issue or pull request anytime.
