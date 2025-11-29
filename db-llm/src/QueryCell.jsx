@@ -99,7 +99,8 @@ function QueryCell({
     }, [schema, handleExecute])
 
     // Resizable Logic
-    const [editorHeight, setEditorHeight] = useState(80) // Reduced to ~3 lines
+    const [editorHeight, setEditorHeight] = useState(80) // Default min height
+    const [hasManuallyResized, setHasManuallyResized] = useState(false)
     const [resultsHeight, setResultsHeight] = useState(null)
     const [isResizing, setIsResizing] = useState(false)
     const [resizeTarget, setResizeTarget] = useState(null) // 'middle' or 'bottom'
@@ -129,9 +130,14 @@ function QueryCell({
     const handleMouseDown = (e, target) => {
         setIsResizing(true)
         setResizeTarget(target)
+        setHasManuallyResized(true) // User is taking control
+
+        // If starting resize from auto-height mode, capture current actual height
+        const currentEditorHeight = editorContainerRef.current ? editorContainerRef.current.clientHeight : editorHeight
+
         setResizeStart({
             y: e.clientY,
-            editor: editorHeight,
+            editor: currentEditorHeight,
             results: resultsHeight || 300
         })
         e.preventDefault()
@@ -239,9 +245,9 @@ function QueryCell({
             <div className="cell-editor-wrapper" ref={editorContainerRef}>
                 <CodeMirror
                     value={cell.query}
-                    height={isFullScreen ? "100%" : `${editorHeight}px`}
-                    minHeight="60px"
-                    maxHeight={isFullScreen ? "none" : "none"}
+                    height={isFullScreen ? "100%" : (hasManuallyResized ? `${editorHeight}px` : "auto")}
+                    minHeight="80px"
+                    maxHeight={isFullScreen ? "none" : (hasManuallyResized ? "none" : "300px")}
                     theme={theme?.theme || vscodeDark}
                     extensions={extensions}
                     onChange={(value) => onQueryChange(cell.id, value)}

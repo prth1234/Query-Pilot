@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
-import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon } from '@primer/octicons-react'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
 import './NotebookView.css'
@@ -44,6 +44,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
 
     const [showLimitDropdown, setShowLimitDropdown] = useState(false)
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
+    const [isFullScreen, setIsFullScreen] = useState(false)
 
     const limitDropdownRef = useRef(null)
     const themeDropdownRef = useRef(null)
@@ -62,6 +63,17 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
+
+    // Handle Escape key to exit full screen
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape' && isFullScreen) {
+                setIsFullScreen(false)
+            }
+        }
+        document.addEventListener('keydown', handleEsc)
+        return () => document.removeEventListener('keydown', handleEsc)
+    }, [isFullScreen])
 
     // Persist settings
     useEffect(() => { localStorage.setItem('notebookRunLimit', selectedLimit.value) }, [selectedLimit])
@@ -190,7 +202,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     }
 
     return (
-        <Box className="notebook-view">
+        <Box className={`notebook-view ${isFullScreen ? 'full-screen-mode' : ''}`}>
             <div className="notebook-header">
                 <div className="notebook-title">
                     <h1>Notebook Mode</h1>
@@ -198,6 +210,15 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                 <div className="notebook-actions">
                     {/* Theme & Font Settings */}
                     <div className="notebook-settings-group">
+                        {/* Full Screen Toggle */}
+                        <button
+                            className={`notebook-action-button secondary icon-only ${isFullScreen ? 'active' : ''}`}
+                            onClick={() => setIsFullScreen(!isFullScreen)}
+                            title={isFullScreen ? "Exit Full Screen" : "Full Screen Mode"}
+                        >
+                            {isFullScreen ? <ScreenNormalIcon size={14} /> : <ScreenFullIcon size={14} />}
+                        </button>
+
                         {/* Theme Dropdown */}
                         <div className="dropdown-wrapper" ref={themeDropdownRef}>
                             <button

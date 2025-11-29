@@ -5,6 +5,29 @@
     overflow: hidden;
     padding: 0 1px;
     /* Reduced top padding to bring header closer */
+    transition: all 0.3s ease;
+}
+
+/* Full Screen Mode */
+.notebook-view.full-screen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #0d1117;
+    padding: 0;
+}
+
+.notebook-view.full-screen-mode .notebook-header {
+    padding: 16px 32px;
+    background: #0d1117;
+    border-bottom: 1px solid rgba(110, 118, 129, 0.3);
+}
+
+.notebook-view.full-screen-mode .notebook-cells-container {
+    padding: 24px 32px;
 }
 
 /* Notebook Header */
