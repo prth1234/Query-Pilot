@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
-import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon } from '@primer/octicons-react'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
 import MarkdownCell from './MarkdownCell'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
 import './NotebookView.css'
+
+
 
 function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     const [cells, setCells] = useState(() => {
@@ -44,6 +46,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         return FONT_FAMILIES.find(f => f.value === saved) || FONT_FAMILIES[0]
     })
 
+
     const [showLimitDropdown, setShowLimitDropdown] = useState(false)
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
@@ -61,6 +64,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
             if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
                 setShowThemeDropdown(false)
             }
+
         }
         document.addEventListener('mousedown', handleClickOutside)
         return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -82,6 +86,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     useEffect(() => { localStorage.setItem('notebookTheme', selectedTheme.value) }, [selectedTheme])
     useEffect(() => { localStorage.setItem('notebookFontSize', fontSize) }, [fontSize])
     useEffect(() => { localStorage.setItem('notebookFontFamily', fontFamily.value) }, [fontFamily])
+
 
     // Save cells to localStorage whenever they change
     useEffect(() => {
@@ -231,11 +236,59 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         }
     }
 
+    const [notebookName, setNotebookName] = useState(() => {
+        return localStorage.getItem('notebookName') || 'Untitled Notebook'
+    })
+    const [isEditingName, setIsEditingName] = useState(false)
+    const nameInputRef = useRef(null)
+
+    // Persist notebook name
+    useEffect(() => {
+        localStorage.setItem('notebookName', notebookName)
+    }, [notebookName])
+
+    useEffect(() => {
+        if (isEditingName && nameInputRef.current) {
+            nameInputRef.current.focus()
+            nameInputRef.current.select()
+        }
+    }, [isEditingName])
+
+    const handleNameSubmit = () => {
+        if (!notebookName.trim()) {
+            setNotebookName('Untitled Notebook')
+        }
+        setIsEditingName(false)
+    }
+
+    const handleNameKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleNameSubmit()
+        }
+    }
+
     return (
         <Box className={`notebook-view ${isFullScreen ? 'full-screen-mode' : ''}`}>
             <div className="notebook-header">
                 <div className="notebook-title">
-                    <h1>Notebook Mode</h1>
+                    {isEditingName ? (
+                        <input
+                            ref={nameInputRef}
+                            type="text"
+                            className="notebook-name-input"
+                            value={notebookName}
+                            onChange={(e) => setNotebookName(e.target.value)}
+                            onBlur={handleNameSubmit}
+                            onKeyDown={handleNameKeyDown}
+                        />
+                    ) : (
+                        <div className="notebook-name-wrapper" onClick={() => setIsEditingName(true)} title="Click to rename">
+                            <h1 className="notebook-name-display">
+                                {notebookName}
+                            </h1>
+                            <PencilIcon size={16} className="edit-icon" />
+                        </div>
+                    )}
                 </div>
                 <div className="notebook-actions">
                     {/* Theme & Font Settings */}
@@ -248,6 +301,8 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         >
                             {isFullScreen ? <ScreenNormalIcon size={14} /> : <ScreenFullIcon size={14} />}
                         </button>
+
+                        <div className="notebook-divider-vertical"></div>
 
                         {/* Theme Dropdown */}
                         <div className="dropdown-wrapper" ref={themeDropdownRef}>
@@ -407,7 +462,9 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                 </div>
             </div>
 
-            <div className="notebook-cells-container">
+            <div
+                className="notebook-cells-container"
+            >
                 {cells.map((cell, index) => (
                     cell.type === 'markdown' ? (
                         <MarkdownCell
