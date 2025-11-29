@@ -12,10 +12,12 @@
 .workspace-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: 20px 32px;
-    background: rgba(22, 27, 34, 0.95);
+    align-items: center;
+    padding: 16px 32px;
+    background: #0d1117;
     border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    height: auto;
+    min-height: 100px;
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
@@ -25,35 +27,98 @@
 .header-left {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 4px;
     align-items: flex-start;
+}
+
+/* Status Badge */
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(35, 134, 54, 0.15);
+    border: 1px solid rgba(35, 134, 54, 0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-bottom: 4px;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3fb950;
+    box-shadow: 0 0 6px rgba(63, 185, 80, 0.4);
+}
+
+.status-badge span {
+    color: #3fb950;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Title */
+.workspace-title {
+    margin: 0;
+    color: #e6edf3;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+/* Subtitle */
+.workspace-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8b949e;
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.separator {
+    color: #484f58;
+}
+
+/* View Toggle - Segmented Control Style */
+.view-toggle-wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .view-toggle-container {
     display: flex;
-    background: rgba(110, 118, 129, 0.1);
-    padding: 3px;
-    border-radius: 6px;
+    background: #161b22;
+    padding: 4px;
+    border-radius: 8px;
     border: 1px solid rgba(110, 118, 129, 0.2);
+    gap: 0;
 }
 
 .view-toggle-button {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
+    gap: 8px;
+    padding: 6px 16px;
     background: transparent;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     color: #7d8590;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
 }
 
 .view-toggle-button:hover {
     color: #e6edf3;
+    background: rgba(110, 118, 129, 0.1);
 }
 
 .view-toggle-button.active {
@@ -62,60 +127,12 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+.view-toggle-button.active::after {
+    display: none;
+}
+
 .view-toggle-button svg {
     fill: currentColor;
-}
-
-.workspace-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 2px;
-}
-
-.status-indicator {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #3fb950;
-    box-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
-}
-
-.status-text {
-    color: #3fb950 !important;
-    font-weight: 500;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.workspace-header h1 {
-    margin: 0;
-    color: #e6edf3;
-    font-size: 32px;
-    font-weight: 600;
-    line-height: 1.2;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-}
-
-.workspace-subtitle {
-    color: #8b949e !important;
-    font-size: 14px;
-    font-weight: 400;
-    margin-top: 2px;
 }
 
 /* Disconnect Button - Red Circle with X */

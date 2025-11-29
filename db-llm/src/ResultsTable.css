@@ -514,6 +514,22 @@
     background: rgba(110, 118, 129, 0.1);
 }
 
+.results-table th {
+    position: sticky;
+    top: 0;
+    background: #161b22;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    color: #8b949e;
+    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    white-space: nowrap;
+    user-select: none;
+    z-index: 10;
+    /* Ensure header stays on top */
+}
+
 .row-index {
     padding: 12px 16px;
     text-align: center;

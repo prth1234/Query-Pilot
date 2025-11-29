@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Box, Button } from '@primer/react-brand'
-import { PlusIcon, PlayIcon } from '@primer/octicons-react'
+import { useState, useEffect, useRef } from 'react'
+import { Box } from '@primer/react-brand'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
+import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
 import './NotebookView.css'
 
 function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
@@ -24,6 +25,49 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         }]
     })
 
+    // Settings State
+    const [selectedLimit, setSelectedLimit] = useState(() => {
+        const saved = parseInt(localStorage.getItem('notebookRunLimit'))
+        return RUN_OPTIONS.find(o => o.value === saved) || RUN_OPTIONS[0]
+    })
+    const [selectedTheme, setSelectedTheme] = useState(() => {
+        const saved = localStorage.getItem('notebookTheme')
+        return THEMES.find(t => t.value === saved) || THEMES[0]
+    })
+    const [fontSize, setFontSize] = useState(() => {
+        return parseInt(localStorage.getItem('notebookFontSize')) || 13
+    })
+    const [fontFamily, setFontFamily] = useState(() => {
+        const saved = localStorage.getItem('notebookFontFamily')
+        return FONT_FAMILIES.find(f => f.value === saved) || FONT_FAMILIES[0]
+    })
+
+    const [showLimitDropdown, setShowLimitDropdown] = useState(false)
+    const [showThemeDropdown, setShowThemeDropdown] = useState(false)
+
+    const limitDropdownRef = useRef(null)
+    const themeDropdownRef = useRef(null)
+
+    // Click outside to close dropdowns
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (limitDropdownRef.current && !limitDropdownRef.current.contains(event.target)) {
+                setShowLimitDropdown(false)
+            }
+            if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
+                setShowThemeDropdown(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    // Persist settings
+    useEffect(() => { localStorage.setItem('notebookRunLimit', selectedLimit.value) }, [selectedLimit])
+    useEffect(() => { localStorage.setItem('notebookTheme', selectedTheme.value) }, [selectedTheme])
+    useEffect(() => { localStorage.setItem('notebookFontSize', fontSize) }, [fontSize])
+    useEffect(() => { localStorage.setItem('notebookFontFamily', fontFamily.value) }, [fontFamily])
+
     // Save cells to localStorage whenever they change
     useEffect(() => {
         localStorage.setItem('notebookCells', JSON.stringify(cells))
@@ -41,30 +85,35 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     }
 
     const handleDeleteCell = (cellId) => {
-        if (cells.length === 1) {
-            // Don't allow deleting the last cell
-            return
-        }
+        if (cells.length === 1) return
         setCells(cells.filter(cell => cell.id !== cellId))
     }
 
     const handleQueryChange = (cellId, newQuery) => {
         setCells(cells.map(cell =>
-            cell.id === cellId
-                ? { ...cell, query: newQuery }
-                : cell
+            cell.id === cellId ? { ...cell, query: newQuery } : cell
         ))
     }
 
     const handleExecuteCell = async (cellId, query) => {
+        let queryToExecute = query.trim()
+
+        // Append LIMIT if needed
+        if (selectedLimit.value !== -1) {
+            // Simple check to avoid double LIMIT
+            // Remove trailing semicolon
+            queryToExecute = queryToExecute.replace(/;\s*$/, '')
+            if (!queryToExecute.toLowerCase().includes('limit')) {
+                queryToExecute += ` LIMIT ${selectedLimit.value}`
+            }
+        }
+
         try {
             const response = await fetch('http://localhost:8000/api/execute-query', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    query: query,
+                    query: queryToExecute,
                     host: connectionDetails.host,
                     port: connectionDetails.port,
                     database: connectionDetails.database,
@@ -77,7 +126,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
             const data = await response.json()
 
             if (data.success) {
-                setCells(cells.map(cell =>
+                setCells(prev => prev.map(cell =>
                     cell.id === cellId
                         ? {
                             ...cell,
@@ -92,24 +141,16 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         : cell
                 ))
             } else {
-                setCells(cells.map(cell =>
+                setCells(prev => prev.map(cell =>
                     cell.id === cellId
-                        ? {
-                            ...cell,
-                            results: null,
-                            error: data.error || 'Query execution failed'
-                        }
+                        ? { ...cell, results: null, error: data.error || 'Query execution failed' }
                         : cell
                 ))
             }
         } catch (error) {
-            setCells(cells.map(cell =>
+            setCells(prev => prev.map(cell =>
                 cell.id === cellId
-                    ? {
-                        ...cell,
-                        results: null,
-                        error: `Connection error: ${error.message}`
-                    }
+                    ? { ...cell, results: null, error: `Connection error: ${error.message}` }
                     : cell
             ))
         }
@@ -124,25 +165,126 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     }
 
     const handleClearAll = () => {
-        setCells(cells.map(cell => ({
-            ...cell,
-            results: null,
-            error: null,
-            executionTime: null
-        })))
+        if (window.confirm('Are you sure you want to clear all results? Your queries will remain.')) {
+            setCells(cells.map(cell => ({
+                ...cell,
+                results: null,
+                error: null,
+                executionTime: null
+            })))
+        }
     }
 
     return (
         <Box className="notebook-view">
             <div className="notebook-header">
                 <div className="notebook-title">
-                    <div className="notebook-icon">📓</div>
-                    <div>
-                        <h3>Notebook Mode</h3>
-                        <p className="notebook-subtitle">Run multiple SQL queries in separate cells</p>
-                    </div>
+                    <h3>Notebook Mode</h3>
                 </div>
                 <div className="notebook-actions">
+                    {/* Theme & Font Settings */}
+                    <div className="notebook-settings-group">
+                        {/* Theme Dropdown */}
+                        <div className="dropdown-wrapper" ref={themeDropdownRef}>
+                            <button
+                                className="notebook-action-button secondary icon-only"
+                                onClick={() => setShowThemeDropdown(!showThemeDropdown)}
+                                title="Editor Settings"
+                            >
+                                <GearIcon size={14} />
+                            </button>
+                            {showThemeDropdown && (
+                                <div className="theme-dropdown">
+                                    <div className="dropdown-header-title">Editor Settings</div>
+                                    <div className="dropdown-content-column">
+                                        {/* Font Size */}
+                                        <div className="setting-group">
+                                            <div className="setting-label-row">
+                                                <span className="setting-label">Font Size</span>
+                                                <span className="setting-value">{fontSize}px</span>
+                                            </div>
+                                            <input
+                                                type="range"
+                                                min="10"
+                                                max="24"
+                                                value={fontSize}
+                                                onChange={(e) => setFontSize(parseInt(e.target.value))}
+                                                className="slider"
+                                            />
+                                        </div>
+
+                                        <div className="dropdown-divider-vertical"></div>
+
+                                        {/* Font Family */}
+                                        <div className="setting-group">
+                                            <span className="setting-label">Font Family</span>
+                                            <select
+                                                className="select-input"
+                                                value={fontFamily.value}
+                                                onChange={(e) => setFontFamily(FONT_FAMILIES.find(f => f.value === e.target.value))}
+                                            >
+                                                {FONT_FAMILIES.map(font => (
+                                                    <option key={font.value} value={font.value}>{font.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="dropdown-divider-vertical"></div>
+
+                                        {/* Theme */}
+                                        <div className="setting-group">
+                                            <span className="setting-label">Theme</span>
+                                            <div className="theme-list">
+                                                {THEMES.map(theme => (
+                                                    <div
+                                                        key={theme.value}
+                                                        className={`dropdown-item ${selectedTheme.value === theme.value ? 'active' : ''}`}
+                                                        onClick={() => {
+                                                            setSelectedTheme(theme)
+                                                            setShowThemeDropdown(false)
+                                                        }}
+                                                    >
+                                                        {theme.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Limit Dropdown */}
+                        <div className="dropdown-wrapper" ref={limitDropdownRef}>
+                            <button
+                                className="notebook-action-button secondary"
+                                onClick={() => setShowLimitDropdown(!showLimitDropdown)}
+                                title="Run Limit"
+                            >
+                                <span>{selectedLimit.label.replace('Run ', '')}</span>
+                                <ChevronDownIcon size={12} />
+                            </button>
+                            {showLimitDropdown && (
+                                <div className="dropdown-menu run-dropdown">
+                                    {RUN_OPTIONS.map((option) => (
+                                        <div
+                                            key={option.value}
+                                            className={`dropdown-item ${selectedLimit.value === option.value ? 'active' : ''}`}
+                                            onClick={() => {
+                                                setSelectedLimit(option)
+                                                setShowLimitDropdown(false)
+                                            }}
+                                        >
+                                            {option.label}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="notebook-divider-vertical"></div>
+
                     <button
                         className="notebook-action-button secondary"
                         onClick={handleClearAll}
@@ -180,6 +322,9 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         schema={schema}
                         isFirst={cells.length === 1}
                         isLast={index === cells.length - 1}
+                        theme={selectedTheme}
+                        fontFamily={fontFamily}
+                        fontSize={fontSize}
                     />
                 ))}
             </div>
@@ -191,7 +336,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                 </button>
                 <div className="keyboard-hints">
                     <span className="hint">
-                        <kbd>Shift</kbd> + <kbd>Enter</kbd> to run cell
+                        <kbd>Cmd</kbd> + <kbd>Enter</kbd> to run cell
                     </span>
                 </div>
             </div>

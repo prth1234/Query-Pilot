@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Box, Heading, Text } from '@primer/react-brand'
-import { CodeIcon, BookIcon } from '@primer/octicons-react'
+import { CodeIcon, BookIcon, XCircleIcon } from '@primer/octicons-react'
 import QueryEditor from './QueryEditor'
 import ResultsTable from './ResultsTable'
 import NotebookView from './NotebookView'
@@ -98,7 +98,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                 setQueryError(data.error || 'Query execution failed')
             }
         } catch (error) {
-            setQueryError(`Connection error: ${error.message}`)
+            setQueryError(`Connection error: ${error.message} `)
         } finally {
             setIsExecuting(false)
         }
@@ -158,50 +158,60 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
         }
     }, [executionTime])
 
+    const handleDisconnect = useCallback(() => {
+        onDisconnect();
+    }, [onDisconnect]);
+
     return (
         <Box className="workspace-container">
             <div className="workspace-header">
                 <div className="header-left">
-                    <div className="workspace-status">
-                        <div className="status-indicator"></div>
-                        <Text size="100" className="status-text">Connected</Text>
+                    <div className="status-badge">
+                        <div className="status-dot"></div>
+                        <span>Connected</span>
                     </div>
-                    <Heading as="h1" size="4">SQL Workspace</Heading>
-                    <Text size="200" className="workspace-subtitle">
-                        {database?.name} • {connectionDetails?.database}
-                    </Text>
+                    <h1 className="workspace-title">SQL Workspace</h1>
+                    <div className="workspace-subtitle">
+                        <span className="db-type">{database?.name || 'Database'}</span>
+                        <span className="separator">•</span>
+                        <span className="db-name">{connectionDetails?.database || 'No Database'}</span>
+                    </div>
                 </div>
 
-                <div className="view-toggle-container">
-                    <button
-                        className={`view-toggle-button ${viewMode === 'editor' ? 'active' : ''}`}
-                        onClick={() => setViewMode('editor')}
-                        title="Standard SQL Editor"
-                    >
-                        <CodeIcon size={16} />
-                        <span>Editor</span>
-                    </button>
-                    <button
-                        className={`view-toggle-button ${viewMode === 'notebook' ? 'active' : ''}`}
-                        onClick={() => setViewMode('notebook')}
-                        title="Notebook View"
-                    >
-                        <BookIcon size={16} />
-                        <span>Notebook</span>
-                    </button>
+                <div className="view-toggle-wrapper">
+                    <div className="view-toggle-container">
+                        <button
+                            className={`view - toggle - button ${viewMode === 'editor' ? 'active' : ''} `}
+                            onClick={() => setViewMode('editor')}
+                        >
+                            <CodeIcon size={16} />
+                            <span>Editor</span>
+                        </button>
+                        <button
+                            className={`view - toggle - button ${viewMode === 'notebook' ? 'active' : ''} `}
+                            onClick={() => setViewMode('notebook')}
+                        >
+                            <BookIcon size={16} />
+                            <span>Notebook</span>
+                        </button>
+                    </div>
                 </div>
 
-                <button className="disconnect-button" onClick={onDisconnect} aria-label="Disconnect">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M1 1L13 13M1 13L13 1" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                    </svg>
-                </button>
+                <div className="header-right">
+                    <button
+                        className="disconnect-button"
+                        onClick={handleDisconnect}
+                        title="Disconnect"
+                    >
+                        <XCircleIcon size={20} />
+                    </button>
+                </div>
             </div>
 
             <div className="workspace-content" ref={containerRef}>
                 {viewMode === 'editor' ? (
                     <>
-                        <div className="editor-section" style={{ height: `${editorHeight}px` }}>
+                        <div className="editor-section" style={{ height: `${editorHeight} px` }}>
                             <QueryEditor
                                 onExecuteQuery={handleExecuteQuery}
                                 isExecuting={isExecuting}
@@ -212,7 +222,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         </div>
 
                         <div
-                            className={`resizer ${isResizing ? 'resizing' : ''}`}
+                            className={`resizer ${isResizing ? 'resizing' : ''} `}
                             onMouseDown={handleMouseDown}
                             ref={resizerRef}
                         >

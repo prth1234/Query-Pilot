@@ -13,7 +13,7 @@ import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night'
 import { createSQLAutocomplete } from './sqlAutocomplete'
 import './QueryEditor.css'
 
-const RUN_OPTIONS = [
+export const RUN_OPTIONS = [
     { label: 'Run Limit 1000', value: 1000 },
     { label: 'Run Top 100', value: 100 },
     { label: 'Run Top 500', value: 500 },
@@ -21,14 +21,14 @@ const RUN_OPTIONS = [
     { label: 'Run All', value: -1 }
 ]
 
-const THEMES = [
+export const THEMES = [
     { name: 'VS Code Dark', value: 'vscode', theme: vscodeDark },
     { name: 'GitHub Dark', value: 'github', theme: githubDark },
     { name: 'Dracula', value: 'dracula', theme: dracula },
     { name: 'Tokyo Night', value: 'tokyo', theme: tokyoNight }
 ]
 
-const FONT_FAMILIES = [
+export const FONT_FAMILIES = [
     { name: 'SF Mono', value: 'sf-mono', family: "'SF Mono', 'Monaco', 'Courier New', monospace" },
     { name: 'Fira Code', value: 'fira', family: "'Fira Code', 'Courier New', monospace" },
     { name: 'JetBrains Mono', value: 'jetbrains', family: "'JetBrains Mono', 'Courier New', monospace" },

@@ -18,9 +18,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 6px 12px;
     background: rgba(22, 27, 34, 0.8);
     border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+}
+
+.cell-left-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cell-right-actions {
+    display: flex;
+    align-items: center;
 }
 
 .cell-label {
@@ -31,40 +42,32 @@
     letter-spacing: 0.5px;
 }
 
-.cell-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-/* Cell Run Button */
-.cell-run-button {
+/* Cell Run Button Icon */
+.cell-run-button-icon {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
-    background: #238636;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
     border: none;
     border-radius: 4px;
-    color: white;
-    font-size: 11px;
-    font-weight: 500;
+    color: #238636;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.cell-run-button:hover:not(:disabled) {
-    background: #2ea043;
+.cell-run-button-icon:hover:not(:disabled) {
+    background: rgba(35, 134, 54, 0.1);
+    color: #2ea043;
+    transform: scale(1.1);
 }
 
-.cell-run-button:disabled {
+.cell-run-button-icon:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.cell-run-button svg {
-    color: white;
-    fill: white;
+    color: #7d8590;
 }
 
 /* Cell Delete Button */
@@ -95,7 +98,7 @@
 }
 
 .cell-editor {
-    font-size: 13px;
+    /* Font size handled by inline style */
 }
 
 .cell-editor .cm-editor {
@@ -117,31 +120,160 @@
     padding: 8px 0;
 }
 
-/* Cell Results */
-.cell-results {
+/* Cell Results Wrapper */
+.cell-results-wrapper {
+    display: flex;
+    flex-direction: column;
+    background: #0d1117;
     border-top: 1px solid rgba(110, 118, 129, 0.2);
+    min-height: auto;
+    /* Allow shrinking */
+    position: relative;
+}
+
+.cell-results-container {
+    flex: 1;
+    overflow: auto;
+    background: #0d1117;
+    /* Remove max-height as it's controlled by wrapper now */
+}
+
+/* Resizer */
+.cell-resizer {
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: ns-resize;
+    background: #161b22;
+    border-top: 1px solid rgba(110, 118, 129, 0.2);
+    transition: background 0.2s;
+}
+
+.cell-resizer:hover,
+.cell-resizer.resizing {
+    background: #1f2428;
+}
+
+.cell-resizer-handle {
+    width: 32px;
+    height: 4px;
+    background: rgba(110, 118, 129, 0.4);
+    border-radius: 2px;
+}
+
+.cell-resizer:hover .cell-resizer-handle,
+.cell-resizer.resizing .cell-resizer-handle {
+    background: #58a6ff;
+}
+
+/* Custom scrollbar for results container */
+.cell-results-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.cell-results-container::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+.cell-results-container::-webkit-scrollbar-thumb {
+    background: rgba(110, 118, 129, 0.3);
+    border-radius: 5px;
+    border: 2px solid #0d1117;
+}
+
+.cell-results-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(110, 118, 129, 0.5);
+}
+
+/* Query Cell Divider */
+.query-cell {
+    border: 1px solid rgba(110, 118, 129, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #0d1117;
+}
+
+/* Full Screen Mode */
+.query-cell.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    background: #0d1117;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.query-cell.fullscreen .cell-editor-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.query-cell.fullscreen .cell-editor {
+    flex: 1;
+    height: 100%;
+}
+
+.query-cell.fullscreen .cm-editor {
+    height: 100% !important;
+}
+
+.query-cell.fullscreen .cell-results-wrapper {
+    height: 40% !important;
+    /* Fixed height in fullscreen for results */
+    border-top: 1px solid #30363d;
+}
+
+/* Cell Action Button (Generic) */
+.cell-action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #7d8590;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 4px;
+}
+
+.cell-action-button:hover {
+    background: rgba(110, 118, 129, 0.1);
+    color: #e6edf3;
 }
 
 /* Cell Error */
 .cell-error {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
     background: rgba(248, 81, 73, 0.1);
-    border-top: 1px solid rgba(248, 81, 73, 0.3);
-    color: #f85149;
-    font-size: 13px;
+    border-bottom: 1px solid rgba(248, 81, 73, 0.2);
+    color: #ff7b72;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
 }
 
 .error-icon {
-    font-size: 18px;
+    margin-top: 2px;
     flex-shrink: 0;
 }
 
 .error-message {
     flex: 1;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
 }
 
 /* Animation */
