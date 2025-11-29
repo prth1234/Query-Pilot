@@ -39,7 +39,7 @@ const ROW_HEIGHT_MAP = {
     comfortable: '16px'
 }
 
-function ResultsTable({ results, error, isLoading, executionTime, compact = true }) {
+function ResultsTable({ results, error, isLoading, executionTime, compact = true, lastRunAt, onClearResult }) {
     const [currentPage, setCurrentPage] = useState(1)
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -236,6 +236,19 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                     )}
                 </div>
                 <div className="results-header-right">
+                    {/* Execution Info */}
+                    {lastRunAt && (
+                        <div className="execution-time">
+                            <span>Last run: {new Date(lastRunAt).toLocaleTimeString()}</span>
+                        </div>
+                    )}
+                    {executionTime && (
+                        <div className="execution-time">
+                            <ClockIcon size={14} />
+                            <span>{executionTime}ms</span>
+                        </div>
+                    )}
+
                     {/* Global Search */}
                     <div className="global-search">
                         <SearchIcon size={14} />
@@ -302,15 +315,21 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                         )}
                     </div>
 
-                    {executionTime && (
-                        <div className="execution-time">
-                            <ClockIcon size={14} />
-                            <span>{executionTime}ms</span>
-                        </div>
-                    )}
+                    {/* Fullscreen Toggle */}
                     <button className="icon-button" onClick={toggleFullScreen} title={isFullScreen ? "Exit Full Screen" : "Enter Full Screen"}>
                         {isFullScreen ? <MdFullscreenExit size={20} /> : <MdFullscreen size={20} />}
                     </button>
+
+                    {/* Clear Results Button */}
+                    {onClearResult && (
+                        <button
+                            className="clear-results-badge"
+                            onClick={onClearResult}
+                            title="Clear results only"
+                        >
+                            Clear
+                        </button>
+                    )}
                 </div>
             </div>
 

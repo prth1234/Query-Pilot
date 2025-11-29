@@ -191,6 +191,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                                 rowCount: data.rowCount
                             },
                             executionTime: data.executionTime,
+                            lastRunAt: Date.now(),
                             error: null
                         }
                         : cell
