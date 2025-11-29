@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS = {
     stickyHeader: true,
     wrapText: false,
     showNullAsText: true,
-    fontFamily: 'monospace', // monospace, sans-serif, serif
+    fontFamily: 'arial', // monospace, sans-serif, serif
     headerStyle: 'dark', // dark, light, colored
     cellPadding: 'normal', // compact, normal, comfortable
     showRowNumbers: true,

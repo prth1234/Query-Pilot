@@ -117,11 +117,11 @@ function QueryCell({
             const headerHeight = 100 // Results header + table header + filters
             const footerHeight = 50 // Pagination footer + padding
 
-            // Always cap initial display at 5 rows
+            // Always cap initial display at 6 rows
             // User can resize to see more
-            const visibleRows = Math.min(rowCount, 5)
+            const visibleRows = Math.min(rowCount, 6)
             // Tweak calculation: Header (~40px) + Rows + Footer (~40px) + Padding
-            // If rows < 5, we want it to be tight.
+            // If rows < 6, we want it to be tight.
             let targetHeight = 90 + (visibleRows * rowHeight)
 
             // Ensure we don't shrink too much (e.g. if 0 rows)

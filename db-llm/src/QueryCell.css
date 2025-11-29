@@ -4,7 +4,7 @@
     border-radius: 8px;
     border: 1px solid rgba(110, 118, 129, 0.3);
     margin-bottom: 16px;
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
@@ -152,12 +152,12 @@
     background: #0d1117;
     border-top: 1px solid rgba(110, 118, 129, 0.2);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .cell-results-container {
     flex: 1;
-    overflow: hidden;
+    overflow: visible;
     background: #0d1117;
     min-height: 0;
     display: flex;
@@ -237,7 +237,7 @@
 .query-cell {
     border: 1px solid rgba(110, 118, 129, 0.2);
     border-radius: 6px;
-    overflow: hidden;
+    overflow: visible;
     background: #0d1117;
 }
 
