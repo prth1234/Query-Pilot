@@ -1,4 +1,4 @@
-# Database LLM - Complete Guide
+# Query Pilot 
 
 A modern database connection interface with beautiful UI and real-time connection testing.
 
