@@ -52,9 +52,23 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [showSavedNotebooks, setShowSavedNotebooks] = useState(false)
     const [savedNotebooks, setSavedNotebooks] = useState(() => {
-        const saved = localStorage.getItem('savedNotebooks')
-        return saved ? JSON.parse(saved) : []
+        try {
+            const saved = localStorage.getItem('savedNotebooks')
+            return saved ? JSON.parse(saved) : []
+        } catch (e) {
+            console.error('Failed to load saved notebooks:', e)
+            return []
+        }
     })
+
+    // ... (other state)
+
+    // Persist saved notebooks
+    useEffect(() => {
+        localStorage.setItem('savedNotebooks', JSON.stringify(savedNotebooks))
+    }, [savedNotebooks])
+
+
 
     const limitDropdownRef = useRef(null)
     const themeDropdownRef = useRef(null)
@@ -297,6 +311,69 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         }
     }
 
+    // Check if current notebook state matches ANY saved notebook (to avoid false "unsaved changes" warnings)
+    const isCurrentStateMatchingAnySaved = () => {
+        if (savedNotebooks.length === 0) return false
+
+        // Check if current state exactly matches any saved notebook
+        for (const savedNotebook of savedNotebooks) {
+            // Check name
+            if (savedNotebook.name !== notebookName) continue
+
+            // Check cell count
+            if (savedNotebook.cells.length !== cells.length) continue
+
+            // Check each cell's content
+            let cellsMatch = true
+            for (let i = 0; i < cells.length; i++) {
+                const currentCell = cells[i]
+                const savedCell = savedNotebook.cells[i]
+
+                if (currentCell.type !== savedCell.type) {
+                    cellsMatch = false
+                    break
+                }
+
+                if (currentCell.type === 'sql') {
+                    if (currentCell.query !== savedCell.query) {
+                        cellsMatch = false
+                        break
+                    }
+                } else if (currentCell.type === 'markdown') {
+                    if (currentCell.content !== savedCell.content) {
+                        cellsMatch = false
+                        break
+                    }
+                }
+            }
+
+            if (!cellsMatch) continue
+
+            // Check settings
+            const currentSettings = {
+                theme: selectedTheme.value,
+                fontSize,
+                fontFamily: fontFamily.value,
+                limit: selectedLimit.value
+            }
+
+            const savedSettings = savedNotebook.settings || {}
+            const normalizedSavedSettings = {
+                theme: (savedSettings.theme && typeof savedSettings.theme === 'object') ? savedSettings.theme.value : savedSettings.theme,
+                fontSize: savedSettings.fontSize,
+                fontFamily: (savedSettings.fontFamily && typeof savedSettings.fontFamily === 'object') ? savedSettings.fontFamily.value : savedSettings.fontFamily,
+                limit: (savedSettings.limit && typeof savedSettings.limit === 'object') ? savedSettings.limit.value : savedSettings.limit
+            }
+
+            if (JSON.stringify(normalizedSavedSettings) === JSON.stringify(currentSettings)) {
+                // Found exact match!
+                return true
+            }
+        }
+
+        return false
+    }
+
     // Check if notebook has changes compared to last saved version
     const hasNotebookChanged = () => {
         if (savedNotebooks.length === 0) return true // No previous saves, so it's new
@@ -322,13 +399,24 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
             }
         }
 
-        // Compare settings
-        if (JSON.stringify(sameNameNotebook.settings) !== JSON.stringify({
-            theme: selectedTheme,
+        // Compare settings (using primitive values)
+        const currentSettings = {
+            theme: selectedTheme.value,
             fontSize,
-            fontFamily,
-            limit: selectedLimit
-        })) return true
+            fontFamily: fontFamily.value,
+            limit: selectedLimit.value
+        }
+
+        // Handle backward compatibility where saved settings might be full objects
+        const savedSettings = sameNameNotebook.settings || {}
+        const normalizedSavedSettings = {
+            theme: (savedSettings.theme && typeof savedSettings.theme === 'object') ? savedSettings.theme.value : savedSettings.theme,
+            fontSize: savedSettings.fontSize,
+            fontFamily: (savedSettings.fontFamily && typeof savedSettings.fontFamily === 'object') ? savedSettings.fontFamily.value : savedSettings.fontFamily,
+            limit: (savedSettings.limit && typeof savedSettings.limit === 'object') ? savedSettings.limit.value : savedSettings.limit
+        }
+
+        if (JSON.stringify(normalizedSavedSettings) !== JSON.stringify(currentSettings)) return true
 
         return false // No changes detected
     }
@@ -348,10 +436,10 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
             savedAt: timestamp,
             cells: JSON.parse(JSON.stringify(cells)),
             settings: {
-                theme: selectedTheme,
+                theme: selectedTheme.value,
                 fontSize,
-                fontFamily,
-                limit: selectedLimit
+                fontFamily: fontFamily.value,
+                limit: selectedLimit.value
             }
         }
 
@@ -376,28 +464,75 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
 
     // Load a saved notebook
     const handleLoadNotebook = (notebook) => {
-        if (window.confirm(`Load "${notebook.name}"? Current notebook will be replaced.`)) {
-            setCells(notebook.cells)
-            setNotebookName(notebook.name)
-            if (notebook.settings) {
-                setSelectedTheme(notebook.settings.theme)
-                setFontSize(notebook.settings.fontSize)
-                setFontFamily(notebook.settings.fontFamily)
-                setSelectedLimit(notebook.settings.limit)
-            }
-            setShowSavedNotebooks(false)
-            alert(`Notebook "${notebook.name}" loaded successfully!`)
+        console.log('handleLoadNotebook called with:', notebook)
+
+        if (!notebook) {
+            console.error('Notebook is null or undefined')
+            alert('Error: Invalid notebook data.')
+            return
         }
+
+        if (!notebook.cells) {
+            console.error('Notebook has no cells property')
+            alert('Error: Invalid notebook data (no cells).')
+            return
+        }
+
+        // Check if there are unsaved changes (current state doesn't match any saved notebook)
+        const hasUnsavedChanges = !isCurrentStateMatchingAnySaved()
+        if (hasUnsavedChanges) {
+            if (!window.confirm(`You have unsaved changes. Load "${notebook.name}" anyway?`)) {
+                console.log('User cancelled due to unsaved changes')
+                return
+            }
+        }
+
+        console.log('Loading notebook...')
+        setCells(notebook.cells)
+        setNotebookName(notebook.name)
+        if (notebook.settings) {
+            // Handle both old (object) and new (value) formats
+            const themeValue = (notebook.settings.theme && typeof notebook.settings.theme === 'object') ? notebook.settings.theme.value : notebook.settings.theme
+            const fontValue = (notebook.settings.fontFamily && typeof notebook.settings.fontFamily === 'object') ? notebook.settings.fontFamily.value : notebook.settings.fontFamily
+            const limitValue = (notebook.settings.limit && typeof notebook.settings.limit === 'object') ? notebook.settings.limit.value : notebook.settings.limit
+
+            const theme = THEMES.find(t => t.value === themeValue) || THEMES[0]
+            const font = FONT_FAMILIES.find(f => f.value === fontValue) || FONT_FAMILIES[0]
+            const limit = RUN_OPTIONS.find(o => o.value === limitValue) || RUN_OPTIONS[0]
+
+            setSelectedTheme(theme)
+            setFontSize(notebook.settings.fontSize)
+            setFontFamily(font)
+            setSelectedLimit(limit)
+        }
+        setShowSavedNotebooks(false)
+        console.log('Notebook loaded successfully')
     }
 
     // Delete a saved notebook
     const handleDeleteSavedNotebook = (notebookId, e) => {
+        console.log('handleDeleteSavedNotebook called with ID:', notebookId)
+        console.log('Event:', e)
         e.stopPropagation()
+
         const notebook = savedNotebooks.find(n => n.id === notebookId)
+        console.log('Found notebook:', notebook)
+
+        if (!notebook) {
+            console.error('Notebook not found with ID:', notebookId)
+            alert('Error: Notebook not found.')
+            return
+        }
+
+        console.log('Showing confirm dialog...')
         if (window.confirm(`Delete saved notebook "${notebook.name}"?`)) {
+            console.log('User confirmed, deleting...')
             const updatedNotebooks = savedNotebooks.filter(n => n.id !== notebookId)
+            console.log('Updated notebooks list:', updatedNotebooks)
             setSavedNotebooks(updatedNotebooks)
-            localStorage.setItem('savedNotebooks', JSON.stringify(updatedNotebooks))
+            console.log('Notebook deleted successfully')
+        } else {
+            console.log('User cancelled deletion')
         }
     }
 

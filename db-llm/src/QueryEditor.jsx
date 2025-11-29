@@ -210,6 +210,41 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
         }
     }
 
+    // Check if current query state matches ANY saved query (to avoid false "unsaved changes" warnings)
+    const isCurrentQueryMatchingAnySaved = () => {
+        if (savedQueries.length === 0) return false
+
+        // Check if current state exactly matches any saved query
+        for (const savedQuery of savedQueries) {
+            // Check name and query content
+            if (savedQuery.name !== queryName) continue
+            if (savedQuery.query !== query) continue
+
+            // Check settings
+            const currentSettings = {
+                theme: selectedTheme.value,
+                fontSize,
+                fontFamily: fontFamily.value,
+                limit: selectedLimit.value
+            }
+
+            const savedSettings = savedQuery.settings || {}
+            const normalizedSavedSettings = {
+                theme: (savedSettings.theme && typeof savedSettings.theme === 'object') ? savedSettings.theme.value : savedSettings.theme,
+                fontSize: savedSettings.fontSize,
+                fontFamily: (savedSettings.fontFamily && typeof savedSettings.fontFamily === 'object') ? savedSettings.fontFamily.value : savedSettings.fontFamily,
+                limit: (savedSettings.limit && typeof savedSettings.limit === 'object') ? savedSettings.limit.value : savedSettings.limit
+            }
+
+            if (JSON.stringify(normalizedSavedSettings) === JSON.stringify(currentSettings)) {
+                // Found exact match!
+                return true
+            }
+        }
+
+        return false
+    }
+
     // Check if query has changes compared to saved version with same name
     const hasQueryChanged = () => {
         if (savedQueries.length === 0) return true
@@ -217,14 +252,27 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
         const sameNameQuery = savedQueries.find(q => q.name === queryName)
         if (!sameNameQuery) return true // Different name = new version
 
-        // Compare query content and settings
+        // Compare query content
         if (sameNameQuery.query !== query) return true
-        if (JSON.stringify(sameNameQuery.settings) !== JSON.stringify({
-            theme: selectedTheme,
+
+        // Compare settings (using primitive values)
+        const currentSettings = {
+            theme: selectedTheme.value,
             fontSize,
-            fontFamily,
-            limit: selectedLimit
-        })) return true
+            fontFamily: fontFamily.value,
+            limit: selectedLimit.value
+        }
+
+        // Handle backward compatibility where saved settings might be full objects
+        const savedSettings = sameNameQuery.settings || {}
+        const normalizedSavedSettings = {
+            theme: (savedSettings.theme && typeof savedSettings.theme === 'object') ? savedSettings.theme.value : savedSettings.theme,
+            fontSize: savedSettings.fontSize,
+            fontFamily: (savedSettings.fontFamily && typeof savedSettings.fontFamily === 'object') ? savedSettings.fontFamily.value : savedSettings.fontFamily,
+            limit: (savedSettings.limit && typeof savedSettings.limit === 'object') ? savedSettings.limit.value : savedSettings.limit
+        }
+
+        if (JSON.stringify(normalizedSavedSettings) !== JSON.stringify(currentSettings)) return true
 
         return false
     }
@@ -243,10 +291,10 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
             savedAt: timestamp,
             query: query,
             settings: {
-                theme: selectedTheme,
+                theme: selectedTheme.value,
                 fontSize,
-                fontFamily,
-                limit: selectedLimit
+                fontFamily: fontFamily.value,
+                limit: selectedLimit.value
             }
         }
 
@@ -270,25 +318,39 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
 
     // Load a saved query
     const handleLoadQuery = (savedQuery) => {
-        if (window.confirm(`Load "${savedQuery.name}"? Current query will be replaced.`)) {
-            setQuery(savedQuery.query)
-            setQueryName(savedQuery.name)
-            if (savedQuery.settings) {
-                setSelectedTheme(savedQuery.settings.theme)
-                setFontSize(savedQuery.settings.fontSize)
-                setFontFamily(savedQuery.settings.fontFamily)
-                setSelectedLimit(savedQuery.settings.limit)
+        // Check if there are unsaved changes (current state doesn't match any saved query)
+        const hasUnsavedChanges = !isCurrentQueryMatchingAnySaved()
+        if (hasUnsavedChanges) {
+            if (!window.confirm(`You have unsaved changes.Load "${savedQuery.name}" anyway ? `)) {
+                return
             }
-            setShowSavedQueries(false)
-            alert(`Query "${savedQuery.name}" loaded!`)
         }
+
+        setQuery(savedQuery.query)
+        setQueryName(savedQuery.name)
+        if (savedQuery.settings) {
+            // Handle both old (object) and new (value) formats
+            const themeValue = (savedQuery.settings.theme && typeof savedQuery.settings.theme === 'object') ? savedQuery.settings.theme.value : savedQuery.settings.theme
+            const fontValue = (savedQuery.settings.fontFamily && typeof savedQuery.settings.fontFamily === 'object') ? savedQuery.settings.fontFamily.value : savedQuery.settings.fontFamily
+            const limitValue = (savedQuery.settings.limit && typeof savedQuery.settings.limit === 'object') ? savedQuery.settings.limit.value : savedQuery.settings.limit
+
+            const theme = THEMES.find(t => t.value === themeValue) || THEMES[0]
+            const font = FONT_FAMILIES.find(f => f.value === fontValue) || FONT_FAMILIES[0]
+            const limit = RUN_OPTIONS.find(o => o.value === limitValue) || RUN_OPTIONS[0]
+
+            setSelectedTheme(theme)
+            setFontSize(savedQuery.settings.fontSize)
+            setFontFamily(font)
+            setSelectedLimit(limit)
+        }
+        setShowSavedQueries(false)
     }
 
     // Delete a saved query
     const handleDeleteSavedQuery = (queryId, e) => {
         e.stopPropagation()
         const savedQuery = savedQueries.find(q => q.id === queryId)
-        if (window.confirm(`Delete saved query "${savedQuery.name}"?`)) {
+        if (window.confirm(`Delete saved query "${savedQuery.name}" ? `)) {
             const updatedQueries = savedQueries.filter(q => q.id !== queryId)
             setSavedQueries(updatedQueries)
             localStorage.setItem('savedQueries', JSON.stringify(updatedQueries))
@@ -326,10 +388,10 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
     }, [schema])
 
     // Calculate editor height (subtract header height ~42px)
-    const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)}px`
+    const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)} px`
 
     return (
-        <Box className={`query-editor-container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
+        <Box className={`query - editor - container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''} `}>
             <div className="editor-header">
                 <div className="editor-title-row">
                     <button
@@ -537,7 +599,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                                     {RUN_OPTIONS.map(option => (
                                         <div
                                             key={option.value}
-                                            className={`dropdown-item ${selectedLimit.value === option.value ? 'active' : ''}`}
+                                            className={`dropdown - item ${selectedLimit.value === option.value ? 'active' : ''} `}
                                             onClick={() => {
                                                 setSelectedLimit(option)
                                                 setShowLimitDropdown(false)
@@ -565,7 +627,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                         onCreateEditor={onCreateEditor}
                         className="code-editor"
                         style={{
-                            '--editor-font-size': `${fontSize}px`,
+                            '--editor-font-size': `${fontSize} px`,
                             '--editor-font-family': fontFamily.family
                         }}
                         basicSetup={{
