@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
-import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon } from '@primer/octicons-react'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
 import MarkdownCell from './MarkdownCell'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
@@ -8,7 +8,7 @@ import './NotebookView.css'
 
 
 
-function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
+function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onImportToEditor }) {
     const [cells, setCells] = useState(() => {
         // Load cells from localStorage or create default cell
         const saved = localStorage.getItem('notebookCells')
@@ -50,9 +50,15 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     const [showLimitDropdown, setShowLimitDropdown] = useState(false)
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
+    const [showSavedNotebooks, setShowSavedNotebooks] = useState(false)
+    const [savedNotebooks, setSavedNotebooks] = useState(() => {
+        const saved = localStorage.getItem('savedNotebooks')
+        return saved ? JSON.parse(saved) : []
+    })
 
     const limitDropdownRef = useRef(null)
     const themeDropdownRef = useRef(null)
+    const savedNotebooksRef = useRef(null)
     const cellRefs = useRef({})
 
     // Click outside to close dropdowns
@@ -63,6 +69,9 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
             }
             if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
                 setShowThemeDropdown(false)
+            }
+            if (savedNotebooksRef.current && !savedNotebooksRef.current.contains(event.target)) {
+                setShowSavedNotebooks(false)
             }
 
         }
@@ -267,6 +276,143 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         }
     }
 
+    // Handle importing all SQL queries to editor
+    const handleImportToEditor = () => {
+        const sqlCells = cells.filter(cell => cell.type === 'sql')
+        if (sqlCells.length === 0) {
+            alert('No SQL queries to import')
+            return
+        }
+
+        const consolidatedQuery = sqlCells
+            .map((cell, index) => {
+                const query = cell.query.trim()
+                return `-- Query ${index + 1}\n${query}`
+            })
+            .join('\n\n')
+
+        if (onImportToEditor) {
+            onImportToEditor(consolidatedQuery)
+            alert('SQL queries imported to editor view!')
+        }
+    }
+
+    // Check if notebook has changes compared to last saved version
+    const hasNotebookChanged = () => {
+        if (savedNotebooks.length === 0) return true // No previous saves, so it's new
+
+        // Find saved notebook with the same name
+        const sameNameNotebook = savedNotebooks.find(n => n.name === notebookName)
+        if (!sameNameNotebook) return true // Different name, so it's a new version
+
+        // Compare number of cells
+        if (sameNameNotebook.cells.length !== cells.length) return true
+
+        // Compare each cell's content (excluding results and execution times)
+        for (let i = 0; i < cells.length; i++) {
+            const currentCell = cells[i]
+            const savedCell = sameNameNotebook.cells[i]
+
+            if (currentCell.type !== savedCell.type) return true
+
+            if (currentCell.type === 'sql') {
+                if (currentCell.query !== savedCell.query) return true
+            } else if (currentCell.type === 'markdown') {
+                if (currentCell.content !== savedCell.content) return true
+            }
+        }
+
+        // Compare settings
+        if (JSON.stringify(sameNameNotebook.settings) !== JSON.stringify({
+            theme: selectedTheme,
+            fontSize,
+            fontFamily,
+            limit: selectedLimit
+        })) return true
+
+        return false // No changes detected
+    }
+
+    // Save current notebook with smart versioning
+    const handleSaveNotebook = () => {
+        // Check if there are actual changes
+        if (!hasNotebookChanged()) {
+            alert('No changes detected. Notebook is already up to date with the last saved version.')
+            return
+        }
+
+        const timestamp = new Date().toISOString()
+        const newNotebookData = {
+            id: crypto.randomUUID(),
+            name: notebookName,
+            savedAt: timestamp,
+            cells: JSON.parse(JSON.stringify(cells)),
+            settings: {
+                theme: selectedTheme,
+                fontSize,
+                fontFamily,
+                limit: selectedLimit
+            }
+        }
+
+        // Check if a notebook with the same name exists
+        const existingIndex = savedNotebooks.findIndex(n => n.name === notebookName)
+
+        let updatedNotebooks
+        if (existingIndex !== -1) {
+            // Update the existing version (replace it)
+            updatedNotebooks = [...savedNotebooks]
+            updatedNotebooks[existingIndex] = newNotebookData
+            alert(`Notebook "${notebookName}" updated!`)
+        } else {
+            // Create new version (name is different)
+            updatedNotebooks = [newNotebookData, ...savedNotebooks]
+            alert(`New notebook version "${notebookName}" created!`)
+        }
+
+        setSavedNotebooks(updatedNotebooks)
+        localStorage.setItem('savedNotebooks', JSON.stringify(updatedNotebooks))
+    }
+
+    // Load a saved notebook
+    const handleLoadNotebook = (notebook) => {
+        if (window.confirm(`Load "${notebook.name}"? Current notebook will be replaced.`)) {
+            setCells(notebook.cells)
+            setNotebookName(notebook.name)
+            if (notebook.settings) {
+                setSelectedTheme(notebook.settings.theme)
+                setFontSize(notebook.settings.fontSize)
+                setFontFamily(notebook.settings.fontFamily)
+                setSelectedLimit(notebook.settings.limit)
+            }
+            setShowSavedNotebooks(false)
+            alert(`Notebook "${notebook.name}" loaded successfully!`)
+        }
+    }
+
+    // Delete a saved notebook
+    const handleDeleteSavedNotebook = (notebookId, e) => {
+        e.stopPropagation()
+        const notebook = savedNotebooks.find(n => n.id === notebookId)
+        if (window.confirm(`Delete saved notebook "${notebook.name}"?`)) {
+            const updatedNotebooks = savedNotebooks.filter(n => n.id !== notebookId)
+            setSavedNotebooks(updatedNotebooks)
+            localStorage.setItem('savedNotebooks', JSON.stringify(updatedNotebooks))
+        }
+    }
+
+    // Format date for display
+    const formatDate = (isoString) => {
+        const date = new Date(isoString)
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
     return (
         <Box className={`notebook-view ${isFullScreen ? 'full-screen-mode' : ''}`}>
             <div className="notebook-header">
@@ -289,6 +435,69 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                             <PencilIcon size={16} className="edit-icon" />
                         </div>
                     )}
+
+                    {/* Save and Saved buttons next to title */}
+                    <div className="notebook-title-actions">
+                        {/* Save Notebook Button - Icon Only */}
+                        <button
+                            className="notebook-action-button save icon-only"
+                            onClick={handleSaveNotebook}
+                            title="Save current notebook version"
+                        >
+                            <DownloadIcon size={14} />
+                        </button>
+
+                        {/* Saved Notebooks Button - Icon Only with Badge */}
+                        <div className="dropdown-wrapper" style={{ position: 'relative' }} ref={savedNotebooksRef}>
+                            <button
+                                className="notebook-action-button secondary icon-only saved-button"
+                                onClick={() => setShowSavedNotebooks(!showSavedNotebooks)}
+                                title="View saved notebooks"
+                            >
+                                <ClockIcon size={14} />
+                                {savedNotebooks.length > 0 && (
+                                    <span className="saved-count-badge">{savedNotebooks.length}</span>
+                                )}
+                            </button>
+                            {showSavedNotebooks && (
+                                <div className="saved-notebooks-dropdown">
+                                    <div className="dropdown-header-title">Saved Notebooks</div>
+                                    <div className="saved-notebooks-list">
+                                        {savedNotebooks.length === 0 ? (
+                                            <div className="no-saved-notebooks">
+                                                <p>No saved notebooks yet</p>
+                                                <small>Click the save icon to create a version</small>
+                                            </div>
+                                        ) : (
+                                            savedNotebooks.map(notebook => (
+                                                <div
+                                                    key={notebook.id}
+                                                    className="saved-notebook-item"
+                                                    onClick={() => handleLoadNotebook(notebook)}
+                                                >
+                                                    <div className="saved-notebook-info">
+                                                        <div className="saved-notebook-name">{notebook.name}</div>
+                                                        <div className="saved-notebook-meta">
+                                                            <span>{formatDate(notebook.savedAt)}</span>
+                                                            <span>•</span>
+                                                            <span>{notebook.cells.length} cells</span>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        className="delete-saved-notebook"
+                                                        onClick={(e) => handleDeleteSavedNotebook(notebook.id, e)}
+                                                        title="Delete this version"
+                                                    >
+                                                        <TrashIcon size={12} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
                 <div className="notebook-actions">
                     {/* Theme & Font Settings */}
@@ -427,6 +636,16 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         </span>
                     </div>
 
+                    {/* Import to Editor Button */}
+                    <button
+                        className="notebook-action-button secondary"
+                        onClick={handleImportToEditor}
+                        title="Import all SQL queries to Editor view"
+                    >
+                        <UploadIcon size={12} />
+                        To Editor
+                    </button>
+
                     <button
                         className="notebook-action-button destructive"
                         onClick={handleClearAll}
@@ -448,7 +667,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         onClick={handleAddMarkdownCell}
                         title="Add text cell"
                     >
-                        <TypographyIcon size={14} />
+                        <PlusIcon size={14} />
                         Add Text
                     </button>
                     <button

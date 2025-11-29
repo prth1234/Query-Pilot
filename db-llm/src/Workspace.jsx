@@ -27,8 +27,15 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
     const [isResizing, setIsResizing] = useState(false)
     const [schema, setSchema] = useState(null) // Database schema for autocomplete
     const [isLoadingSchema, setIsLoadingSchema] = useState(false)
+    const [importedQuery, setImportedQuery] = useState(null) // For importing from notebook
     const containerRef = useRef(null)
     const resizerRef = useRef(null)
+
+    // Handle import from notebook to editor
+    const handleImportFromNotebook = (query) => {
+        setImportedQuery(query)
+        setViewMode('editor')
+    }
 
     // Fetch database schema on mount
     useEffect(() => {
@@ -220,6 +227,8 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                                 height={editorHeight}
                                 schema={schema}
                                 isLoadingSchema={isLoadingSchema}
+                                importedQuery={importedQuery}
+                                onQueryImported={() => setImportedQuery(null)}
                             />
                         </div>
 
@@ -252,6 +261,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         schema={schema}
                         connectionDetails={connectionDetails}
                         database={database}
+                        onImportToEditor={handleImportFromNotebook}
                     />
                 )}
             </div>

@@ -37,12 +37,22 @@ export const FONT_FAMILIES = [
     { name: 'Courier New', value: 'courier', family: "'Courier New', monospace" }
 ]
 
-function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema }) {
+function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
 
     useEffect(() => {
         localStorage.setItem('savedQuery', query)
     }, [query])
+
+    // Handle imported query from notebook
+    useEffect(() => {
+        if (importedQuery) {
+            setQuery(importedQuery)
+            if (onQueryImported) {
+                onQueryImported()
+            }
+        }
+    }, [importedQuery, onQueryImported])
     const [selectedLimit, setSelectedLimit] = useState(() => {
         const saved = parseInt(localStorage.getItem('runLimit'))
         return RUN_OPTIONS.find(o => o.value === saved) || RUN_OPTIONS[0]

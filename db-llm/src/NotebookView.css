@@ -50,6 +50,32 @@
     gap: 12px;
 }
 
+.notebook-title-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+}
+
+.saved-button {
+    position: relative;
+}
+
+.saved-count-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #a371f7;
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 10px;
+    line-height: 1;
+    min-width: 16px;
+    text-align: center;
+}
+
 .notebook-icon {
     font-size: 20px;
 }
@@ -460,4 +486,141 @@ kbd {
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
     font-size: 11px;
     color: #c9d1d9;
+}
+
+/* Saved Notebooks Dropdown */
+.saved-notebooks-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: #161b22;
+    border: 1px solid rgba(110, 118, 129, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+    width: 360px;
+    max-height: 500px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.saved-notebooks-list {
+    overflow-y: auto;
+    max-height: 450px;
+    padding: 8px;
+}
+
+.no-saved-notebooks {
+    padding: 32px 24px;
+    text-align: center;
+    color: #8b949e;
+}
+
+.no-saved-notebooks p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #c9d1d9;
+}
+
+.no-saved-notebooks small {
+    font-size: 12px;
+    color: #7d8590;
+}
+
+.saved-notebook-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    margin-bottom: 6px;
+    background: rgba(110, 118, 129, 0.05);
+    border: 1px solid rgba(110, 118, 129, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.saved-notebook-item:last-child {
+    margin-bottom: 0;
+}
+
+.saved-notebook-item:hover {
+    background: rgba(56, 139, 253, 0.1);
+    border-color: rgba(88, 166, 255, 0.3);
+    transform: translateX(-2px);
+}
+
+.saved-notebook-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.saved-notebook-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e6edf3;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.saved-notebook-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #7d8590;
+}
+
+.saved-notebook-meta span {
+    white-space: nowrap;
+}
+
+.delete-saved-notebook {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #7d8590;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.delete-saved-notebook:hover {
+    background: rgba(218, 54, 51, 0.15);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #f85149;
+}
+
+/* Save Notebook Button */
+.notebook-action-button.save {
+    background: rgba(163, 113, 247, 0.15);
+    border: 1px solid rgba(163, 113, 247, 0.4);
+    color: #a371f7;
+}
+
+.notebook-action-button.save:hover {
+    background: #8957e5;
+    color: white;
+    border-color: #8957e5;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
