@@ -1,10 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import { Box, Heading, Text } from '@primer/react-brand'
+import { CodeIcon, BookIcon } from '@primer/octicons-react'
 import QueryEditor from './QueryEditor'
 import ResultsTable from './ResultsTable'
+import NotebookView from './NotebookView'
 import './Workspace.css'
 
 function Workspace({ database, connectionDetails, onDisconnect }) {
+    const [viewMode, setViewMode] = useState(() => localStorage.getItem('viewMode') || 'editor') // 'editor' or 'notebook'
+
+    useEffect(() => {
+        localStorage.setItem('viewMode', viewMode)
+    }, [viewMode])
+
     const [queryResults, setQueryResults] = useState(() => {
         const saved = localStorage.getItem('queryResults')
         return saved ? JSON.parse(saved) : null
@@ -17,8 +25,42 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
     })
     const [editorHeight, setEditorHeight] = useState(250) // Default height in pixels
     const [isResizing, setIsResizing] = useState(false)
+    const [schema, setSchema] = useState(null) // Database schema for autocomplete
+    const [isLoadingSchema, setIsLoadingSchema] = useState(false)
     const containerRef = useRef(null)
     const resizerRef = useRef(null)
+
+    // Fetch database schema on mount
+    useEffect(() => {
+        const fetchSchema = async () => {
+            setIsLoadingSchema(true)
+            try {
+                const response = await fetch('http://localhost:8000/api/schema', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        host: connectionDetails.host,
+                        port: connectionDetails.port,
+                        database: connectionDetails.database,
+                        user: connectionDetails.user,
+                        password: connectionDetails.password,
+                    }),
+                })
+
+                const data = await response.json()
+                setSchema(data)
+                console.log('Schema loaded:', data)
+            } catch (error) {
+                console.error('Failed to fetch schema:', error)
+            } finally {
+                setIsLoadingSchema(false)
+            }
+        }
+
+        fetchSchema()
+    }, [connectionDetails])
 
     const handleExecuteQuery = async (query) => {
         setIsExecuting(true)
@@ -129,6 +171,26 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         {database?.name} • {connectionDetails?.database}
                     </Text>
                 </div>
+
+                <div className="view-toggle-container">
+                    <button
+                        className={`view-toggle-button ${viewMode === 'editor' ? 'active' : ''}`}
+                        onClick={() => setViewMode('editor')}
+                        title="Standard SQL Editor"
+                    >
+                        <CodeIcon size={16} />
+                        <span>Editor</span>
+                    </button>
+                    <button
+                        className={`view-toggle-button ${viewMode === 'notebook' ? 'active' : ''}`}
+                        onClick={() => setViewMode('notebook')}
+                        title="Notebook View"
+                    >
+                        <BookIcon size={16} />
+                        <span>Notebook</span>
+                    </button>
+                </div>
+
                 <button className="disconnect-button" onClick={onDisconnect} aria-label="Disconnect">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M1 1L13 13M1 13L13 1" stroke="white" strokeWidth="4" strokeLinecap="round" />
@@ -137,36 +199,49 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
             </div>
 
             <div className="workspace-content" ref={containerRef}>
-                <div className="editor-section" style={{ height: `${editorHeight}px` }}>
-                    <QueryEditor
+                {viewMode === 'editor' ? (
+                    <>
+                        <div className="editor-section" style={{ height: `${editorHeight}px` }}>
+                            <QueryEditor
+                                onExecuteQuery={handleExecuteQuery}
+                                isExecuting={isExecuting}
+                                height={editorHeight}
+                                schema={schema}
+                                isLoadingSchema={isLoadingSchema}
+                            />
+                        </div>
+
+                        <div
+                            className={`resizer ${isResizing ? 'resizing' : ''}`}
+                            onMouseDown={handleMouseDown}
+                            ref={resizerRef}
+                        >
+                            <div className="resizer-line"></div>
+                            <div className="resizer-handle">
+                                <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
+                                    <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                    <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div className="results-section">
+                            <ResultsTable
+                                results={queryResults}
+                                error={queryError}
+                                isLoading={isExecuting}
+                                executionTime={executionTime}
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <NotebookView
                         onExecuteQuery={handleExecuteQuery}
-                        isExecuting={isExecuting}
-                        height={editorHeight}
+                        schema={schema}
+                        connectionDetails={connectionDetails}
+                        database={database}
                     />
-                </div>
-
-                <div
-                    className={`resizer ${isResizing ? 'resizing' : ''}`}
-                    onMouseDown={handleMouseDown}
-                    ref={resizerRef}
-                >
-                    <div className="resizer-line"></div>
-                    <div className="resizer-handle">
-                        <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
-                            <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                            <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div className="results-section">
-                    <ResultsTable
-                        results={queryResults}
-                        error={queryError}
-                        isLoading={isExecuting}
-                        executionTime={executionTime}
-                    />
-                </div>
+                )}
             </div>
         </Box>
     )

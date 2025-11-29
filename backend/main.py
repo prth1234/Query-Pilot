@@ -638,6 +638,161 @@ async def execute_query(request: QueryRequest):
             error=f"Unexpected error: {str(e)}"
         )
 
+@app.post("/api/schema")
+async def get_database_schema(request: MySQLConnectionRequest):
+    """
+    Fetch database schema (tables and columns) for autocomplete.
+    Returns table names, column names, and data types.
+    """
+    try:
+        db_type = None
+        
+        # Try to determine database type based on port or connection attempt
+        if request.port == 3306:
+            db_type = 'mysql'
+        elif request.port == 5432:
+            db_type = 'postgresql'
+        else:
+            # Default to mysql, will fail gracefully if wrong
+            db_type = 'mysql'
+        
+        if db_type == 'mysql':
+            try:
+                import pymysql
+                
+                connection = pymysql.connect(
+                    host=request.host,
+                    port=request.port,
+                    user=request.user,
+                    password=request.password,
+                    database=request.database,
+                    connect_timeout=10
+                )
+                
+                cursor = connection.cursor()
+                
+                # Get all tables
+                cursor.execute("SHOW TABLES")
+                tables_result = cursor.fetchall()
+                
+                schema = {
+                    "tables": [],
+                    "keywords": ["SELECT", "FROM", "WHERE", "JOIN", "LEFT JOIN", "RIGHT JOIN", 
+                                "INNER JOIN", "OUTER JOIN", "ON", "AND", "OR", "ORDER BY", 
+                                "GROUP BY", "HAVING", "LIMIT", "OFFSET", "AS", "DISTINCT",
+                                "COUNT", "SUM", "AVG", "MAX", "MIN", "INSERT", "UPDATE", 
+                                "DELETE", "CREATE", "DROP", "ALTER", "TABLE", "INDEX",
+                                "PRIMARY KEY", "FOREIGN KEY", "NOT NULL", "UNIQUE", "DEFAULT"]
+                }
+                
+                # For each table, get columns
+                for table_row in tables_result:
+                    table_name = table_row[0]
+                    
+                    # Get column information
+                    cursor.execute(f"DESCRIBE `{table_name}`")
+                    columns_result = cursor.fetchall()
+                    
+                    columns = []
+                    for col in columns_result:
+                        columns.append({
+                            "name": col[0],
+                            "type": col[1],
+                            "nullable": col[2] == "YES",
+                            "key": col[3],
+                            "default": col[4],
+                            "extra": col[5]
+                        })
+                    
+                    schema["tables"].append({
+                        "name": table_name,
+                        "columns": columns
+                    })
+                
+                cursor.close()
+                connection.close()
+                
+                return schema
+                
+            except ImportError:
+                raise HTTPException(status_code=500, detail="PyMySQL not installed")
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"MySQL error: {str(e)}")
+        
+        elif db_type == 'postgresql':
+            try:
+                import psycopg2
+                
+                connection = psycopg2.connect(
+                    host=request.host,
+                    port=request.port,
+                    user=request.user,
+                    password=request.password,
+                    dbname=request.database,
+                    connect_timeout=10
+                )
+                
+                cursor = connection.cursor()
+                
+                # Get all tables from public schema
+                cursor.execute("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public' 
+                    AND table_type = 'BASE TABLE'
+                """)
+                tables_result = cursor.fetchall()
+                
+                schema = {
+                    "tables": [],
+                    "keywords": ["SELECT", "FROM", "WHERE", "JOIN", "LEFT JOIN", "RIGHT JOIN", 
+                                "INNER JOIN", "OUTER JOIN", "ON", "AND", "OR", "ORDER BY", 
+                                "GROUP BY", "HAVING", "LIMIT", "OFFSET", "AS", "DISTINCT",
+                                "COUNT", "SUM", "AVG", "MAX", "MIN", "INSERT", "UPDATE", 
+                                "DELETE", "CREATE", "DROP", "ALTER", "TABLE", "INDEX",
+                                "PRIMARY KEY", "FOREIGN KEY", "NOT NULL", "UNIQUE", "DEFAULT"]
+                }
+                
+                # For each table, get columns
+                for table_row in tables_result:
+                    table_name = table_row[0]
+                    
+                    # Get column information
+                    cursor.execute("""
+                        SELECT column_name, data_type, is_nullable, column_default
+                        FROM information_schema.columns
+                        WHERE table_schema = 'public' AND table_name = %s
+                        ORDER BY ordinal_position
+                    """, (table_name,))
+                    columns_result = cursor.fetchall()
+                    
+                    columns = []
+                    for col in columns_result:
+                        columns.append({
+                            "name": col[0],
+                            "type": col[1],
+                            "nullable": col[2] == "YES",
+                            "default": col[3]
+                        })
+                    
+                    schema["tables"].append({
+                        "name": table_name,
+                        "columns": columns
+                    })
+                
+                cursor.close()
+                connection.close()
+                
+                return schema
+                
+            except ImportError:
+                raise HTTPException(status_code=500, detail="psycopg2 not installed")
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"PostgreSQL error: {str(e)}")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}

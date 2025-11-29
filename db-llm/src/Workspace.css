@@ -25,8 +25,45 @@
 .header-left {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 24px;
     align-items: flex-start;
+}
+
+.view-toggle-container {
+    display: flex;
+    background: rgba(110, 118, 129, 0.1);
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid rgba(110, 118, 129, 0.2);
+}
+
+.view-toggle-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #7d8590;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-toggle-button:hover {
+    color: #e6edf3;
+}
+
+.view-toggle-button.active {
+    background: #238636;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.view-toggle-button svg {
+    fill: currentColor;
 }
 
 .workspace-status {

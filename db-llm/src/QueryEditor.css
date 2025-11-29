@@ -537,3 +537,248 @@
         right: auto;
     }
 }
+
+/* ==========================================
+   SQL AUTOCOMPLETE STYLING
+   ========================================== */
+
+/* Autocomplete container */
+.cm-tooltip-autocomplete {
+    background: #161b22 !important;
+    border: 1px solid rgba(110, 118, 129, 0.4) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(110, 118, 129, 0.1) !important;
+    padding: 2px 0 !important;
+    min-width: 240px !important;
+    max-width: 400px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif !important;
+    overflow: hidden !important;
+}
+
+/* Autocomplete list */
+.cm-tooltip-autocomplete>ul {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(110, 118, 129, 0.3) transparent;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.cm-tooltip-autocomplete>ul::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cm-tooltip-autocomplete>ul::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cm-tooltip-autocomplete>ul::-webkit-scrollbar-thumb {
+    background: rgba(110, 118, 129, 0.3);
+    border-radius: 4px;
+}
+
+.cm-tooltip-autocomplete>ul::-webkit-scrollbar-thumb:hover {
+    background: rgba(110, 118, 129, 0.5);
+}
+
+/* Individual completion options */
+.cm-tooltip-autocomplete ul li {
+    display: flex !important;
+    align-items: center !important;
+    padding: 4px 10px !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.1s ease !important;
+    border-left: 2px solid transparent !important;
+    margin: 0 !important;
+    list-style: none !important;
+    min-height: 26px !important;
+}
+
+.cm-tooltip-autocomplete ul li:hover {
+    background: rgba(110, 118, 129, 0.15) !important;
+}
+
+.cm-tooltip-autocomplete ul li[aria-selected="true"] {
+    background: rgba(88, 166, 255, 0.18) !important;
+    border-left-color: #58a6ff !important;
+}
+
+/* Completion text */
+.cm-completionLabel {
+    flex: 1 !important;
+    font-size: 12px !important;
+    color: #e6edf3 !important;
+    font-weight: 500 !important;
+    font-family: inherit !important;
+}
+
+/* Completion detail (type/table info) */
+.cm-completionDetail {
+    font-size: 10px !important;
+    color: #7d8590 !important;
+    margin-left: 10px !important;
+    font-family: 'SF Mono', 'Monaco', monospace !important;
+    opacity: 0.8;
+}
+
+.cm-tooltip-autocomplete ul li[aria-selected="true"] .cm-completionDetail {
+    color: #79c0ff !important;
+    opacity: 1;
+}
+
+/* Completion info (extended info) */
+.cm-completionInfo {
+    background: #0d1117 !important;
+    border: 1px solid rgba(110, 118, 129, 0.3) !important;
+    border-radius: 6px !important;
+    padding: 8px !important;
+    font-size: 11px !important;
+    color: #c9d1d9 !important;
+    max-width: 250px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ==========================================
+   CUSTOM ICONS FOR AUTOCOMPLETE TYPES
+   ========================================== */
+
+/* Add colored icons based on completion type */
+.cm-completionIcon {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 8px !important;
+    border-radius: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Keyword (SQL keywords like SELECT, FROM) - Red/Pink */
+.cm-completionIcon-keyword {
+    background: linear-gradient(135deg, #ff7b72 0%, #f85149 100%) !important;
+    color: white !important;
+}
+
+.cm-completionIcon-keyword::before {
+    content: 'K';
+}
+
+/* Class (Table names) - Blue */
+.cm-completionIcon-class {
+    background: linear-gradient(135deg, #58a6ff 0%, #1f6feb 100%) !important;
+    color: white !important;
+}
+
+.cm-completionIcon-class::before {
+    content: 'T';
+}
+
+/* Property (Column names) - Purple */
+.cm-completionIcon-property {
+    background: linear-gradient(135deg, #bc8cff 0%, #8957e5 100%) !important;
+    color: white !important;
+}
+
+.cm-completionIcon-property::before {
+    content: 'C';
+}
+
+/* Function - Green */
+.cm-completionIcon-function {
+    background: linear-gradient(135deg, #7ee787 0%, #3fb950 100%) !important;
+    color: #0d1117 !important;
+}
+
+.cm-completionIcon-function::before {
+    content: 'F';
+}
+
+/* Variable - Orange */
+.cm-completionIcon-variable {
+    background: linear-gradient(135deg, #ffa657 0%, #f0883e 100%) !important;
+    color: white !important;
+}
+
+.cm-completionIcon-variable::before {
+    content: 'V';
+}
+
+/* Hover effects for icons */
+.cm-tooltip-autocomplete ul li:hover .cm-completionIcon,
+.cm-tooltip-autocomplete ul li[aria-selected="true"] .cm-completionIcon {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================
+   AUTOCOMPLETE ANIMATIONS
+   ========================================== */
+
+@keyframes autocompleteSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cm-tooltip-autocomplete {
+    animation: autocompleteSlideIn 0.15s ease-out;
+}
+
+/* Smooth transitions for list items */
+.cm-tooltip-autocomplete ul li {
+    opacity: 0;
+    animation: fadeInItem 0.2s ease-out forwards;
+}
+
+@keyframes fadeInItem {
+    from {
+        opacity: 0;
+        transform: translateX(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Stagger animation for items */
+.cm-tooltip-autocomplete ul li:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.cm-tooltip-autocomplete ul li:nth-child(2) {
+    animation-delay: 0.02s;
+}
+
+.cm-tooltip-autocomplete ul li:nth-child(3) {
+    animation-delay: 0.04s;
+}
+
+.cm-tooltip-autocomplete ul li:nth-child(4) {
+    animation-delay: 0.06s;
+}
+
+.cm-tooltip-autocomplete ul li:nth-child(5) {
+    animation-delay: 0.08s;
+}
+
+.cm-tooltip-autocomplete ul li:nth-child(n+6) {
+    animation-delay: 0.1s;
+}
+
+/* Match CodeMirror panel styling */
+.cm-panels {
+    background: #161b22 !important;
+    color: #e6edf3 !important;
+}

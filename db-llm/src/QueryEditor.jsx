@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { sql } from '@codemirror/lang-sql'
+import { autocompletion } from '@codemirror/autocomplete'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
 import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon } from '@primer/octicons-react'
@@ -9,6 +10,7 @@ import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { githubDark } from '@uiw/codemirror-theme-github'
 import { dracula } from '@uiw/codemirror-theme-dracula'
 import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night'
+import { createSQLAutocomplete } from './sqlAutocomplete'
 import './QueryEditor.css'
 
 const RUN_OPTIONS = [
@@ -35,7 +37,7 @@ const FONT_FAMILIES = [
     { name: 'Courier New', value: 'courier', family: "'Courier New', monospace" }
 ]
 
-function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
+function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
 
     useEffect(() => {
@@ -155,8 +157,23 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250 }) {
         }
     }
 
-    // Memoize extensions array
-    const extensions = useMemo(() => [sql()], [])
+    // Memoize extensions array with schema-aware autocomplete
+    const extensions = useMemo(() => {
+        const exts = [sql()]
+
+        // Add custom autocomplete if schema is available
+        if (schema && schema.tables) {
+            const customAutocomplete = autocompletion({
+                override: [createSQLAutocomplete(schema)],
+                activateOnTyping: true,
+                maxRenderedOptions: 15,
+                defaultKeymap: true
+            })
+            exts.push(customAutocomplete)
+        }
+
+        return exts
+    }, [schema])
 
     // Calculate editor height (subtract header height ~42px)
     const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)}px`

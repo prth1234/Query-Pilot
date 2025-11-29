@@ -21,8 +21,7 @@ fi
 # Start backend in background
 echo "🔧 Starting FastAPI backend..."
 cd backend
-source venv/bin/activate
-uvicorn main:app --reload --port 8000 &
+./venv/bin/uvicorn main:app --reload --port 8000 &
 BACKEND_PID=$!
 cd ..
 echo "✅ Backend running on http://localhost:8000"

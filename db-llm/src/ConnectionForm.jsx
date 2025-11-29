@@ -240,25 +240,37 @@ function ConnectionForm({ database, onBack, onConnect }) {
             }
 
             if (endpoint) {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        host: formData.host,
-                        port: parseInt(formData.port) || (database.id === 'mysql' ? 3306 : 5432),
-                        database: formData.database,
-                        user: formData.user,
-                        password: formData.password,
-                    }),
-                })
+                // Create an AbortController with a 15-second timeout
+                const controller = new AbortController()
+                const timeoutId = setTimeout(() => controller.abort(), 15000)
 
-                const data = await response.json()
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            host: formData.host,
+                            port: parseInt(formData.port) || (database.id === 'mysql' ? 3306 : 5432),
+                            database: formData.database,
+                            user: formData.user,
+                            password: formData.password,
+                        }),
+                        signal: controller.signal
+                    })
 
-                setTestSteps(data.steps || [])
-                setTestSuccess(data.success)
-                setErrorMessage(data.error || data.message)
+                    clearTimeout(timeoutId)
+
+                    const data = await response.json()
+
+                    setTestSteps(data.steps || [])
+                    setTestSuccess(data.success)
+                    setErrorMessage(data.error || data.message)
+                } catch (fetchError) {
+                    clearTimeout(timeoutId)
+                    throw fetchError
+                }
 
             } else {
                 // For other databases, show a placeholder message
@@ -270,19 +282,23 @@ function ConnectionForm({ database, onBack, onConnect }) {
             }
         } catch (error) {
             console.error('Connection test error:', error)
-            setTestSteps(prev => {
-                const newSteps = [...prev]
-                if (newSteps.length > 0) {
-                    newSteps[newSteps.length - 1].status = 'failed'
-                    newSteps[newSteps.length - 1].error = 'Service unavailable'
+
+            // Create a failed step to show in the modal
+            setTestSteps([
+                {
+                    id: 1,
+                    label: 'Connecting to backend service',
+                    status: 'failed',
+                    error: 'Backend service unavailable'
                 }
-                return newSteps
-            })
+            ])
             setTestSuccess(false)
 
             // User-friendly error message for network/server issues
-            if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-                setErrorMessage('The connection service is currently unavailable. Please ensure the backend server is running or try again in a few moments.')
+            if (error.name === 'AbortError') {
+                setErrorMessage('Connection test timed out after 15 seconds. The backend server may not be running. Please start the backend server and try again.')
+            } else if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+                setErrorMessage('Cannot connect to backend server. Please ensure the backend server is running on http://localhost:8000 and try again.')
             } else {
                 setErrorMessage(`Connection error: ${error.message}`)
             }
