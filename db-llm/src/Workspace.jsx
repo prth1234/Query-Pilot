@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Box, Heading, Text } from '@primer/react-brand'
-import { CodeIcon, BookIcon, XCircleIcon } from '@primer/octicons-react'
+import { CodeIcon, BookIcon } from '@primer/octicons-react'
 import QueryEditor from './QueryEditor'
 import ResultsTable from './ResultsTable'
 import NotebookView from './NotebookView'
@@ -170,7 +170,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         <div className="status-dot"></div>
                         <span>Connected</span>
                     </div>
-                    <h1 className="workspace-title">SQL Workspace</h1>
+                    <h1 className="workspace-title">SQL Warehouse</h1>
                     <div className="workspace-subtitle">
                         <span className="db-type">{database?.name || 'Database'}</span>
                         <span className="separator">•</span>
@@ -181,14 +181,14 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                 <div className="view-toggle-wrapper">
                     <div className="view-toggle-container">
                         <button
-                            className={`view - toggle - button ${viewMode === 'editor' ? 'active' : ''} `}
+                            className={`view-toggle-button ${viewMode === 'editor' ? 'active' : ''}`}
                             onClick={() => setViewMode('editor')}
                         >
                             <CodeIcon size={16} />
                             <span>Editor</span>
                         </button>
                         <button
-                            className={`view - toggle - button ${viewMode === 'notebook' ? 'active' : ''} `}
+                            className={`view-toggle-button ${viewMode === 'notebook' ? 'active' : ''}`}
                             onClick={() => setViewMode('notebook')}
                         >
                             <BookIcon size={16} />
@@ -203,7 +203,9 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         onClick={handleDisconnect}
                         title="Disconnect"
                     >
-                        <XCircleIcon size={20} />
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                            <path d="M4 4L12 12M12 4L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -211,7 +213,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
             <div className="workspace-content" ref={containerRef}>
                 {viewMode === 'editor' ? (
                     <>
-                        <div className="editor-section" style={{ height: `${editorHeight} px` }}>
+                        <div className="editor-section" style={{ height: `${editorHeight}px` }}>
                             <QueryEditor
                                 onExecuteQuery={handleExecuteQuery}
                                 isExecuting={isExecuting}
@@ -222,7 +224,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         </div>
 
                         <div
-                            className={`resizer ${isResizing ? 'resizing' : ''} `}
+                            className={`resizer ${isResizing ? 'resizing' : ''}`}
                             onMouseDown={handleMouseDown}
                             ref={resizerRef}
                         >

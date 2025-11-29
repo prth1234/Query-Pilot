@@ -179,7 +179,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
         <Box className="notebook-view">
             <div className="notebook-header">
                 <div className="notebook-title">
-                    <h3>Notebook Mode</h3>
+                    <h2>Notebook Mode</h2>
                 </div>
                 <div className="notebook-actions">
                     {/* Theme & Font Settings */}

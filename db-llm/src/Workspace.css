@@ -21,7 +21,12 @@
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 10;
+}
+
+.header-right {
+    display: flex;
+    align-items: flex-start;
 }
 
 .header-left {
@@ -63,7 +68,7 @@
 .workspace-title {
     margin: 0;
     color: #e6edf3;
-    font-size: 28px;
+    font-size: 42px;
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.5px;
@@ -84,7 +89,7 @@
     color: #484f58;
 }
 
-/* View Toggle - Segmented Control Style */
+/* View Toggle - Minimal Style with Underline */
 .view-toggle-wrapper {
     position: absolute;
     left: 50%;
@@ -93,21 +98,21 @@
 
 .view-toggle-container {
     display: flex;
-    background: #161b22;
-    padding: 4px;
-    border-radius: 8px;
-    border: 1px solid rgba(110, 118, 129, 0.2);
-    gap: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    gap: 24px;
 }
 
 .view-toggle-button {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 16px;
+    padding: 8px 0;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-bottom: 2px solid transparent;
     color: #7d8590;
     font-size: 13px;
     font-weight: 500;
@@ -118,46 +123,45 @@
 
 .view-toggle-button:hover {
     color: #e6edf3;
-    background: rgba(110, 118, 129, 0.1);
 }
 
 .view-toggle-button.active {
-    background: #238636;
-    color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.view-toggle-button.active::after {
-    display: none;
+    background: transparent;
+    color: #e6edf3;
+    border-bottom: 2px solid #58a6ff;
+    box-shadow: none;
 }
 
 .view-toggle-button svg {
     fill: currentColor;
 }
 
-/* Disconnect Button - Red Circle with X */
+/* Disconnect Button - Solid Red with White X */
 .disconnect-button {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff453a 0%, #ff3b30 100%);
+    background: #f85149;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(255, 69, 58, 0.3);
+    padding: 0;
 }
 
 .disconnect-button:hover {
-    background: linear-gradient(135deg, #ff6259 0%, #ff5449 100%);
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(255, 69, 58, 0.4);
+    background: #ff6b6b;
+    transform: scale(1.08);
 }
 
 .disconnect-button:active {
     transform: scale(0.95);
+}
+
+.disconnect-button svg {
+    color: white;
 }
 
 .workspace-content {
