@@ -536,6 +536,29 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         }
     }
 
+    // Create a new empty notebook
+    const handleNewNotebook = () => {
+        // Check if there are unsaved changes
+        const hasUnsavedChanges = !isCurrentStateMatchingAnySaved()
+        if (hasUnsavedChanges) {
+            if (!window.confirm('You have unsaved changes. Create new notebook anyway?')) {
+                return
+            }
+        }
+
+        // Reset to default state
+        const defaultCell = {
+            id: crypto.randomUUID(),
+            type: 'sql',
+            query: '',
+            results: null,
+            error: null,
+            executionTime: null
+        }
+        setCells([defaultCell])
+        setNotebookName('Untitled Notebook')
+    }
+
     // Format date for display
     const formatDate = (isoString) => {
         const date = new Date(isoString)
@@ -573,6 +596,15 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
 
                     {/* Save and Saved buttons next to title */}
                     <div className="notebook-title-actions">
+                        {/* New Notebook Button - Icon Only */}
+                        <button
+                            className="notebook-action-button new icon-only"
+                            onClick={handleNewNotebook}
+                            title="Create new empty notebook"
+                        >
+                            <PlusIcon size={14} />
+                        </button>
+
                         {/* Save Notebook Button - Icon Only */}
                         <button
                             className="notebook-action-button save icon-only"

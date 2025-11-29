@@ -600,6 +600,19 @@ kbd {
     color: #f85149;
 }
 
+/* New Notebook Button */
+.notebook-action-button.new {
+    background: rgba(46, 160, 67, 0.15);
+    border: 1px solid rgba(46, 160, 67, 0.4);
+    color: #3fb950;
+}
+
+.notebook-action-button.new:hover {
+    background: #238636;
+    color: white;
+    border-color: #238636;
+}
+
 /* Save Notebook Button */
 .notebook-action-button.save {
     background: rgba(163, 113, 247, 0.15);

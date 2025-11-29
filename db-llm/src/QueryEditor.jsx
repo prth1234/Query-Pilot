@@ -4,7 +4,7 @@ import { sql } from '@codemirror/lang-sql'
 import { autocompletion } from '@codemirror/autocomplete'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
-import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon } from '@primer/octicons-react'
+import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon, PlusIcon } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { githubDark } from '@uiw/codemirror-theme-github'
@@ -357,6 +357,21 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
         }
     }
 
+    // Create a new empty query
+    const handleNewQuery = () => {
+        // Check if there are unsaved changes
+        const hasUnsavedChanges = !isCurrentQueryMatchingAnySaved()
+        if (hasUnsavedChanges) {
+            if (!window.confirm('You have unsaved changes. Create new query anyway?')) {
+                return
+            }
+        }
+
+        // Reset to default state
+        setQuery('SELECT * FROM your_table;')
+        setQueryName('Untitled Query')
+    }
+
     // Format date for display
     const formatDate = (isoString) => {
         const date = new Date(isoString)
@@ -384,14 +399,28 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
             exts.push(customAutocomplete)
         }
 
+        // Add font family extension
+        const fontTheme = EditorView.theme({
+            "&": {
+                fontFamily: fontFamily.family
+            },
+            ".cm-content": {
+                fontFamily: fontFamily.family
+            },
+            ".cm-scroller": {
+                fontFamily: fontFamily.family
+            }
+        })
+        exts.push(fontTheme)
+
         return exts
-    }, [schema])
+    }, [schema, fontFamily])
 
     // Calculate editor height (subtract header height ~42px)
-    const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)} px`
+    const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)}px`
 
     return (
-        <Box className={`query - editor - container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''} `}>
+        <Box className={`query-editor-container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
             <div className="editor-header">
                 <div className="editor-title-row">
                     <button
@@ -430,9 +459,18 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
 
                     {/* Save and Saved buttons next to title */}
                     <div className="query-title-actions">
+                        {/* New Query Button - Icon Only */}
+                        <button
+                            className="notebook-action-button new icon-only"
+                            onClick={handleNewQuery}
+                            title="Create new empty query"
+                        >
+                            <PlusIcon size={14} />
+                        </button>
+
                         {/* Save Button - Icon Only */}
                         <button
-                            className="query-save-button icon-only"
+                            className="notebook-action-button save icon-only"
                             onClick={handleSaveQuery}
                             title="Save current query"
                         >
@@ -442,7 +480,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                         {/* Saved Queries Button - Icon Only with Badge */}
                         <div className="dropdown-wrapper" style={{ position: 'relative' }} ref={savedQueriesRef}>
                             <button
-                                className="query-saved-button icon-only"
+                                className="notebook-action-button secondary icon-only saved-button"
                                 onClick={() => setShowSavedQueries(!showSavedQueries)}
                                 title="View saved queries"
                             >
@@ -492,7 +530,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                 <div className="editor-actions">
                     {/* Fullscreen Toggle */}
                     <button
-                        className="icon-button"
+                        className="notebook-action-button secondary icon-only"
                         onClick={() => setIsFullscreen(!isFullscreen)}
                         title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                     >
@@ -501,7 +539,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
 
                     {/* Theme Toggle */}
                     <button
-                        className="icon-button"
+                        className="notebook-action-button secondary icon-only"
                         onClick={() => {
                             const currentIndex = THEMES.findIndex(t => t.value === selectedTheme.value)
                             const nextIndex = (currentIndex + 1) % THEMES.length
@@ -509,13 +547,13 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                         }}
                         title={`Current Theme: ${selectedTheme.name} (Click to change)`}
                     >
-                        <PaintbrushIcon size={16} />
+                        <PaintbrushIcon size={14} />
                     </button>
 
                     {/* Settings Selector */}
                     <div className="theme-selector" ref={themeDropdownRef}>
                         <button
-                            className="theme-button"
+                            className="notebook-action-button secondary icon-only"
                             onClick={() => {
                                 setShowThemeDropdown(!showThemeDropdown)
                                 setShowLimitDropdown(false)
@@ -599,7 +637,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                                     {RUN_OPTIONS.map(option => (
                                         <div
                                             key={option.value}
-                                            className={`dropdown - item ${selectedLimit.value === option.value ? 'active' : ''} `}
+                                            className={`dropdown-item ${selectedLimit.value === option.value ? 'active' : ''}`}
                                             onClick={() => {
                                                 setSelectedLimit(option)
                                                 setShowLimitDropdown(false)
@@ -627,7 +665,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                         onCreateEditor={onCreateEditor}
                         className="code-editor"
                         style={{
-                            '--editor-font-size': `${fontSize} px`,
+                            '--editor-font-size': `${fontSize}px`,
                             '--editor-font-family': fontFamily.family
                         }}
                         basicSetup={{
