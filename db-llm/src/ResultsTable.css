@@ -426,7 +426,7 @@
 
 /* Row Height Options */
 .results-table.row-height-compact .table-cell {
-    padding: 6px 12px !important;
+    padding: 4px 12px !important;
 }
 
 .results-table.row-height-normal .table-cell {

@@ -98,30 +98,30 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
             executionTime: null
         }
         setCells([...cells, newCell])
-        scrollToNewCell(newCell.id)
+
+        // Scroll to new cell
+        setTimeout(() => {
+            const el = cellRefs.current[newCell.id]
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+        }, 100)
     }
 
     const handleAddMarkdownCell = () => {
         const newCell = {
             id: crypto.randomUUID(),
             type: 'markdown',
-            content: ''
+            content: '### New Text Cell\nDouble-click to edit',
+            isEditing: true
         }
         setCells([...cells, newCell])
-        scrollToNewCell(newCell.id)
-    }
 
-    const scrollToNewCell = (cellId) => {
+        // Scroll to new cell
         setTimeout(() => {
-            const cellElement = cellRefs.current[cellId]
-            if (cellElement) {
-                cellElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                // Focus the editor
-                const editorElement = cellElement.querySelector('.cm-content') || cellElement.querySelector('.markdown-preview')
-                if (editorElement) {
-                    editorElement.focus()
-                    // If markdown, trigger edit mode? Logic inside component handles it.
-                }
+            const el = cellRefs.current[newCell.id]
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' })
             }
         }, 100)
     }
@@ -350,8 +350,30 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
 
                     <div className="notebook-divider-vertical"></div>
 
+                    <div className="keyboard-hints" style={{ marginRight: '8px' }}>
+                        <span className="hint" style={{ fontSize: '11px', color: '#8b949e' }}>
+                            <kbd style={{
+                                background: 'rgba(110, 118, 129, 0.1)',
+                                border: '1px solid rgba(110, 118, 129, 0.2)',
+                                borderRadius: '3px',
+                                padding: '2px 4px',
+                                fontFamily: 'monospace',
+                                fontSize: '10px',
+                                color: '#c9d1d9'
+                            }}>Cmd</kbd> + <kbd style={{
+                                background: 'rgba(110, 118, 129, 0.1)',
+                                border: '1px solid rgba(110, 118, 129, 0.2)',
+                                borderRadius: '3px',
+                                padding: '2px 4px',
+                                fontFamily: 'monospace',
+                                fontSize: '10px',
+                                color: '#c9d1d9'
+                            }}>Enter</kbd> to run
+                        </span>
+                    </div>
+
                     <button
-                        className="clear-results-badge"
+                        className="notebook-action-button destructive"
                         onClick={handleClearAll}
                         title="Delete all results"
                     >
@@ -359,7 +381,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         Delete All
                     </button>
                     <button
-                        className="coming-soon-badge"
+                        className="notebook-action-button primary"
                         onClick={handleRunAll}
                         title="Run all cells (Shift+Enter in each cell to run individually)"
                     >
@@ -367,19 +389,19 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         Run All
                     </button>
                     <button
-                        className="results-badge"
+                        className="notebook-action-button add"
                         onClick={handleAddMarkdownCell}
                         title="Add text cell"
                     >
-                        <TypographyIcon size={12} />
+                        <TypographyIcon size={14} />
                         Add Text
                     </button>
                     <button
-                        className="results-badge"
+                        className="notebook-action-button add"
                         onClick={handleAddCell}
                         title="Add SQL query cell"
                     >
-                        <PlusIcon size={12} />
+                        <PlusIcon size={14} />
                         Add Query
                     </button>
                 </div>
@@ -416,18 +438,8 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         />
                     )
                 ))}
-            </div>
-
-            <div className="notebook-footer">
-                <button className="add-cell-button" onClick={handleAddCell}>
-                    <PlusIcon size={16} />
-                    <span>Add Cell</span>
-                </button>
-                <div className="keyboard-hints">
-                    <span className="hint">
-                        <kbd>Cmd</kbd> + <kbd>Enter</kbd> to run cell
-                    </span>
-                </div>
+                {/* Spacer to allow scrolling last cell to center */}
+                <div style={{ minHeight: '40vh' }}></div>
             </div>
         </Box>
     )

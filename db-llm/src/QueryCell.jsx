@@ -5,7 +5,7 @@ import { autocompletion } from '@codemirror/autocomplete'
 import { keymap } from '@codemirror/view'
 import { Prec } from '@codemirror/state'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
-import { PlayIcon, TrashIcon, ScreenFullIcon, ScreenNormalIcon } from '@primer/octicons-react'
+import { PlayIcon, TrashIcon, ScreenFullIcon, ScreenNormalIcon, ChevronDownIcon } from '@primer/octicons-react'
 import { createSQLAutocomplete } from './sqlAutocomplete'
 import ResultsTable from './ResultsTable'
 import './QueryCell.css'
@@ -26,6 +26,7 @@ function QueryCell({
 }) {
     const [isExecuting, setIsExecuting] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
+    const [isCollapsed, setIsCollapsed] = useState(false)
     const viewRef = useRef(null)
     const queryRef = useRef(cell.query)
     const editorContainerRef = useRef(null)
@@ -44,12 +45,13 @@ function QueryCell({
         if (isExecuting || !currentQuery.trim()) return
 
         setIsExecuting(true)
+        if (isCollapsed) setIsCollapsed(false) // Auto-expand on run
         try {
             await onExecute(cell.id, currentQuery)
         } finally {
             setIsExecuting(false)
         }
-    }, [isExecuting, cell.id, onExecute])
+    }, [isExecuting, cell.id, onExecute, isCollapsed])
 
     const handleKeyDown = (event) => {
         // Shift+Enter or Cmd+Enter (Mac) or Ctrl+Enter (Windows) to run cell
@@ -102,7 +104,7 @@ function QueryCell({
     // Resizable Logic
     const [editorHeight, setEditorHeight] = useState(80) // Default min height
     const [hasManuallyResized, setHasManuallyResized] = useState(false)
-    const [resultsHeight, setResultsHeight] = useState(null)
+    const [resultsHeight, setResultsHeight] = useState(300) // Default height for results
     const [isResizing, setIsResizing] = useState(false)
     const [resizeTarget, setResizeTarget] = useState(null) // 'middle' or 'bottom'
     const [resizeStart, setResizeStart] = useState({ y: 0, editor: 0, results: 0 })
@@ -113,15 +115,15 @@ function QueryCell({
     useEffect(() => {
         if (cell.results && cell.results.rows) {
             const rowCount = cell.results.rows.length
-            const rowHeight = 42 // Actual row height in table
+            const rowHeight = 36 // Reduced row height (was 42)
             const headerHeight = 100 // Results header + table header + filters
             const footerHeight = 50 // Pagination footer + padding
 
-            // Always cap initial display at 6 rows
+            // Always cap initial display at 12 rows
             // User can resize to see more
-            const visibleRows = Math.min(rowCount, 6)
+            const visibleRows = Math.min(rowCount, 12)
             // Tweak calculation: Header (~40px) + Rows + Footer (~40px) + Padding
-            // If rows < 6, we want it to be tight.
+            // If rows < 12, we want it to be tight.
             let targetHeight = 90 + (visibleRows * rowHeight)
 
             // Ensure we don't shrink too much (e.g. if 0 rows)

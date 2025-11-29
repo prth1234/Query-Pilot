@@ -78,14 +78,14 @@
 .notebook-action-button {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 12px;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    height: 28px;
+    height: 24px;
     white-space: nowrap;
 }
 
@@ -108,16 +108,32 @@
 
 .notebook-action-button.primary:hover {
     background: #2ea043;
-}
-
-.notebook-action-button.add {
-    background: #1f6feb;
-    border: 1px solid rgba(240, 246, 252, 0.1);
+    border-color: rgba(240, 246, 252, 0.1);
     color: white;
 }
 
+.notebook-action-button.add {
+    background: rgba(56, 139, 253, 0.15);
+    border: 1px solid rgba(88, 166, 255, 0.4);
+    color: #58a6ff;
+}
+
 .notebook-action-button.add:hover {
-    background: #388bfd;
+    background: #1f6feb;
+    color: white;
+    border-color: #1f6feb;
+}
+
+.notebook-action-button.destructive {
+    background: rgba(218, 54, 51, 0.15);
+    border: 1px solid rgba(248, 81, 73, 0.4);
+    color: #f85149;
+}
+
+.notebook-action-button.destructive:hover {
+    background: #da3633;
+    color: white;
+    border-color: #da3633;
 }
 
 .notebook-action-button.icon-only {
@@ -136,15 +152,19 @@
 .notebook-actions .coming-soon-badge {
     display: inline-flex;
     align-items: center;
-    gap: 10px; /* add more gap between icon and text */
-    padding: 6px 12px; /* larger padding for toolbar */
-    height: 34px; /* taller for better alignment */
+    gap: 10px;
+    /* add more gap between icon and text */
+    padding: 6px 12px;
+    /* larger padding for toolbar */
+    height: 34px;
+    /* taller for better alignment */
     font-size: 13px;
     font-weight: 600;
-    border-radius: 9999px; /* pill */
+    border-radius: 9999px;
+    /* pill */
     cursor: pointer;
     transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.08s ease;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 /* Slight icon spacing override to ensure more space on the left of text */
@@ -160,7 +180,7 @@
 .notebook-actions .clear-results-badge:hover,
 .notebook-actions .coming-soon-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
 }
 
 /* Fine tune visuals for each badge inside the toolbar to blend with design */
@@ -177,9 +197,10 @@
 }
 
 .notebook-actions .coming-soon-badge {
-    background: #238636; /* keep the same green color used elsewhere */
+    background: #238636;
+    /* keep the same green color used elsewhere */
     color: #ffffff;
-    border: 1px solid rgba(0,0,0,0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Ensure the 'Clear' in results table remains compact elsewhere */
