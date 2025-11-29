@@ -126,6 +126,70 @@
     justify-content: center;
 }
 
+/* Badge styles for toolbar actions */
+/* badge styles were removed to use the badges from ResultsTable/App styles
+   Please reuse existing classes like 'clear-results-badge', 'coming-soon-badge', and 'results-badge' */
+
+/* Notebook toolbar badge overrides: make existing badges look good inside the toolbar */
+.notebook-actions .results-badge,
+.notebook-actions .clear-results-badge,
+.notebook-actions .coming-soon-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; /* add more gap between icon and text */
+    padding: 6px 12px; /* larger padding for toolbar */
+    height: 34px; /* taller for better alignment */
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 9999px; /* pill */
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.08s ease;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* Slight icon spacing override to ensure more space on the left of text */
+.notebook-actions .results-badge svg,
+.notebook-actions .clear-results-badge svg,
+.notebook-actions .coming-soon-badge svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Hover states for toolbar badges */
+.notebook-actions .results-badge:hover,
+.notebook-actions .clear-results-badge:hover,
+.notebook-actions .coming-soon-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+
+/* Fine tune visuals for each badge inside the toolbar to blend with design */
+.notebook-actions .results-badge {
+    background: rgba(88, 166, 255, 0.12);
+    border: 1px solid rgba(88, 166, 255, 0.2);
+    color: #58a6ff;
+}
+
+.notebook-actions .clear-results-badge {
+    background: rgba(218, 54, 51, 0.12);
+    color: #f85149;
+    border: 1px solid rgba(248, 81, 73, 0.14);
+}
+
+.notebook-actions .coming-soon-badge {
+    background: #238636; /* keep the same green color used elsewhere */
+    color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* Ensure the 'Clear' in results table remains compact elsewhere */
+.results-container .clear-results-badge {
+    padding: 2px 8px;
+    height: auto;
+    font-size: 10px;
+    box-shadow: none;
+}
+
 /* Settings Group */
 .notebook-settings-group {
     display: flex;

@@ -221,7 +221,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
     }
 
     const handleClearAll = () => {
-        if (window.confirm('Are you sure you want to clear all results? Your queries will remain.')) {
+        if (window.confirm('Are you sure you want to delete all results? Your queries will remain.')) {
             setCells(cells.map(cell => ({
                 ...cell,
                 results: null,
@@ -351,14 +351,15 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                     <div className="notebook-divider-vertical"></div>
 
                     <button
-                        className="notebook-action-button secondary"
+                        className="clear-results-badge"
                         onClick={handleClearAll}
-                        title="Clear all results"
+                        title="Delete all results"
                     >
-                        Clear All
+                        <TrashIcon size={12} />
+                        Delete All
                     </button>
                     <button
-                        className="notebook-action-button primary"
+                        className="coming-soon-badge"
                         onClick={handleRunAll}
                         title="Run all cells (Shift+Enter in each cell to run individually)"
                     >
@@ -366,19 +367,19 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                         Run All
                     </button>
                     <button
-                        className="notebook-action-button add"
+                        className="results-badge"
                         onClick={handleAddMarkdownCell}
                         title="Add text cell"
                     >
-                        <TypographyIcon size={14} />
+                        <TypographyIcon size={12} />
                         Add Text
                     </button>
                     <button
-                        className="notebook-action-button add"
+                        className="results-badge"
                         onClick={handleAddCell}
                         title="Add SQL query cell"
                     >
-                        <PlusIcon size={14} />
+                        <PlusIcon size={12} />
                         Add Query
                     </button>
                 </div>
