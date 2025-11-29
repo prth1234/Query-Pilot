@@ -166,7 +166,7 @@
 
 .workspace-content {
     flex: 1;
-    padding: 24px 32px;
+    padding: 2px 20px;
     overflow: hidden;
     display: flex;
     flex-direction: column;

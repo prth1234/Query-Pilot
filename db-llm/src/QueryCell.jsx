@@ -214,7 +214,7 @@ function QueryCell({
                     >
                         <PlayIcon size={16} />
                     </button>
-                    <div className="cell-label">Query Cell</div>
+                    <div className="cell-label">Run</div>
                 </div>
                 <div className="cell-right-actions">
                     <button
