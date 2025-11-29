@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
-import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon } from '@primer/octicons-react'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
+import MarkdownCell from './MarkdownCell'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
 import './NotebookView.css'
 
@@ -17,7 +18,8 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
             }
         }
         return [{
-            id: Date.now(),
+            id: crypto.randomUUID(),
+            type: 'sql',
             query: '-- Write your SQL query here\nSELECT * FROM your_table LIMIT 10;',
             results: null,
             error: null,
@@ -88,23 +90,37 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
 
     const handleAddCell = () => {
         const newCell = {
-            id: Date.now(),
+            id: crypto.randomUUID(),
+            type: 'sql',
             query: '-- New query\n',
             results: null,
             error: null,
             executionTime: null
         }
         setCells([...cells, newCell])
+        scrollToNewCell(newCell.id)
+    }
 
-        // Scroll to new cell and focus editor after state update
+    const handleAddMarkdownCell = () => {
+        const newCell = {
+            id: crypto.randomUUID(),
+            type: 'markdown',
+            content: ''
+        }
+        setCells([...cells, newCell])
+        scrollToNewCell(newCell.id)
+    }
+
+    const scrollToNewCell = (cellId) => {
         setTimeout(() => {
-            const cellElement = cellRefs.current[newCell.id]
+            const cellElement = cellRefs.current[cellId]
             if (cellElement) {
                 cellElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                // Focus the CodeMirror editor
-                const editorElement = cellElement.querySelector('.cm-content')
+                // Focus the editor
+                const editorElement = cellElement.querySelector('.cm-content') || cellElement.querySelector('.markdown-preview')
                 if (editorElement) {
                     editorElement.focus()
+                    // If markdown, trigger edit mode? Logic inside component handles it.
                 }
             }
         }, 100)
@@ -112,13 +128,26 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
 
     const handleDeleteCell = (cellId) => {
         if (cells.length === 1) return
-        setCells(cells.filter(cell => cell.id !== cellId))
+        setCells(prev => prev.filter(cell => cell.id !== cellId))
     }
 
-    const handleQueryChange = (cellId, newQuery) => {
-        setCells(cells.map(cell =>
-            cell.id === cellId ? { ...cell, query: newQuery } : cell
+    const handleClearResult = (cellId) => {
+        setCells(prev => prev.map(cell =>
+            cell.id === cellId ? { ...cell, results: null, error: null, executionTime: null } : cell
         ))
+    }
+
+    const handleContentChange = (cellId, newContent) => {
+        setCells(cells.map(cell => {
+            if (cell.id === cellId) {
+                if (cell.type === 'markdown') {
+                    return { ...cell, content: newContent }
+                } else {
+                    return { ...cell, query: newContent }
+                }
+            }
+            return cell
+        }))
     }
 
     const handleExecuteCell = async (cellId, query) => {
@@ -337,31 +366,53 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database }) {
                     </button>
                     <button
                         className="notebook-action-button add"
+                        onClick={handleAddMarkdownCell}
+                        title="Add text cell"
+                    >
+                        <TypographyIcon size={14} />
+                        Add Text
+                    </button>
+                    <button
+                        className="notebook-action-button add"
                         onClick={handleAddCell}
-                        title="Add new cell"
+                        title="Add SQL query cell"
                     >
                         <PlusIcon size={14} />
-                        Add Cell
+                        Add Query
                     </button>
                 </div>
             </div>
 
             <div className="notebook-cells-container">
                 {cells.map((cell, index) => (
-                    <QueryCell
-                        key={cell.id}
-                        cell={cell}
-                        cellRef={(el) => cellRefs.current[cell.id] = el}
-                        onExecute={handleExecuteCell}
-                        onDelete={handleDeleteCell}
-                        onQueryChange={handleQueryChange}
-                        schema={schema}
-                        isFirst={cells.length === 1}
-                        isLast={index === cells.length - 1}
-                        theme={selectedTheme}
-                        fontFamily={fontFamily}
-                        fontSize={fontSize}
-                    />
+                    cell.type === 'markdown' ? (
+                        <MarkdownCell
+                            key={cell.id}
+                            cell={cell}
+                            onChange={handleContentChange}
+                            onDelete={handleDeleteCell}
+                            isFirst={cells.length === 1}
+                            theme={selectedTheme}
+                            fontFamily={fontFamily}
+                            fontSize={fontSize}
+                        />
+                    ) : (
+                        <QueryCell
+                            key={cell.id}
+                            cell={cell}
+                            cellRef={(el) => cellRefs.current[cell.id] = el}
+                            onExecute={handleExecuteCell}
+                            onDelete={handleDeleteCell}
+                            onClearResult={handleClearResult}
+                            onQueryChange={handleContentChange}
+                            schema={schema}
+                            isFirst={cells.length === 1}
+                            isLast={index === cells.length - 1}
+                            theme={selectedTheme}
+                            fontFamily={fontFamily}
+                            fontSize={fontSize}
+                        />
+                    )
                 ))}
             </div>
 

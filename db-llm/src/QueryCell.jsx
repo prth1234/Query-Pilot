@@ -14,6 +14,7 @@ function QueryCell({
     cell,
     onExecute,
     onDelete,
+    onClearResult,
     onQueryChange,
     schema,
     isFirst,
@@ -298,6 +299,34 @@ function QueryCell({
                         ref={resultsRef}
                     >
                         <div className="cell-results-container">
+                            <div className="results-actions-bar" style={{ position: 'absolute', top: '8px', right: '24px', zIndex: 10 }}>
+                                <button
+                                    className="clear-results-badge"
+                                    onClick={() => onClearResult(cell.id)}
+                                    title="Clear results only"
+                                    style={{
+                                        background: 'rgba(218, 54, 51, 0.15)',
+                                        color: '#f85149',
+                                        border: '1px solid rgba(248, 81, 73, 0.4)',
+                                        borderRadius: '12px',
+                                        padding: '2px 8px',
+                                        fontSize: '11px',
+                                        cursor: 'pointer',
+                                        fontWeight: '500',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.background = '#da3633'
+                                        e.target.style.color = 'white'
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.background = 'rgba(218, 54, 51, 0.15)'
+                                        e.target.style.color = '#f85149'
+                                    }}
+                                >
+                                    Clear
+                                </button>
+                            </div>
                             <ResultsTable
                                 results={cell.results}
                                 error={cell.error}
