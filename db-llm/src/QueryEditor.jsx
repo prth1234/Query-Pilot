@@ -11,6 +11,8 @@ import { githubDark } from '@uiw/codemirror-theme-github'
 import { dracula } from '@uiw/codemirror-theme-dracula'
 import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night'
 import { createSQLAutocomplete } from './sqlAutocomplete'
+import AIGeneratorButton from './AIGeneratorButton'
+import CodeDiffView from './CodeDiffView'
 import './QueryEditor.css'
 
 export const RUN_OPTIONS = [
@@ -39,6 +41,8 @@ export const FONT_FAMILIES = [
 
 function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
+    const [isAiGenerating, setIsAiGenerating] = useState(false)
+    const [aiSuggestion, setAiSuggestion] = useState(null)
 
     useEffect(() => {
         localStorage.setItem('savedQuery', query)
@@ -53,6 +57,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
             }
         }
     }, [importedQuery, onQueryImported])
+
     const [selectedLimit, setSelectedLimit] = useState(() => {
         const saved = parseInt(localStorage.getItem('runLimit'))
         return RUN_OPTIONS.find(o => o.value === saved) || RUN_OPTIONS[0]
@@ -187,6 +192,35 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
             console.log('Executing query:', modifiedQuery)
             onExecuteQuery(modifiedQuery)
         }
+    }
+
+    const handleAiGenerate = () => {
+        setIsAiGenerating(true)
+        // Simulate AI generation delay
+        setTimeout(() => {
+            // Mock AI suggestion
+            const suggestion = `SELECT 
+    u.id, 
+    u.username, 
+    COUNT(o.id) as total_orders,
+    SUM(o.amount) as total_spent
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.username
+HAVING total_spent > 1000
+ORDER BY total_spent DESC;`
+            setAiSuggestion(suggestion)
+            setIsAiGenerating(false)
+        }, 2000)
+    }
+
+    const handleAcceptSuggestion = () => {
+        setQuery(aiSuggestion)
+        setAiSuggestion(null)
+    }
+
+    const handleRejectSuggestion = () => {
+        setAiSuggestion(null)
     }
 
     const handleKeyDown = (event) => {
@@ -528,6 +562,12 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                     </div>
                 </div>
                 <div className="editor-actions">
+                    {/* AI Generator Button */}
+                    <AIGeneratorButton
+                        onClick={handleAiGenerate}
+                        isGenerating={isAiGenerating}
+                    />
+
                     {/* Fullscreen Toggle */}
                     <button
                         className="notebook-action-button secondary icon-only"
@@ -655,42 +695,58 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
                 </div>
             </div>
             {!isCollapsed && (
-                <div className="editor-wrapper" onKeyDown={handleKeyDown}>
-                    <CodeMirror
-                        value={query}
-                        height={editorHeight}
-                        theme={selectedTheme.theme}
-                        extensions={extensions}
-                        onChange={(value) => setQuery(value)}
-                        onCreateEditor={onCreateEditor}
-                        className="code-editor"
-                        style={{
-                            '--editor-font-size': `${fontSize}px`,
-                            '--editor-font-family': fontFamily.family
-                        }}
-                        basicSetup={{
-                            lineNumbers: true,
-                            highlightActiveLineGutter: true,
-                            highlightSpecialChars: true,
-                            foldGutter: true,
-                            drawSelection: true,
-                            dropCursor: true,
-                            allowMultipleSelections: true,
-                            indentOnInput: true,
-                            bracketMatching: true,
-                            closeBrackets: true,
-                            autocompletion: true,
-                            rectangularSelection: true,
-                            crosshairCursor: true,
-                            highlightActiveLine: true,
-                            highlightSelectionMatches: true,
-                            closeBracketsKeymap: true,
-                            searchKeymap: true,
-                            foldKeymap: true,
-                            completionKeymap: true,
-                            lintKeymap: true,
-                        }}
-                    />
+                <div
+                    className={`editor-wrapper ${isAiGenerating ? 'ai-analyzing' : ''}`}
+                    onKeyDown={handleKeyDown}
+                >
+                    {aiSuggestion ? (
+                        <div style={{ height: editorHeight, overflow: 'hidden' }}>
+                            <CodeDiffView
+                                originalCode={query}
+                                suggestedCode={aiSuggestion}
+                                onAccept={handleAcceptSuggestion}
+                                onReject={handleRejectSuggestion}
+                                fontSize={fontSize}
+                                fontFamily={fontFamily.family}
+                            />
+                        </div>
+                    ) : (
+                        <CodeMirror
+                            value={query}
+                            height={editorHeight}
+                            theme={selectedTheme.theme}
+                            extensions={extensions}
+                            onChange={(value) => setQuery(value)}
+                            onCreateEditor={onCreateEditor}
+                            className="code-editor"
+                            style={{
+                                '--editor-font-size': `${fontSize}px`,
+                                '--editor-font-family': fontFamily.family
+                            }}
+                            basicSetup={{
+                                lineNumbers: true,
+                                highlightActiveLineGutter: true,
+                                highlightSpecialChars: true,
+                                foldGutter: true,
+                                drawSelection: true,
+                                dropCursor: true,
+                                allowMultipleSelections: true,
+                                indentOnInput: true,
+                                bracketMatching: true,
+                                closeBrackets: true,
+                                autocompletion: true,
+                                rectangularSelection: true,
+                                crosshairCursor: true,
+                                highlightActiveLine: true,
+                                highlightSelectionMatches: true,
+                                closeBracketsKeymap: true,
+                                searchKeymap: true,
+                                foldKeymap: true,
+                                completionKeymap: true,
+                                lintKeymap: true,
+                            }}
+                        />
+                    )}
                 </div>
             )}
         </Box>

@@ -1,0 +1,60 @@
+.magic-reveal-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    animation: materialize 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+    /* Start hidden */
+}
+
+@keyframes materialize {
+    0% {
+        opacity: 0;
+        transform: scale(0.96) translateY(20px);
+        filter: blur(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Magic One-Time Wave Effect */
+.magic-wave-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Apple Intelligence-inspired gradient */
+    background: linear-gradient(115deg,
+            transparent 20%,
+            rgba(255, 51, 102, 0.1) 40%,
+            rgba(255, 51, 204, 0.3) 45%,
+            rgba(51, 102, 255, 0.3) 50%,
+            rgba(0, 204, 255, 0.3) 55%,
+            transparent 70%);
+    background-size: 250% 100%;
+    background-position: 100% 0;
+    pointer-events: none;
+    z-index: 9999;
+    animation: magicWave 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes magicWave {
+    0% {
+        background-position: 100% 0;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        background-position: -150% 0;
+        opacity: 0;
+    }
+}

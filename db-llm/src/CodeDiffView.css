@@ -1,0 +1,247 @@
+.code-diff-view-sidebyside {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background: #0d1117;
+    position: relative;
+    overflow: hidden;
+}
+
+.diff-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.diff-pane {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    border-right: 1px solid #30363d;
+    min-height: 0;
+}
+
+.diff-pane:last-child {
+    border-right: none;
+}
+
+.diff-pane-header {
+    padding: 10px 16px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    font-size: 12px;
+    font-weight: 600;
+    color: #7d8590;
+    flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.suggested-header {
+    background: rgba(138, 56, 245, 0.1);
+    color: #d2a8ff;
+}
+
+.diff-pane-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    font-family: var(--diff-font-family, 'SF Mono', monospace);
+    font-size: var(--diff-font-size, 13px);
+    min-height: 0;
+    /* Critical for flex scrolling */
+}
+
+.diff-line {
+    display: flex;
+    align-items: stretch;
+    min-height: 20px;
+    line-height: 1.5;
+    position: relative;
+}
+
+.diff-line.added {
+    background: rgba(46, 160, 67, 0.15);
+}
+
+.diff-line.removed {
+    background: rgba(248, 81, 73, 0.15);
+}
+
+.diff-line.unchanged {
+    background: transparent;
+}
+
+.diff-line:hover {
+    background-color: rgba(110, 118, 129, 0.08);
+}
+
+.diff-line.added:hover {
+    background: rgba(46, 160, 67, 0.22);
+}
+
+.diff-line.removed:hover {
+    background: rgba(248, 81, 73, 0.22);
+}
+
+.line-number {
+    display: inline-block;
+    width: 50px;
+    padding: 0 10px;
+    text-align: right;
+    color: #7d8590;
+    user-select: none;
+    flex-shrink: 0;
+    font-size: 11px;
+}
+
+.line-indicator {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.diff-line.added .line-indicator {
+    color: #3fb950;
+}
+
+.diff-line.removed .line-indicator {
+    color: #f85149;
+}
+
+.diff-line.unchanged .line-indicator {
+    color: transparent;
+}
+
+.line-content {
+    flex: 1;
+    padding: 0 12px;
+    color: #e6edf3;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* AI Suggestion Glow Effect - Restored */
+.ai-suggestion-glow {
+    position: relative;
+}
+
+.ai-suggestion-glow .diff-pane-content {
+    box-shadow: inset 0 0 40px rgba(138, 56, 245, 0.15);
+    animation: contentPulse 3s ease-in-out infinite;
+}
+
+.ai-suggestion-glow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 20px rgba(138, 56, 245, 0.2);
+    z-index: 10;
+    animation: borderPulse 3s ease-in-out infinite;
+}
+
+@keyframes contentPulse {
+    0% {
+        box-shadow: inset 0 0 30px rgba(138, 56, 245, 0.1);
+    }
+
+    50% {
+        box-shadow: inset 0 0 60px rgba(138, 56, 245, 0.25);
+    }
+
+    100% {
+        box-shadow: inset 0 0 30px rgba(138, 56, 245, 0.1);
+    }
+}
+
+@keyframes borderPulse {
+    0% {
+        box-shadow: inset 0 0 10px rgba(138, 56, 245, 0.1);
+    }
+
+    50% {
+        box-shadow: inset 0 0 25px rgba(138, 56, 245, 0.3);
+    }
+
+    100% {
+        box-shadow: inset 0 0 10px rgba(138, 56, 245, 0.1);
+    }
+}
+
+/* Action Buttons - In Header */
+.diff-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.diff-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.diff-action-btn span {
+    font-size: 13px;
+}
+
+.diff-action-btn.accept {
+    background: #238636;
+    color: white;
+    border-color: #2ea043;
+}
+
+.diff-action-btn.accept:hover {
+    background: #2ea043;
+    box-shadow: 0 2px 8px rgba(46, 160, 67, 0.3);
+}
+
+.diff-action-btn.reject {
+    background: rgba(248, 81, 73, 0.1);
+    color: #f85149;
+    border-color: rgba(248, 81, 73, 0.4);
+}
+
+.diff-action-btn.reject:hover {
+    background: rgba(248, 81, 73, 0.2);
+    border-color: #f85149;
+    box-shadow: 0 2px 8px rgba(248, 81, 73, 0.3);
+}
+
+/* Scrollbar styling */
+.diff-pane-content::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.diff-pane-content::-webkit-scrollbar-track {
+    background: #0d1117;
+}
+
+.diff-pane-content::-webkit-scrollbar-thumb {
+    background: #30363d;
+    border-radius: 5px;
+}
+
+.diff-pane-content::-webkit-scrollbar-thumb:hover {
+    background: #484f58;
+}

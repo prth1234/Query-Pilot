@@ -1,0 +1,90 @@
+.ai-generator-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    background: rgba(138, 56, 245, 0.15);
+    /* Purple tint base */
+    border: 1px solid rgba(138, 56, 245, 0.4);
+    border-radius: 20px;
+    /* Pill shape */
+    color: #d2a8ff;
+    /* Light purple text */
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 12px;
+}
+
+.ai-button-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+    position: relative;
+}
+
+.ai-button-text {
+    background: linear-gradient(90deg, #d2a8ff, #f0f6fc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+}
+
+/* The 256-color cycling glow */
+.ai-button-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg,
+            #ff0000,
+            #ff8000,
+            #ffff00,
+            #80ff00,
+            #00ff00,
+            #00ff80,
+            #00ffff,
+            #0080ff,
+            #0000ff,
+            #8000ff,
+            #ff00ff,
+            #ff0080,
+            #ff0000);
+    opacity: 0.15;
+    /* Subtle glow */
+    filter: blur(10px);
+    animation: rotateGlow 30s linear infinite;
+    z-index: 1;
+}
+
+.ai-generator-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(138, 56, 245, 0.25);
+    border-color: rgba(138, 56, 245, 0.8);
+}
+
+.ai-generator-button:hover .ai-button-glow {
+    opacity: 0.3;
+}
+
+.ai-generator-button.generating {
+    background: rgba(138, 56, 245, 0.3);
+    border-color: #d2a8ff;
+}
+
+@keyframes rotateGlow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
