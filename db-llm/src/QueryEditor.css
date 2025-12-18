@@ -27,22 +27,64 @@
 
 /* Fullscreen Mode */
 .query-editor-container.fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 10000;
-    margin: 0;
-    border-radius: 0;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 10000 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: #0d1117 !important;
+}
+
+.query-editor-container.fullscreen .editor-header {
+    flex-shrink: 0;
 }
 
 .query-editor-container.fullscreen .editor-wrapper {
-    flex: 1;
+    flex-shrink: 0 !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+}
+
+/* Fullscreen Resizer */
+.fullscreen-resizer {
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: ns-resize;
+    position: relative;
+    z-index: 200;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.fullscreen-resizer:hover,
+.fullscreen-resizer.resizing {
+    background-color: rgba(88, 166, 255, 0.05);
+}
+
+.fullscreen-resizer:hover .resizer-handle,
+.fullscreen-resizer.resizing .resizer-handle {
+    background-color: rgba(88, 166, 255, 0.2);
+    color: #58a6ff;
+}
+
+/* Add fullscreen results container */
+.query-editor-container.fullscreen~.fullscreen-results-container {
+    position: fixed;
+    top: 50vh;
+    left: 0;
+    width: 100vw;
+    height: 50vh;
+    z-index: 10001;
+    background: #0d1117;
     overflow: auto;
 }
 

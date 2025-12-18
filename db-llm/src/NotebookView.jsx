@@ -3,6 +3,7 @@ import { Box } from '@primer/react-brand'
 import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
 import MarkdownCell from './MarkdownCell'
+import AIGeneratorButton from './AIGeneratorButton'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
 import './NotebookView.css'
 
@@ -201,7 +202,9 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                     port: connectionDetails.port,
                     database: connectionDetails.database,
                     user: connectionDetails.user,
+                    username: connectionDetails.username,
                     password: connectionDetails.password,
+                    connectionString: connectionDetails.connectionString,
                     db_type: database?.id || connectionDetails.db_type || 'mysql'
                 }),
             })

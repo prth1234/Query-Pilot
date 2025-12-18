@@ -53,7 +53,9 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         port: connectionDetails.port,
                         database: connectionDetails.database,
                         user: connectionDetails.user,
+                        username: connectionDetails.username,
                         password: connectionDetails.password,
+                        connectionString: connectionDetails.connectionString,
                     }),
                 })
 
@@ -88,7 +90,9 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                     port: connectionDetails.port,
                     database: connectionDetails.database,
                     user: connectionDetails.user,
+                    username: connectionDetails.username,
                     password: connectionDetails.password,
+                    connectionString: connectionDetails.connectionString,
                     db_type: database.id // 'mysql' or 'postgresql'
                 }),
             })
@@ -231,6 +235,9 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                                     isLoadingSchema={isLoadingSchema}
                                     importedQuery={importedQuery}
                                     onQueryImported={() => setImportedQuery(null)}
+                                    queryResults={queryResults}
+                                    queryError={queryError}
+                                    executionTime={executionTime}
                                 />
                             </div>
 

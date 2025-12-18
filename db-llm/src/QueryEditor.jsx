@@ -13,6 +13,7 @@ import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night'
 import { createSQLAutocomplete } from './sqlAutocomplete'
 import AIGeneratorButton from './AIGeneratorButton'
 import CodeDiffView from './CodeDiffView'
+import ResultsTable from './ResultsTable'
 import './QueryEditor.css'
 
 export const RUN_OPTIONS = [
@@ -39,7 +40,7 @@ export const FONT_FAMILIES = [
     { name: 'Courier New', value: 'courier', family: "'Courier New', monospace" }
 ]
 
-function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported }) {
+function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported, queryResults, queryError, executionTime }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
     const [isAiGenerating, setIsAiGenerating] = useState(false)
     const [aiSuggestion, setAiSuggestion] = useState(null)
@@ -85,6 +86,8 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
     })
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [isFullscreen, setIsFullscreen] = useState(false)
+    const [fullscreenEditorHeight, setFullscreenEditorHeight] = useState(50) // Percentage of viewport
+    const [isFullscreenResizing, setIsFullscreenResizing] = useState(false)
 
     // Query name and saved queries
     const [queryName, setQueryName] = useState(() => {
@@ -155,6 +158,37 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
     useEffect(() => {
         localStorage.setItem('editorTheme', selectedTheme.value)
     }, [selectedTheme])
+
+    // Handle fullscreen resize
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!isFullscreenResizing) return
+
+            const newHeightPercent = (e.clientY / window.innerHeight) * 100
+
+            // Set minimum and maximum heights (20% to 80%)
+            const minHeight = 20
+            const maxHeight = 80
+
+            if (newHeightPercent >= minHeight && newHeightPercent <= maxHeight) {
+                setFullscreenEditorHeight(newHeightPercent)
+            }
+        }
+
+        const handleMouseUp = () => {
+            setIsFullscreenResizing(false)
+        }
+
+        if (isFullscreenResizing) {
+            document.addEventListener('mousemove', handleMouseMove)
+            document.addEventListener('mouseup', handleMouseUp)
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove)
+            document.removeEventListener('mouseup', handleMouseUp)
+        }
+    }, [isFullscreenResizing])
 
     const viewRef = useRef(null)
 
@@ -451,7 +485,16 @@ ORDER BY total_spent DESC;`
     }, [schema, fontFamily])
 
     // Calculate editor height (subtract header height ~42px)
-    const editorHeight = isFullscreen ? 'calc(100vh - 60px)' : `${Math.max(height - 42, 100)}px`
+    // In fullscreen, use resizable height
+    const editorHeight = isFullscreen
+        ? `calc(${fullscreenEditorHeight}vh - 50px)`  // Resizable height minus header
+        : `${Math.max(height - 42, 100)}px`
+
+    // Mouse down handler for fullscreen resizer
+    const handleFullscreenResizerMouseDown = (e) => {
+        setIsFullscreenResizing(true)
+        e.preventDefault()
+    }
 
     return (
         <Box className={`query-editor-container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
@@ -566,6 +609,7 @@ ORDER BY total_spent DESC;`
                     <AIGeneratorButton
                         onClick={handleAiGenerate}
                         isGenerating={isAiGenerating}
+                        disabled={true}
                     />
 
                     {/* Fullscreen Toggle */}
@@ -748,6 +792,36 @@ ORDER BY total_spent DESC;`
                         />
                     )}
                 </div>
+            )}
+            {/* Show resizer and results in fullscreen mode */}
+            {isFullscreen && !isCollapsed && (
+                <>
+                    <div
+                        className={`fullscreen-resizer ${isFullscreenResizing ? 'resizing' : ''}`}
+                        onMouseDown={handleFullscreenResizerMouseDown}
+                    >
+                        <div className="resizer-line"></div>
+                        <div className="resizer-handle">
+                            <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
+                                <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div style={{
+                        flex: 1,
+                        overflow: 'auto',
+                        background: '#0d1117',
+                        minHeight: 0
+                    }}>
+                        <ResultsTable
+                            results={queryResults}
+                            error={queryError}
+                            isLoading={isExecuting}
+                            executionTime={executionTime}
+                        />
+                    </div>
+                </>
             )}
         </Box>
     )

@@ -12,7 +12,10 @@ import {
     XIcon,
     SortAscIcon,
     SortDescIcon,
-    GearIcon
+    GearIcon,
+    DownloadIcon,
+    CopyIcon,
+    FileIcon
 } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md"
 import TableSettings from './TableSettings'
@@ -56,9 +59,14 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
             return DEFAULT_SETTINGS
         }
     })
+
+    // Export functionality state
+    const [showExportMenu, setShowExportMenu] = useState(false)
+
     const rowsPerPage = 300
 
     const settingsRef = useRef(null)
+    const exportMenuRef = useRef(null)
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -71,6 +79,19 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
             document.removeEventListener("mousedown", handleClickOutside)
         }
     }, [settingsRef])
+
+    // Close export menu on outside click
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
+                setShowExportMenu(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [exportMenuRef])
 
     // Save settings to localStorage
     useEffect(() => {
@@ -206,6 +227,143 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
     const activeFilterCount = Object.keys(columnFilters).length + (globalFilter ? 1 : 0)
 
+    // Export as CSV (download)
+    const exportAsCSV = () => {
+        if (!results) return
+
+        const { columns, rows } = results
+        const csvRows = []
+
+        // Add header
+        csvRows.push(columns.join(','))
+
+        // Add data rows
+        filteredRows.forEach(row => {
+            const values = columns.map(col => {
+                const val = row[col]
+                // Handle null/undefined
+                if (val === null || val === undefined) return ''
+                // Escape quotes and wrap in quotes if contains comma
+                const stringVal = String(val)
+                if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\n')) {
+                    return `"${stringVal.replace(/"/g, '""')}"`
+                }
+                return stringVal
+            })
+            csvRows.push(values.join(','))
+        })
+
+        const csvContent = csvRows.join('\n')
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', `query_results_${Date.now()}.csv`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        setShowExportMenu(false)
+    }
+
+    // Export as PDF (download)
+    const exportAsPDF = async () => {
+        if (!results) return
+
+        try {
+            // Dynamic import of jsPDF
+            const { jsPDF } = await import('jspdf')
+            const { default: autoTable } = await import('jspdf-autotable')
+
+            const doc = new jsPDF({
+                orientation: columns.length > 5 ? 'landscape' : 'portrait'
+            })
+
+            // Add title
+            doc.setFontSize(16)
+            doc.text('Query Results', 14, 15)
+
+            // Add execution info
+            doc.setFontSize(10)
+            doc.text(`Rows: ${filteredRows.length}`, 14, 22)
+            if (executionTime) {
+                doc.text(`Execution Time: ${executionTime}ms`, 14, 28)
+            }
+
+            // Prepare table data
+            const tableData = filteredRows.map(row =>
+                columns.map(col => {
+                    const val = row[col]
+                    return val !== null && val !== undefined ? String(val) : 'NULL'
+                })
+            )
+
+            // Generate table
+            autoTable(doc, {
+                head: [columns],
+                body: tableData,
+                startY: 35,
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [59, 130, 246] },
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+            })
+
+            doc.save(`query_results_${Date.now()}.pdf`)
+            setShowExportMenu(false)
+        } catch (error) {
+            console.error('Error exporting PDF:', error)
+            alert('Failed to export PDF. Please try again.')
+        }
+    }
+
+    // Copy as JSON
+    const copyAsJSON = () => {
+        if (!results) return
+
+        const jsonData = JSON.stringify(filteredRows, null, 2)
+        navigator.clipboard.writeText(jsonData).then(() => {
+            alert('Copied as JSON to clipboard!')
+            setShowExportMenu(false)
+        }).catch(err => {
+            console.error('Failed to copy:', err)
+            alert('Failed to copy to clipboard')
+        })
+    }
+
+    // Copy as CSV
+    const copyAsCSV = () => {
+        if (!results) return
+
+        const { columns, rows } = results
+        const csvRows = []
+
+        // Add header
+        csvRows.push(columns.join(','))
+
+        // Add data rows
+        filteredRows.forEach(row => {
+            const values = columns.map(col => {
+                const val = row[col]
+                if (val === null || val === undefined) return ''
+                const stringVal = String(val)
+                if (stringVal.includes(',') || stringVal.includes('"') || stringVal.includes('\n')) {
+                    return `"${stringVal.replace(/"/g, '""')}"`
+                }
+                return stringVal
+            })
+            csvRows.push(values.join(','))
+        })
+
+        const csvContent = csvRows.join('\n')
+        navigator.clipboard.writeText(csvContent).then(() => {
+            alert('Copied as CSV to clipboard!')
+            setShowExportMenu(false)
+        }).catch(err => {
+            console.error('Failed to copy:', err)
+            alert('Failed to copy to clipboard')
+        })
+    }
+
 
 
     // Generate dynamic styles based on settings
@@ -312,6 +470,141 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                                 onClose={() => setShowSettings(false)}
                                 onReset={() => setSettings(DEFAULT_SETTINGS)}
                             />
+                        )}
+                    </div>
+
+                    {/* Export Menu */}
+                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={exportMenuRef}>
+                        <button
+                            className={`icon-button ${showExportMenu ? 'active' : ''}`}
+                            onClick={() => setShowExportMenu(!showExportMenu)}
+                            title="Export results"
+                            disabled={!results || filteredRows.length === 0}
+                        >
+                            <DownloadIcon size={16} />
+                        </button>
+                        {showExportMenu && (
+                            <div className="export-menu" style={{
+                                position: 'absolute',
+                                right: 0,
+                                top: '100%',
+                                marginTop: '8px',
+                                background: '#1c1c1e',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '8px',
+                                padding: '8px',
+                                minWidth: '180px',
+                                zIndex: 1000,
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)'
+                            }}>
+                                <div style={{
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    color: '#8b949e',
+                                    padding: '4px 8px',
+                                    marginBottom: '4px',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                }}>Export Results</div>
+
+                                <button
+                                    onClick={exportAsCSV}
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '8px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: '#c9d1d9',
+                                        cursor: 'pointer',
+                                        borderRadius: '4px',
+                                        fontSize: '13px',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                >
+                                    <FileIcon size={14} />
+                                    <span>Download CSV</span>
+                                </button>
+
+                                <button
+                                    onClick={exportAsPDF}
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '8px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: '#c9d1d9',
+                                        cursor: 'pointer',
+                                        borderRadius: '4px',
+                                        fontSize: '13px',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                >
+                                    <FileIcon size={14} />
+                                    <span>Download PDF</span>
+                                </button>
+
+                                <div style={{
+                                    height: '1px',
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    margin: '4px 0'
+                                }}></div>
+
+                                <button
+                                    onClick={copyAsCSV}
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '8px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: '#c9d1d9',
+                                        cursor: 'pointer',
+                                        borderRadius: '4px',
+                                        fontSize: '13px',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                >
+                                    <CopyIcon size={14} />
+                                    <span>Copy as CSV</span>
+                                </button>
+
+                                <button
+                                    onClick={copyAsJSON}
+                                    style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '8px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: '#c9d1d9',
+                                        cursor: 'pointer',
+                                        borderRadius: '4px',
+                                        fontSize: '13px',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
+                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                >
+                                    <CopyIcon size={14} />
+                                    <span>Copy as JSON</span>
+                                </button>
+                            </div>
                         )}
                     </div>
 

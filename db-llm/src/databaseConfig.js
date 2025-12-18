@@ -44,11 +44,32 @@ export const databases = [
         description: 'Document-oriented NoSQL database',
         logo: mongodbLogo,
         available: true,
+        usesConnectionString: true,
         connectionFields: [
-            { name: 'connectionString', label: 'Connection String', type: 'text', placeholder: 'mongodb://localhost:27017', required: true },
-            { name: 'database', label: 'Database Name', type: 'text', placeholder: 'mydb', required: true },
-            { name: 'username', label: 'Username (Optional)', type: 'text', placeholder: '', required: false },
-            { name: 'password', label: 'Password (Optional)', type: 'password', placeholder: '••••••••', required: false },
+            {
+                name: 'connectionString',
+                label: 'Connection String',
+                type: 'textarea',
+                placeholder: 'mongodb+srv://cluster.mongodb.net/',
+                required: true,
+                helpText: 'The connection URI. You can omit credentials here and use the fields below if preferred.'
+            },
+            {
+                name: 'username',
+                label: 'Username (Optional)',
+                type: 'text',
+                placeholder: 'myUser',
+                required: false,
+                helpText: 'Overrides username in connection string'
+            },
+            {
+                name: 'password',
+                label: 'Password (Optional)',
+                type: 'password',
+                placeholder: '••••••••',
+                required: false,
+                helpText: 'Overrides password in connection string'
+            }
         ]
     },
     {
@@ -57,7 +78,8 @@ export const databases = [
         category: 'Data Warehouse',
         description: 'Cloud-based data warehousing platform',
         logo: snowflakeLogo,
-        available: true,
+        available: false,
+        comingSoon: true,
         connectionFields: [
             { name: 'account', label: 'Account', type: 'text', placeholder: 'xy12345.us-east-1', required: true },
             { name: 'warehouse', label: 'Warehouse', type: 'text', placeholder: 'COMPUTE_WH', required: true },
@@ -73,7 +95,8 @@ export const databases = [
         category: 'Data Warehouse',
         description: 'Google Cloud serverless data warehouse',
         logo: bigqueryLogo,
-        available: true,
+        available: false,
+        comingSoon: true,
         connectionFields: [
             { name: 'projectId', label: 'Project ID', type: 'text', placeholder: 'my-project-123', required: true },
             { name: 'dataset', label: 'Dataset', type: 'text', placeholder: 'my_dataset', required: true },
@@ -86,7 +109,8 @@ export const databases = [
         category: 'Data Warehouse',
         description: 'Unified analytics platform built on Apache Spark',
         logo: databricksLogo,
-        available: true,
+        available: false,
+        comingSoon: true,
         connectionFields: [
             { name: 'host', label: 'Server Hostname', type: 'text', placeholder: 'dbc-xxx.cloud.databricks.com', required: true },
             { name: 'httpPath', label: 'HTTP Path', type: 'text', placeholder: 'sql/protocolv1/o/xxx', required: true },

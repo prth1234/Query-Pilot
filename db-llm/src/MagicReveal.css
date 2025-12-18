@@ -2,7 +2,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    animation: materialize 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: materialize 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
     /* Start hidden */
 }
@@ -31,30 +31,34 @@
     /* Apple Intelligence-inspired gradient */
     background: linear-gradient(115deg,
             transparent 20%,
-            rgba(255, 51, 102, 0.1) 40%,
-            rgba(255, 51, 204, 0.3) 45%,
-            rgba(51, 102, 255, 0.3) 50%,
-            rgba(0, 204, 255, 0.3) 55%,
+            rgba(255, 51, 102, 0.15) 38%,
+            rgba(255, 51, 204, 0.35) 44%,
+            rgba(51, 102, 255, 0.35) 50%,
+            rgba(0, 204, 255, 0.35) 56%,
             transparent 70%);
-    background-size: 250% 100%;
-    background-position: 100% 0;
+    background-size: 300% 100%;
+    background-position: 120% 0;
     pointer-events: none;
     z-index: 9999;
-    animation: magicWave 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    animation: magicWave 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @keyframes magicWave {
     0% {
-        background-position: 100% 0;
+        background-position: 120% 0;
         opacity: 0;
     }
 
-    20% {
+    15% {
+        opacity: 1;
+    }
+
+    85% {
         opacity: 1;
     }
 
     100% {
-        background-position: -150% 0;
+        background-position: -180% 0;
         opacity: 0;
     }
 }

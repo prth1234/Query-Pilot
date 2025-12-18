@@ -7,6 +7,7 @@ import { Prec } from '@codemirror/state'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 import { PlayIcon, TrashIcon, ScreenFullIcon, ScreenNormalIcon, ChevronDownIcon } from '@primer/octicons-react'
 import { createSQLAutocomplete } from './sqlAutocomplete'
+import AIGeneratorButton from './AIGeneratorButton'
 import ResultsTable from './ResultsTable'
 import './QueryCell.css'
 
@@ -228,6 +229,12 @@ function QueryCell({
                     <div className="cell-label">Run</div>
                 </div>
                 <div className="cell-right-actions">
+                    {/* Query Pilot Button */}
+                    <AIGeneratorButton
+                        onClick={() => { }}
+                        isGenerating={false}
+                        disabled={true}
+                    />
                     <button
                         className="cell-action-button"
                         onClick={toggleFullScreen}

@@ -60,8 +60,24 @@
     opacity: 0.15;
     /* Subtle glow */
     filter: blur(10px);
-    animation: rotateGlow 30s linear infinite;
+    animation: ai-pulse 2s ease-in-out infinite;
     z-index: 1;
+}
+
+/* Disabled state */
+.ai-generator-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.ai-generator-button.disabled:hover {
+    transform: none;
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2);
+}
+
+.ai-generator-button.disabled .ai-button-glow {
+    display: none;
 }
 
 .ai-generator-button:hover {

@@ -325,6 +325,15 @@ input[type=number] {
     margin-left: 4px;
 }
 
+/* Help Text */
+.field-help-text {
+    display: block;
+    color: #8b949e;
+    font-size: 13px;
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
 /* Test Progress Section */
 .test-progress {
     margin: 32px 0;

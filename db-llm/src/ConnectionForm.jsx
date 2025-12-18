@@ -51,15 +51,11 @@ const validationRules = {
     },
     mongodb: {
         connectionString: {
-            pattern: /^mongodb(\+srv)?:\/\/.+$/,
-            message: 'Must start with mongodb:// or mongodb+srv://'
-        },
-        database: {
-            pattern: /^[a-zA-Z_][a-zA-Z0-9_]{0,63}$/,
-            message: 'Valid database name required'
+            pattern: /^mongodb(\+srv)?:\/\/.+/,
+            message: 'Must be a valid MongoDB connection URI'
         },
         username: {
-            pattern: /^[a-zA-Z0-9_@.-]{0,}$/,
+            pattern: /^.*$/,
             message: 'Valid username format'
         },
         password: {
@@ -233,10 +229,34 @@ function ConnectionForm({ database, onBack, onConnect }) {
 
         try {
             let endpoint = ''
+            let requestBody = {}
+
             if (database.id === 'mysql') {
                 endpoint = 'http://localhost:8000/api/test-connection/mysql'
+                requestBody = {
+                    host: formData.host,
+                    port: parseInt(formData.port) || 3306,
+                    database: formData.database,
+                    user: formData.user,
+                    password: formData.password,
+                }
             } else if (database.id === 'postgresql') {
                 endpoint = 'http://localhost:8000/api/test-connection/postgresql'
+                requestBody = {
+                    host: formData.host,
+                    port: parseInt(formData.port) || 5432,
+                    database: formData.database,
+                    user: formData.user,
+                    password: formData.password,
+                }
+            } else if (database.id === 'mongodb') {
+                endpoint = 'http://localhost:8000/api/test-connection/mongodb'
+                requestBody = {
+                    connectionString: formData.connectionString,
+                    username: formData.username,
+                    password: formData.password,
+                    database: 'admin' // Default to admin for connection testing
+                }
             }
 
             if (endpoint) {
@@ -250,13 +270,7 @@ function ConnectionForm({ database, onBack, onConnect }) {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            host: formData.host,
-                            port: parseInt(formData.port) || (database.id === 'mysql' ? 3306 : 5432),
-                            database: formData.database,
-                            user: formData.user,
-                            password: formData.password,
-                        }),
+                        body: JSON.stringify(requestBody),
                         signal: controller.signal
                     })
 
@@ -315,7 +329,12 @@ function ConnectionForm({ database, onBack, onConnect }) {
     }
 
     const handleNavigateToWorkspace = () => {
-        onConnect(database, formData)
+        const finalFormData = { ...formData }
+        // For MongoDB, connection is cluster-wide but backend expects 'database' field
+        if (database.id === 'mongodb') {
+            finalFormData.database = 'admin'
+        }
+        onConnect(database, finalFormData)
     }
 
     return (
@@ -387,114 +406,123 @@ function ConnectionForm({ database, onBack, onConnect }) {
                                 {isInvalid && validation.message && (
                                     <span className="validation-error">{validation.message}</span>
                                 )}
+
+                                {field.helpText && !isInvalid && (
+                                    <span className="field-help-text">{field.helpText}</span>
+                                )}
                             </div>
                         )
                     })}
                 </div>
 
-                <div className="divider-container">
-                    <div className="divider-line"></div>
-                    <span className="divider-text">OR</span>
-                    <div className="divider-line"></div>
-                </div>
+                {/* Only show "Connect via URL" for databases that use individual fields (not MongoDB) */}
+                {!database.usesConnectionString && (
+                    <>
+                        <div className="divider-container">
+                            <div className="divider-line"></div>
+                            <span className="divider-text">OR</span>
+                            <div className="divider-line"></div>
+                        </div>
 
-                <div className="connection-string-section">
-                    <label className="form-label">Connect via URL</label>
-                    <input
-                        type="text"
-                        placeholder={`e.g. ${database.id}://user:password@localhost:${database.id === 'mysql' ? '3306' : '5432'}/dbname`}
-                        className="form-input connection-string-input"
-                        value={formData.connectionUrl || ''}
-                        onChange={(e) => {
-                            const val = e.target.value
+                        <div className="connection-string-section">
+                            <label className="form-label">Connect via URL</label>
+                            <input
+                                type="text"
+                                placeholder={`e.g. ${database.id}://user:password@localhost:${database.id === 'mysql' ? '3306' : '5432'}/dbname`}
+                                className="form-input connection-string-input"
+                                value={formData.connectionUrl || ''}
+                                onChange={(e) => {
+                                    const val = e.target.value
 
-                            // Robust parsing for connection strings
-                            // format: protocol://user:pass@host:port/db
-                            try {
-                                // Remove protocol if present
-                                let str = val
-                                if (str.includes('://')) {
-                                    str = str.split('://')[1]
-                                }
+                                    // Robust parsing for connection strings
+                                    // format: protocol://user:pass@host:port/db
+                                    try {
+                                        // Remove protocol if present
+                                        let str = val
+                                        if (str.includes('://')) {
+                                            str = str.split('://')[1]
+                                        }
 
-                                // Split into auth+host and path
-                                // We use the first slash to separate the database path
-                                const firstSlashIndex = str.indexOf('/')
-                                let authHost = str
-                                let path = ''
+                                        // Split into auth+host and path
+                                        // We use the first slash to separate the database path
+                                        const firstSlashIndex = str.indexOf('/')
+                                        let authHost = str
+                                        let path = ''
 
-                                if (firstSlashIndex !== -1) {
-                                    authHost = str.substring(0, firstSlashIndex)
-                                    path = str.substring(firstSlashIndex + 1)
-                                }
+                                        if (firstSlashIndex !== -1) {
+                                            authHost = str.substring(0, firstSlashIndex)
+                                            path = str.substring(firstSlashIndex + 1)
+                                        }
 
-                                const databaseName = path ? path.split('?')[0] : ''
+                                        const databaseName = path ? path.split('?')[0] : ''
 
-                                let user = ''
-                                let password = ''
-                                let host = ''
-                                let port = ''
+                                        let user = ''
+                                        let password = ''
+                                        let host = ''
+                                        let port = ''
 
-                                if (authHost.includes('@')) {
-                                    // Use lastIndexOf to handle @ in password
-                                    const lastAtIndex = authHost.lastIndexOf('@')
-                                    const auth = authHost.substring(0, lastAtIndex)
-                                    const hostPort = authHost.substring(lastAtIndex + 1)
+                                        if (authHost.includes('@')) {
+                                            // Use lastIndexOf to handle @ in password
+                                            const lastAtIndex = authHost.lastIndexOf('@')
+                                            const auth = authHost.substring(0, lastAtIndex)
+                                            const hostPort = authHost.substring(lastAtIndex + 1)
 
-                                    // Split user:pass on the FIRST colon to allow colons in password
-                                    const firstColonIndex = auth.indexOf(':')
-                                    if (firstColonIndex !== -1) {
-                                        user = auth.substring(0, firstColonIndex)
-                                        password = auth.substring(firstColonIndex + 1)
-                                    } else {
-                                        user = auth
+                                            // Split user:pass on the FIRST colon to allow colons in password
+                                            const firstColonIndex = auth.indexOf(':')
+                                            if (firstColonIndex !== -1) {
+                                                user = auth.substring(0, firstColonIndex)
+                                                password = auth.substring(firstColonIndex + 1)
+                                            } else {
+                                                user = auth
+                                            }
+
+                                            // Split host:port on the LAST colon
+                                            const lastColonIndex = hostPort.lastIndexOf(':')
+                                            if (lastColonIndex !== -1) {
+                                                host = hostPort.substring(0, lastColonIndex)
+                                                port = hostPort.substring(lastColonIndex + 1)
+                                            } else {
+                                                host = hostPort
+                                            }
+                                        } else {
+                                            // No auth provided, just host:port
+                                            const lastColonIndex = authHost.lastIndexOf(':')
+                                            if (lastColonIndex !== -1) {
+                                                host = authHost.substring(0, lastColonIndex)
+                                                port = authHost.substring(lastColonIndex + 1)
+                                            } else {
+                                                host = authHost
+                                            }
+                                        }
+
+                                        const newFormData = { ...formData, connectionUrl: val }
+                                        if (host) newFormData.host = host
+                                        if (port) newFormData.port = port
+                                        if (user) newFormData.user = user
+                                        if (password) newFormData.password = password
+                                        if (databaseName) newFormData.database = databaseName
+
+                                        setFormData(newFormData)
+
+                                        // Update validation state
+                                        Object.keys(newFormData).forEach(key => {
+                                            if (newFormData[key]) {
+                                                const validation = validateField(key, newFormData[key])
+                                                setValidationState(prev => ({
+                                                    ...prev,
+                                                    [key]: validation
+                                                }))
+                                            }
+                                        })
+
+                                    } catch (err) {
+                                        // Ignore parsing errors while typing
                                     }
-
-                                    // Split host:port on the LAST colon
-                                    const lastColonIndex = hostPort.lastIndexOf(':')
-                                    if (lastColonIndex !== -1) {
-                                        host = hostPort.substring(0, lastColonIndex)
-                                        port = hostPort.substring(lastColonIndex + 1)
-                                    } else {
-                                        host = hostPort
-                                    }
-                                } else {
-                                    // No auth provided, just host:port
-                                    const lastColonIndex = authHost.lastIndexOf(':')
-                                    if (lastColonIndex !== -1) {
-                                        host = authHost.substring(0, lastColonIndex)
-                                        port = authHost.substring(lastColonIndex + 1)
-                                    } else {
-                                        host = authHost
-                                    }
-                                }
-
-                                const newFormData = { ...formData, connectionUrl: val }
-                                if (host) newFormData.host = host
-                                if (port) newFormData.port = port
-                                if (user) newFormData.user = user
-                                if (password) newFormData.password = password
-                                if (databaseName) newFormData.database = databaseName
-
-                                setFormData(newFormData)
-
-                                // Update validation state
-                                Object.keys(newFormData).forEach(key => {
-                                    if (newFormData[key]) {
-                                        const validation = validateField(key, newFormData[key])
-                                        setValidationState(prev => ({
-                                            ...prev,
-                                            [key]: validation
-                                        }))
-                                    }
-                                })
-
-                            } catch (err) {
-                                // Ignore parsing errors while typing
-                            }
-                        }}
-                    />
-                </div>
+                                }}
+                            />
+                        </div>
+                    </>
+                )}
 
                 <Box className="form-actions">
                     <Button
