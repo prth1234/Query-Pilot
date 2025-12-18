@@ -4,7 +4,6 @@ import { CodeIcon, BookIcon } from '@primer/octicons-react'
 import QueryEditor from './QueryEditor'
 import ResultsTable from './ResultsTable'
 import NotebookView from './NotebookView'
-import MagicReveal from './MagicReveal'
 import './Workspace.css'
 
 function Workspace({ database, connectionDetails, onDisconnect }) {
@@ -175,107 +174,105 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
     }, [onDisconnect]);
 
     return (
-        <MagicReveal>
-            <Box className="workspace-container">
-                <div className="workspace-header">
-                    <div className="header-left">
-                        <div className="status-badge">
-                            <div className="status-dot"></div>
-                            <span>Connected</span>
-                        </div>
-                        <h1 className="workspace-title">SQL Warehouse</h1>
-                        <div className="workspace-subtitle">
-                            <span className="db-type">{database?.name || 'Database'}</span>
-                            <span className="separator">•</span>
-                            <span className="db-name">{connectionDetails?.database || 'No Database'}</span>
-                        </div>
+        <Box className="workspace-container">
+            <div className="workspace-header">
+                <div className="header-left">
+                    <div className="status-badge">
+                        <div className="status-dot"></div>
+                        <span>Connected</span>
                     </div>
-
-                    <div className="view-toggle-wrapper">
-                        <div className="view-toggle-container">
-                            <button
-                                className={`view-toggle-button ${viewMode === 'editor' ? 'active' : ''}`}
-                                onClick={() => setViewMode('editor')}
-                            >
-                                <CodeIcon size={16} />
-                                <span>Editor</span>
-                            </button>
-                            <button
-                                className={`view-toggle-button ${viewMode === 'notebook' ? 'active' : ''}`}
-                                onClick={() => setViewMode('notebook')}
-                            >
-                                <BookIcon size={16} />
-                                <span>Notebook</span>
-                            </button>
-                        </div>
+                    <h1 className="workspace-title">{database?.category === 'NoSQL' ? 'NoSQL Warehouse' : 'SQL Warehouse'}</h1>
+                    <div className="workspace-subtitle">
+                        <span className="db-type">{database?.name || 'Database'}</span>
+                        <span className="separator">•</span>
+                        <span className="db-name">{connectionDetails?.database || 'No Database'}</span>
                     </div>
+                </div>
 
-                    <div className="header-right">
+                <div className="view-toggle-wrapper">
+                    <div className="view-toggle-container">
                         <button
-                            className="disconnect-button"
-                            onClick={handleDisconnect}
-                            title="Disconnect"
+                            className={`view-toggle-button ${viewMode === 'editor' ? 'active' : ''}`}
+                            onClick={() => setViewMode('editor')}
                         >
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-                                <path d="M4 4L12 12M12 4L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                            </svg>
+                            <CodeIcon size={16} />
+                            <span>Editor</span>
+                        </button>
+                        <button
+                            className={`view-toggle-button ${viewMode === 'notebook' ? 'active' : ''}`}
+                            onClick={() => setViewMode('notebook')}
+                        >
+                            <BookIcon size={16} />
+                            <span>Notebook</span>
                         </button>
                     </div>
                 </div>
 
-                <div className="workspace-content" ref={containerRef}>
-                    {viewMode === 'editor' ? (
-                        <>
-                            <div className="editor-section" style={{ height: `${editorHeight}px` }}>
-                                <QueryEditor
-                                    onExecuteQuery={handleExecuteQuery}
-                                    isExecuting={isExecuting}
-                                    height={editorHeight}
-                                    schema={schema}
-                                    isLoadingSchema={isLoadingSchema}
-                                    importedQuery={importedQuery}
-                                    onQueryImported={() => setImportedQuery(null)}
-                                    queryResults={queryResults}
-                                    queryError={queryError}
-                                    executionTime={executionTime}
-                                />
-                            </div>
-
-                            <div
-                                className={`resizer ${isResizing ? 'resizing' : ''}`}
-                                onMouseDown={handleMouseDown}
-                                ref={resizerRef}
-                            >
-                                <div className="resizer-line"></div>
-                                <div className="resizer-handle">
-                                    <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
-                                        <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                                        <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <div className="results-section">
-                                <ResultsTable
-                                    results={queryResults}
-                                    error={queryError}
-                                    isLoading={isExecuting}
-                                    executionTime={executionTime}
-                                />
-                            </div>
-                        </>
-                    ) : (
-                        <NotebookView
-                            onExecuteQuery={handleExecuteQuery}
-                            schema={schema}
-                            connectionDetails={connectionDetails}
-                            database={database}
-                            onImportToEditor={handleImportFromNotebook}
-                        />
-                    )}
+                <div className="header-right">
+                    <button
+                        className="disconnect-button"
+                        onClick={handleDisconnect}
+                        title="Disconnect"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+                            <path d="M4 4L12 12M12 4L4 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                        </svg>
+                    </button>
                 </div>
-            </Box>
-        </MagicReveal>
+            </div>
+
+            <div className="workspace-content" ref={containerRef}>
+                {viewMode === 'editor' ? (
+                    <>
+                        <div className="editor-section" style={{ height: `${editorHeight}px` }}>
+                            <QueryEditor
+                                onExecuteQuery={handleExecuteQuery}
+                                isExecuting={isExecuting}
+                                height={editorHeight}
+                                schema={schema}
+                                isLoadingSchema={isLoadingSchema}
+                                importedQuery={importedQuery}
+                                onQueryImported={() => setImportedQuery(null)}
+                                queryResults={queryResults}
+                                queryError={queryError}
+                                executionTime={executionTime}
+                            />
+                        </div>
+
+                        <div
+                            className={`resizer ${isResizing ? 'resizing' : ''}`}
+                            onMouseDown={handleMouseDown}
+                            ref={resizerRef}
+                        >
+                            <div className="resizer-line"></div>
+                            <div className="resizer-handle">
+                                <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
+                                    <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                    <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div className="results-section">
+                            <ResultsTable
+                                results={queryResults}
+                                error={queryError}
+                                isLoading={isExecuting}
+                                executionTime={executionTime}
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <NotebookView
+                        onExecuteQuery={handleExecuteQuery}
+                        schema={schema}
+                        connectionDetails={connectionDetails}
+                        database={database}
+                        onImportToEditor={handleImportFromNotebook}
+                    />
+                )}
+            </div>
+        </Box>
     )
 }
 

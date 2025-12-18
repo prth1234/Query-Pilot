@@ -293,7 +293,7 @@ function QueryCell({
                 />
             </div>
 
-            {cell.results && (
+            {(cell.results || isExecuting) && (
                 <>
                     <div
                         className={`cell-resizer ${isResizing && resizeTarget === 'middle' ? 'resizing' : ''}`}
