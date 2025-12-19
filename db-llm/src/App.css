@@ -1,7 +1,7 @@
 /* App Container */
 .app-container {
   min-height: 100vh;
-  background: #0d1117;
+  background: var(--bg-canvas);
   opacity: 0;
   transition: opacity 0.8s ease-in;
 }
@@ -20,12 +20,12 @@
 .typewriter-heading {
   font-size: 56px !important;
   font-weight: 700 !important;
-  color: #ffffff !important;
+  color: var(--fg-default) !important;
   letter-spacing: -0.02em;
 }
 
 .cursor {
-  color: #58a6ff;
+  color: var(--accent-fg);
   animation: blink 1s step-end infinite;
 }
 
@@ -75,9 +75,9 @@
 
 /* Database Card */
 .database-card {
-  background: transparent;
-  /* Transparent background */
-  border: 1px solid #30363d;
+  background: var(--bg-canvas);
+  border-bottom: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
@@ -90,23 +90,23 @@
 }
 
 .database-card:hover {
-  border-color: #58a6ff;
-  /* background: rgba(255, 255, 255, 0.03); */
+  border-color: var(--accent-fg);
+  background: linear-gradient(135deg, var(--bg-canvas) 0%, var(--bg-canvas-subtle) 100%);
   /* Subtle hover effect */
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.1);
+  box-shadow: var(--shadow-medium);
 }
 
 .database-card.coming-soon {
   background: transparent;
-  border-color: #21262d;
+  border-color: var(--border-muted);
   opacity: 0.6;
 }
 
 .database-card.coming-soon:hover {
   transform: none;
-  border-color: #21262d;
-  background: #0d1117;
+  border-color: var(--border-muted);
+  background: var(--bg-canvas);
   box-shadow: none;
 }
 
@@ -123,10 +123,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  /* Transparent background */
-  border-radius: 6px;
-  padding: 0;
+  background-color: var(--bg-canvas-subtle);
+  border-radius: 4px;
+  color: var(--fg-muted);
   /* Remove padding to maximize logo size */
   flex-shrink: 0;
 }
@@ -144,7 +143,7 @@
 
 /* Database Name */
 .db-name {
-  color: #ffffff !important;
+  color: var(--fg-default) !important;
   font-weight: 600 !important;
   /* Bolder */
   margin: 0 !important;
@@ -158,7 +157,7 @@
 
 /* Database Category */
 .db-category {
-  color: #58a6ff !important;
+  color: var(--accent-fg) !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600 !important;
@@ -168,7 +167,7 @@
 
 /* Database Description */
 .db-description {
-  color: #8b949e !important;
+  color: var(--fg-muted) !important;
   text-align: center;
   line-height: 1.5;
   font-size: 13px !important;
@@ -177,14 +176,15 @@
 /* Coming Soon Badge */
 .coming-soon-badge {
   margin-left: auto;
-  background: #238636;
-  color: #ffffff !important;
+  background: var(--success-fg);
+  box-shadow: 0 0 6px var(--success-muted);
+  color: var(--fg-on-emphasis) !important;
   padding: 2px 8px;
   border-radius: 12px;
 }
 
 .coming-soon-badge span {
-  color: #ffffff !important;
+  color: var(--success-fg);
   font-size: 10px !important;
   font-weight: 700 !important;
   letter-spacing: 0.5px;

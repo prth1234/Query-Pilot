@@ -102,6 +102,9 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
         }
     }, [settings])
 
+    // Error state management
+    const [isErrorExpanded, setIsErrorExpanded] = useState(false)
+
     if (isLoading) {
         return (
             <Box className="results-container loading">
@@ -114,16 +117,55 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
     }
 
     if (error) {
+        const errorLines = error.split('\n')
+        const isLongError = errorLines.length > 2
+        const isVeryLongError = errorLines.length > 6
+
+        const downloadErrorLog = () => {
+            const blob = new Blob([error], { type: 'text/plain' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `query_error_${Date.now()}.log`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+        }
+
         return (
             <Box className="results-container error">
                 <div className="error-state">
                     <XCircleIcon size={48} className="error-icon" />
                     <h3 className="error-title">Query Failed</h3>
-                    <p className="error-message">{error}</p>
+                    <div className="error-message-container">
+                        <p className={`error-message ${!isErrorExpanded ? 'truncated' : ''}`}>
+                            {isErrorExpanded ? error : errorLines.slice(0, 2).join('\n')}
+                        </p>
+                        {isLongError && (
+                            <div className="error-actions">
+                                <button
+                                    className="error-toggle-button"
+                                    onClick={() => setIsErrorExpanded(!isErrorExpanded)}
+                                >
+                                    {isErrorExpanded ? 'Show Less' : 'Read More'}
+                                </button>
+                                {isVeryLongError && (
+                                    <button
+                                        className="error-download-button"
+                                        onClick={downloadErrorLog}
+                                    >
+                                        <DownloadIcon size={14} />
+                                        <span>Download Error Log</span>
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </Box>
         )
-    }
+    } // End if (error)
 
     if (!results) {
         return (
@@ -140,6 +182,8 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
     }
 
     const { columns, rows } = results
+
+
 
     // Apply global filter
     let filteredRows = rows.filter(row => {
@@ -484,47 +528,12 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                             <DownloadIcon size={16} />
                         </button>
                         {showExportMenu && (
-                            <div className="export-menu" style={{
-                                position: 'absolute',
-                                right: 0,
-                                top: '100%',
-                                marginTop: '8px',
-                                background: '#1c1c1e',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '8px',
-                                padding: '8px',
-                                minWidth: '180px',
-                                zIndex: 1000,
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)'
-                            }}>
-                                <div style={{
-                                    fontSize: '11px',
-                                    fontWeight: '600',
-                                    color: '#8b949e',
-                                    padding: '4px 8px',
-                                    marginBottom: '4px',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px'
-                                }}>Export Results</div>
+                            <div className="export-menu">
+                                <div className="export-menu-header">Export Results</div>
 
                                 <button
                                     onClick={exportAsCSV}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
                                     <FileIcon size={14} />
                                     <span>Download CSV</span>
@@ -532,51 +541,17 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
                                 <button
                                     onClick={exportAsPDF}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
                                     <FileIcon size={14} />
                                     <span>Download PDF</span>
                                 </button>
 
-                                <div style={{
-                                    height: '1px',
-                                    background: 'rgba(255, 255, 255, 0.1)',
-                                    margin: '4px 0'
-                                }}></div>
+                                <div className="export-menu-divider"></div>
 
                                 <button
                                     onClick={copyAsCSV}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
                                     <CopyIcon size={14} />
                                     <span>Copy as CSV</span>
@@ -584,22 +559,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
                                 <button
                                     onClick={copyAsJSON}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
                                     <CopyIcon size={14} />
                                     <span>Copy as JSON</span>

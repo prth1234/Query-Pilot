@@ -6,7 +6,7 @@ import ResultsTable from './ResultsTable'
 import NotebookView from './NotebookView'
 import './Workspace.css'
 
-function Workspace({ database, connectionDetails, onDisconnect }) {
+function Workspace({ database, connectionDetails, onDisconnect, theme }) {
     const [viewMode, setViewMode] = useState(() => localStorage.getItem('viewMode') || 'editor') // 'editor' or 'notebook'
 
     useEffect(() => {
@@ -236,6 +236,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                                 queryResults={queryResults}
                                 queryError={queryError}
                                 executionTime={executionTime}
+                                theme={theme}
                             />
                         </div>
 
@@ -269,6 +270,7 @@ function Workspace({ database, connectionDetails, onDisconnect }) {
                         connectionDetails={connectionDetails}
                         database={database}
                         onImportToEditor={handleImportFromNotebook}
+                        theme={theme}
                     />
                 )}
             </div>

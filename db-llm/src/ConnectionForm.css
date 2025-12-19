@@ -5,10 +5,10 @@
     margin-left: 20%;
     padding: 32px 40px;
     animation: slideIn 0.4s ease-out;
-    border: 1px solid #30363d;
+    border: 1px solid var(--border-default);
     border-radius: 12px;
     background: transparent;
-    box-shadow: 0 0 0 1px rgba(48, 54, 61, 0.5);
+    box-shadow: 0 0 0 1px var(--border-subtle);
     margin-top: 5vh;
     margin-bottom: 5vh;
 }
@@ -37,18 +37,18 @@
     align-items: center;
     justify-content: center;
     background: transparent !important;
-    border: 1px solid #30363d !important;
-    color: #8b949e !important;
+    border: 1px solid var(--border-default) !important;
+    color: var(--fg-muted) !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     box-shadow: none;
 }
 
 .back-button:hover {
-    border-color: #58a6ff !important;
-    color: #58a6ff !important;
+    border-color: var(--accent-fg) !important;
+    color: var(--accent-fg) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(88, 166, 255, 0.1) !important;
+    box-shadow: 0 4px 12px var(--accent-muted) !important;
 }
 
 .back-button svg {
@@ -76,7 +76,7 @@
 .db-logo-large-container {
     width: 64px;
     height: 64px;
-    background: #161b22;
+    background: var(--bg-card);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -99,7 +99,7 @@
 }
 
 .form-subtitle {
-    color: #8b949e !important;
+    color: var(--fg-muted) !important;
     text-align: left;
     font-size: 14px !important;
 }
@@ -135,9 +135,9 @@
 /* Form Fields - Native Inputs */
 input.form-input,
 textarea.form-textarea {
-    background: #0d1117 !important;
-    border: 1px solid #30363d !important;
-    color: #ffffff !important;
+    background: var(--bg-canvas) !important;
+    border: 1px solid var(--border-default) !important;
+    color: var(--fg-default) !important;
     height: 48px !important;
     font-size: 16px !important;
     width: 100% !important;
@@ -164,15 +164,15 @@ textarea.form-textarea {
 /* Success State - Only green border */
 input.form-input.success,
 textarea.form-textarea.success {
-    border-color: #238636 !important;
-    box-shadow: 0 0 0 2px rgba(35, 134, 54, 0.15) !important;
+    border-color: var(--success-emphasis) !important;
+    box-shadow: 0 0 0 2px var(--success-muted) !important;
 }
 
 /* Error State - Only red border */
 input.form-input.error,
 textarea.form-textarea.error {
-    border-color: #f85149 !important;
-    box-shadow: 0 0 0 2px rgba(248, 81, 73, 0.15) !important;
+    border-color: var(--danger-fg) !important;
+    box-shadow: 0 0 0 2px var(--danger-muted) !important;
     animation: shake 0.3s ease;
 }
 
@@ -200,8 +200,8 @@ textarea.form-textarea:focus {
 /* Focus states - don't override error/success colors */
 input.form-input:focus:not(.error):not(.success),
 textarea.form-textarea:focus:not(.error):not(.success) {
-    border-color: #58a6ff !important;
-    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.15) !important;
+    border-color: var(--accent-fg) !important;
+    box-shadow: 0 0 0 2px var(--accent-muted) !important;
 }
 
 /* Hide number input spinners */
@@ -221,16 +221,46 @@ input[type=number] {
     position: absolute;
     right: 16px;
     top: 50%;
-    transform: translateY(-50%);
+    margin-top: -9px;
+    /* Center by half height instead of transform */
     width: 18px;
     height: 18px;
-    background: #238636;
+    background: var(--success-emphasis);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     animation: scaleIn 0.2s ease-out;
+}
+
+/* For textarea, adjust checkmark position */
+.form-textarea~.validation-checkmark {
+    top: 32px;
+    margin-top: 0;
+    transform: none;
+}
+
+@keyframes scaleIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.validation-checkmark svg {
+    fill: var(--fg-on-emphasis);
+    width: 11px;
+    /* Slightly larger */
+    height: 11px;
+    stroke: var(--fg-on-emphasis);
+    /* Make it bolder */
+    stroke-width: 1px;
 }
 
 /* Divider */
@@ -244,12 +274,12 @@ input[type=number] {
 .divider-line {
     flex-grow: 1;
     height: 1px;
-    background-color: #30363d;
+    background-color: var(--border-default);
 }
 
 .divider-text {
     padding: 0 12px;
-    color: #8b949e;
+    color: var(--fg-muted);
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -266,34 +296,10 @@ input[type=number] {
     font-size: 13px;
 }
 
-@keyframes scaleIn {
-    0% {
-        opacity: 0;
-        transform: translateY(-50%) scale(0.5);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(-50%) scale(1);
-    }
-}
-
-.validation-checkmark svg {
-    fill: #ffffff;
-    width: 10px;
-    height: 10px;
-}
-
-/* For textarea, adjust checkmark position */
-.form-textarea~.validation-checkmark {
-    top: 32px;
-    transform: translateY(0);
-}
-
 /* Validation Error Message */
 .validation-error {
     display: block;
-    color: #f85149;
+    color: var(--danger-fg);
     font-size: 13px;
     margin-top: 6px;
     animation: fadeIn 0.3s ease;
@@ -314,21 +320,21 @@ input[type=number] {
 /* Label Styling */
 .form-label {
     display: block;
-    color: #ffffff;
+    color: var(--fg-default);
     font-weight: 600;
     font-size: 14px;
     margin-bottom: 4px;
 }
 
 .required {
-    color: #f85149;
+    color: var(--danger-fg);
     margin-left: 4px;
 }
 
 /* Help Text */
 .field-help-text {
     display: block;
-    color: #8b949e;
+    color: var(--fg-muted);
     font-size: 13px;
     margin-top: 6px;
     line-height: 1.5;
@@ -338,8 +344,8 @@ input[type=number] {
 .test-progress {
     margin: 32px 0;
     padding: 24px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid #30363d;
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
     animation: slideDown 0.4s ease-out;
 }
@@ -373,7 +379,7 @@ input[type=number] {
 }
 
 .test-step.active {
-    background: rgba(88, 166, 255, 0.05);
+    background: var(--accent-muted);
     opacity: 1;
 }
 
@@ -392,30 +398,30 @@ input[type=number] {
 }
 
 .test-step.active .step-icon {
-    background: #238636;
+    background: var(--success-emphasis);
 }
 
 .test-step.completed .step-icon {
-    background: #238636;
+    background: var(--success-emphasis);
 }
 
 .test-step.completed .step-icon svg {
-    fill: #ffffff;
+    fill: var(--fg-on-emphasis);
 }
 
 .step-number {
-    color: #8b949e;
+    color: var(--fg-muted);
     font-size: 12px;
     font-weight: 600;
 }
 
 .step-label {
-    color: #c9d1d9;
+    color: var(--fg-default);
     font-size: 14px;
 }
 
 .test-step.active .step-label {
-    color: #ffffff;
+    color: var(--fg-default);
     font-weight: 500;
 }
 
@@ -423,7 +429,7 @@ input[type=number] {
 .spinner {
     width: 14px;
     height: 14px;
-    border: 2px solid #ffffff;
+    border: 2px solid var(--fg-default);
     border-top-color: transparent;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -446,8 +452,8 @@ input[type=number] {
 
 /* Connect Button */
 .connect-button {
-    background-color: #238636 !important;
-    color: #ffffff !important;
+    background-color: var(--success-emphasis) !important;
+    color: var(--fg-on-emphasis) !important;
     border: 1px solid rgba(240, 246, 252, 0.1) !important;
     font-weight: 600 !important;
     padding: 0 24px !important;
@@ -456,23 +462,23 @@ input[type=number] {
 }
 
 .connect-button:hover:not(:disabled) {
-    background-color: #2ea043 !important;
+    background-color: var(--success-emphasis) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(35, 134, 54, 0.2);
+    box-shadow: 0 4px 12px var(--success-muted);
 }
 
 .connect-button:disabled {
-    background-color: #238636 !important;
+    background-color: var(--success-emphasis) !important;
     opacity: 0.7;
     cursor: not-allowed;
 }
 
 .cancel-button {
-    color: #c9d1d9 !important;
+    color: var(--fg-default) !important;
 }
 
 .cancel-button:hover {
-    color: #58a6ff !important;
+    color: var(--accent-fg) !important;
 }
 
 /* Form Footer */
@@ -483,7 +489,7 @@ input[type=number] {
 }
 
 .form-footer span {
-    color: #8b949e !important;
+    color: var(--fg-muted) !important;
     font-size: 12px !important;
 }
 

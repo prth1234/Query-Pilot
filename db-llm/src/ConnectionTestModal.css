@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(1, 4, 9, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -29,7 +29,20 @@
     position: relative;
     width: 90%;
     max-width: 600px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
     animation: modalSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Removed overflow: hidden so no clipping happens if we wanted negative margins, but fine to keep logic simple */
+}
+
+.modal-content {
+    padding: 32px;
+}
+
+/* Force header text to white */
+.modal-header h2 {
+    color: white !important;
 }
 
 @keyframes modalSlideIn {
@@ -44,7 +57,10 @@
     }
 }
 
-/* ... (Genie effect hidden) ... */
+/* Genie effect hidden */
+.genie-effect {
+    display: none;
+}
 
 /* Timeline Step */
 .timeline-step {
@@ -53,7 +69,6 @@
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 24px;
-    /* Ultra smooth slide in, no bounce */
     animation: slideInStep 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -61,7 +76,6 @@
     from {
         opacity: 0;
         transform: translateY(10px);
-        /* Changed from translateX for subtler effect */
     }
 
     to {
@@ -77,12 +91,12 @@
     top: 32px;
     width: 2px;
     height: calc(100% + 24px);
-    background: #21262d;
+    background: rgba(255, 255, 255, 0.2);
     transition: background 0.4s ease;
 }
 
 .timeline-connector.active {
-    background: linear-gradient(to bottom, #238636, #21262d);
+    background: linear-gradient(to bottom, var(--success-emphasis), rgba(255, 255, 255, 0.2));
     animation: connectorGrow 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -107,26 +121,24 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    background: #21262d;
-    border: 2px solid #30363d;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
     position: relative;
     z-index: 1;
     transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .timeline-step.in-progress .timeline-icon {
-    background: #1f6feb;
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.1);
-    /* Subtle pulse */
+    background: var(--accent-emphasis);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 4px var(--accent-muted);
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .timeline-step.completed .timeline-icon {
-    background: #238636;
-    border-color: #2ea043;
-    box-shadow: 0 0 0 4px rgba(35, 134, 54, 0.1);
-    /* Smooth scale, no overshoot */
+    background: var(--success-emphasis);
+    border-color: var(--success-emphasis);
+    box-shadow: 0 0 0 4px var(--success-muted);
     animation: successScale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -143,9 +155,9 @@
 }
 
 .timeline-step.failed .timeline-icon {
-    background: #da3633;
-    border-color: #f85149;
-    box-shadow: 0 0 0 4px rgba(248, 81, 73, 0.1);
+    background: var(--danger-emphasis);
+    border-color: var(--danger-fg);
+    box-shadow: 0 0 0 4px var(--danger-muted);
     animation: errorShake 0.4s ease;
 }
 
@@ -166,14 +178,14 @@
 }
 
 .timeline-icon svg {
-    color: #ffffff;
+    color: white;
 }
 
 /* Spinner Small */
 .spinner-small {
     width: 16px;
     height: 16px;
-    border: 2px solid #ffffff;
+    border: 2px solid white;
     border-top-color: transparent;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -194,43 +206,45 @@
 .step-label {
     font-size: 15px;
     font-weight: 500;
-    color: #c9d1d9;
+    color: rgba(255, 255, 255, 0.7);
     margin-bottom: 4px;
 }
 
 .timeline-step.in-progress .step-label {
-    color: #ffffff;
+    color: white;
+    font-weight: 600;
 }
 
 .step-error {
     font-size: 13px;
-    color: #f85149;
+    color: white;
     margin-top: 4px;
     padding: 8px 12px;
-    background: rgba(248, 81, 73, 0.1);
-    border-left: 2px solid #f85149;
+    background: var(--danger-emphasis);
+    border-left: 2px solid white;
     border-radius: 4px;
     animation: fadeIn 0.3s ease;
 }
 
 .step-info {
     font-size: 13px;
-    color: #8b949e;
+    color: rgba(255, 255, 255, 0.6);
     margin-top: 4px;
 }
 
 .close-button:hover {
-    background: #da3633;
+    background: var(--danger-emphasis);
     transform: scale(1.1);
-    color: #ffffff;
+    color: var(--fg-on-emphasis);
 }
 
 /* Result Section */
 .result-section {
-    padding: 32px;
-    border-top: 1px solid #21262d;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
     animation: fadeInUp 0.5s ease-out;
+    margin-top: 32px;
 }
 
 @keyframes fadeInUp {
@@ -267,31 +281,32 @@
 }
 
 .result-section.success .result-icon {
-    background: rgba(35, 134, 54, 0.15);
-    color: #2ea043;
+    background: var(--success-muted);
+    color: var(--success-fg);
 }
 
 .result-section.error .result-icon {
-    background: rgba(248, 81, 73, 0.15);
-    color: #f85149;
+    background: var(--danger-muted);
+    color: var(--danger-fg);
 }
 
 .result-title {
     font-size: 20px;
     font-weight: 600;
     margin: 0 0 12px;
+    color: white;
 }
 
 .result-section.success .result-title {
-    color: #2ea043;
+    color: var(--success-fg);
 }
 
 .result-section.error .result-title {
-    color: #f85149;
+    color: var(--danger-fg);
 }
 
 .result-message {
-    color: #8b949e;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     line-height: 1.6;
     margin: 0 0 24px;
@@ -313,45 +328,23 @@
 }
 
 .action-button.primary {
-    background: #238636 !important;
+    background: var(--success-emphasis) !important;
     border-color: rgba(240, 246, 252, 0.1) !important;
-    color: #ffffff !important;
+    color: var(--fg-on-emphasis) !important;
 }
 
 .result-section.error .action-button.primary {
-    background: #da3633 !important;
+    background: var(--danger-emphasis) !important;
+    border-color: rgba(240, 246, 252, 0.1) !important;
 }
 
 .action-button.primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+    box-shadow: 0 4px 12px var(--success-muted);
 }
 
 .result-section.error .action-button.primary:hover {
-    box-shadow: 0 4px 12px rgba(248, 81, 73, 0.3);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .modal-container {
-        width: 95%;
-        margin: 20px;
-    }
-
-    .modal-header,
-    .timeline-container,
-    .result-section {
-        padding: 20px;
-    }
-
-    .result-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .action-button {
-        width: 100%;
-    }
+    box-shadow: 0 4px 12px var(--danger-muted);
 }
 
 /* Fallback loader when no detailed steps are available */
@@ -362,20 +355,48 @@
     justify-content: center;
     padding: 36px 20px;
     gap: 12px;
-    color: #c9d1d9;
+    color: white;
 }
 
 .spinner-large {
     width: 48px;
     height: 48px;
-    border: 4px solid #ffffff;
+    border: 4px solid white;
     border-top-color: transparent;
     border-radius: 50%;
     animation: spin 0.9s linear infinite;
-    box-shadow: 0 4px 20px rgba(2,6,23,0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
 .testing-text {
     font-size: 15px;
-    color: #8b949e;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 95%;
+        margin: 20px;
+    }
+
+    .modal-content,
+    .modal-header,
+    .timeline-container,
+    .result-section {
+        padding: 20px;
+    }
+
+    .result-section {
+        margin-top: 20px;
+    }
+
+    .result-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-button {
+        width: 100%;
+    }
 }

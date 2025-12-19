@@ -1,8 +1,8 @@
 /* Query Cell Container */
 .query-cell {
-    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    background: linear-gradient(135deg, var(--bg-canvas) 0%, var(--bg-canvas-subtle) 100%);
     border-radius: 8px;
-    border: 1px solid rgba(110, 118, 129, 0.3);
+    border: 1px solid var(--border-subtle);
     margin-bottom: 16px;
     overflow: visible;
     transition: all 0.2s ease;
@@ -10,8 +10,8 @@
 }
 
 .query-cell:hover {
-    border-color: rgba(110, 118, 129, 0.5);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-default);
+    box-shadow: 0 4px 16px var(--shadow-medium);
 }
 
 /* Cell Header */
@@ -20,8 +20,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 6px 12px;
-    background: rgba(22, 27, 34, 0.8);
-    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-canvas-subtle);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .cell-left-actions {
@@ -38,7 +38,7 @@
 .cell-label {
     font-size: 11px;
     font-weight: 600;
-    color: #7d8590;
+    color: var(--fg-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -54,21 +54,21 @@
     background: transparent;
     border: none;
     border-radius: 4px;
-    color: #238636;
+    color: var(--success-emphasis);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .cell-run-button-icon:hover:not(:disabled) {
-    background: rgba(35, 134, 54, 0.1);
-    color: #2ea043;
+    background: var(--success-muted);
+    color: var(--success-fg);
     transform: scale(1.1);
 }
 
 .cell-run-button-icon:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    color: #7d8590;
+    color: var(--fg-muted);
 }
 
 /* Cell Delete Button */
@@ -82,19 +82,19 @@
     background: transparent;
     border: none;
     border-radius: 4px;
-    color: #7d8590;
+    color: var(--fg-muted);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .cell-delete-button:hover {
-    background: rgba(248, 81, 73, 0.1);
-    color: #f85149;
+    background: var(--danger-muted);
+    color: var(--danger-fg);
 }
 
 /* Cell Editor */
 .cell-editor-wrapper {
-    background: #0d1117;
+    background: var(--bg-canvas);
     min-height: 60px;
 }
 
@@ -127,14 +127,14 @@
 }
 
 .cell-editor .cm-editor {
-    background: #0d1117 !important;
-    color: #e6edf3 !important;
+    background: var(--bg-canvas) !important;
+    color: var(--fg-default) !important;
 }
 
 .cell-editor .cm-gutters {
-    background: #161b22 !important;
-    border-right: 1px solid rgba(110, 118, 129, 0.2) !important;
-    color: #7d8590 !important;
+    background: var(--bg-canvas-subtle) !important;
+    border-right: 1px solid var(--border-subtle) !important;
+    color: var(--fg-muted) !important;
 }
 
 .cell-editor .cm-scroller {
@@ -149,8 +149,8 @@
 .cell-results-wrapper {
     display: flex;
     flex-direction: column;
-    background: #0d1117;
-    border-top: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-canvas);
+    border-top: 1px solid var(--border-subtle);
     position: relative;
     overflow: visible;
 }
@@ -158,7 +158,7 @@
 .cell-results-container {
     flex: 1;
     overflow: visible;
-    background: #0d1117;
+    background: var(--bg-canvas);
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -167,9 +167,9 @@
 /* Resizer */
 .cell-resizer {
     height: 8px;
-    background: #161b22;
-    border-top: 1px solid rgba(110, 118, 129, 0.2);
-    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-canvas-subtle);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
     cursor: row-resize;
     display: flex;
     align-items: center;
@@ -188,29 +188,29 @@
 
 .cell-resizer:hover,
 .cell-resizer.resizing {
-    background: #58a6ff;
+    background: var(--accent-fg);
 }
 
 .cell-resizer.bottom:hover,
 .cell-resizer.bottom.resizing {
-    background: rgba(88, 166, 255, 0.1);
+    background: var(--accent-muted);
 }
 
 .cell-resizer-handle {
     width: 32px;
     height: 4px;
-    background: rgba(110, 118, 129, 0.4);
+    background: var(--border-default);
     border-radius: 2px;
 }
 
 .cell-resizer:hover .cell-resizer-handle,
 .cell-resizer.resizing .cell-resizer-handle {
-    background: white;
+    background: var(--fg-on-emphasis);
 }
 
 .cell-resizer.bottom:hover .cell-resizer-handle,
 .cell-resizer.bottom.resizing .cell-resizer-handle {
-    background: #58a6ff;
+    background: var(--accent-fg);
 }
 
 /* Custom scrollbar for results container */
@@ -220,25 +220,25 @@
 }
 
 .cell-results-container::-webkit-scrollbar-track {
-    background: #0d1117;
+    background: var(--bg-canvas);
 }
 
 .cell-results-container::-webkit-scrollbar-thumb {
-    background: rgba(110, 118, 129, 0.3);
+    background: var(--border-subtle);
     border-radius: 5px;
-    border: 2px solid #0d1117;
+    border: 2px solid var(--bg-canvas);
 }
 
 .cell-results-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(110, 118, 129, 0.5);
+    background: var(--border-default);
 }
 
 /* Query Cell Divider */
 .query-cell {
-    border: 1px solid rgba(110, 118, 129, 0.2);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     overflow: visible;
-    background: #0d1117;
+    background: var(--bg-canvas);
 }
 
 /* Full Screen Mode */
@@ -249,7 +249,7 @@
     width: 100vw;
     height: 100vh;
     z-index: 1000;
-    background: #0d1117;
+    background: var(--bg-canvas);
     border-radius: 0;
     border: none;
     display: flex;
@@ -274,7 +274,7 @@
 .query-cell.fullscreen .cell-results-wrapper {
     height: 40% !important;
     /* Fixed height in fullscreen for results */
-    border-top: 1px solid #30363d;
+    border-top: 1px solid var(--border-default);
 }
 
 /* Cell Action Button (Generic) */
@@ -288,15 +288,15 @@
     background: transparent;
     border: none;
     border-radius: 4px;
-    color: #7d8590;
+    color: var(--fg-muted);
     cursor: pointer;
     transition: all 0.2s ease;
     margin-right: 4px;
 }
 
 .cell-action-button:hover {
-    background: rgba(110, 118, 129, 0.1);
-    color: #e6edf3;
+    background: var(--bg-canvas-subtle);
+    color: var(--fg-default);
 }
 
 /* Cell Error */
@@ -305,9 +305,9 @@
     align-items: flex-start;
     gap: 8px;
     padding: 12px;
-    background: rgba(248, 81, 73, 0.1);
-    border-bottom: 1px solid rgba(248, 81, 73, 0.2);
-    color: #ff7b72;
+    background: var(--danger-muted);
+    border-bottom: 1px solid var(--danger-muted);
+    color: var(--danger-fg);
     font-family: monospace;
     font-size: 12px;
     white-space: pre-wrap;
@@ -360,7 +360,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #238636, #2ea043, #238636, transparent);
+    background: linear-gradient(90deg, transparent, var(--success-emphasis), var(--success-fg), var(--success-emphasis), transparent);
     background-size: 200% 100%;
     animation: runningWave 1.5s linear infinite;
     z-index: 10;
@@ -387,7 +387,7 @@
     padding: 0;
     background: transparent;
     border: none;
-    color: #7d8590;
+    color: var(--fg-muted);
     cursor: pointer;
     transition: all 0.2s;
     border-radius: 4px;
@@ -395,8 +395,8 @@
 }
 
 .collapse-button:hover {
-    background: rgba(110, 118, 129, 0.1);
-    color: #e6edf3;
+    background: var(--bg-canvas-subtle);
+    color: var(--fg-default);
 }
 
 .collapse-button svg {

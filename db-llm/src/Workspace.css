@@ -1,7 +1,7 @@
 .workspace-container {
     height: 100vh;
     /* Fixed height */
-    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    background: linear-gradient(135deg, var(--bg-canvas) 0%, var(--bg-canvas-subtle) 100%);
     display: flex;
     flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
@@ -15,8 +15,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 32px;
-    background: #0d1117;
-    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-canvas);
+    border-bottom: 1px solid var(--border-subtle);
     height: auto;
     min-height: 100px;
     backdrop-filter: blur(10px);
@@ -42,8 +42,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: rgba(35, 134, 54, 0.15);
-    border: 1px solid rgba(35, 134, 54, 0.3);
+    background: var(--success-muted);
+    border: 1px solid var(--success-emphasis);
     padding: 2px 8px;
     border-radius: 12px;
     margin-bottom: 4px;
@@ -53,12 +53,12 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #3fb950;
-    box-shadow: 0 0 6px rgba(63, 185, 80, 0.4);
+    background: var(--success-fg);
+    box-shadow: 0 0 6px var(--success-muted);
 }
 
 .status-badge span {
-    color: #3fb950;
+    color: var(--success-fg);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -68,7 +68,7 @@
 /* Title */
 .workspace-title {
     margin: 0;
-    color: #e6edf3;
+    color: var(--fg-default);
     font-size: 42px;
     font-weight: 600;
     line-height: 1.2;
@@ -81,13 +81,13 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #8b949e;
+    color: var(--fg-muted);
     font-size: 13px;
     margin-top: 2px;
 }
 
 .separator {
-    color: #484f58;
+    color: var(--fg-subtle);
 }
 
 /* View Toggle - Minimal Style with Underline */
@@ -114,7 +114,7 @@
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    color: #7d8590;
+    color: var(--fg-muted);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -123,13 +123,13 @@
 }
 
 .view-toggle-button:hover {
-    color: #e6edf3;
+    color: var(--fg-default);
 }
 
 .view-toggle-button.active {
     background: transparent;
-    color: #e6edf3;
-    border-bottom: 2px solid #58a6ff;
+    color: var(--fg-default);
+    border-bottom: 2px solid var(--accent-fg);
     box-shadow: none;
 }
 
@@ -142,7 +142,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #f85149;
+    background: var(--danger-fg);
     border: none;
     display: flex;
     align-items: center;
@@ -153,7 +153,7 @@
 }
 
 .disconnect-button:hover {
-    background: #ff6b6b;
+    background: var(--danger-emphasis);
     transform: scale(1.08);
 }
 
@@ -201,13 +201,13 @@
 
 .resizer:hover,
 .resizer.resizing {
-    background-color: rgba(88, 166, 255, 0.05);
+    background-color: var(--accent-muted);
 }
 
 .resizer:hover .resizer-handle,
 .resizer.resizing .resizer-handle {
-    background-color: rgba(88, 166, 255, 0.2);
-    color: #58a6ff;
+    background-color: var(--accent-muted);
+    color: var(--accent-fg);
 }
 
 .resizer-line {
@@ -216,7 +216,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(110, 118, 129, 0.2);
+    background: var(--border-subtle);
     pointer-events: none;
 }
 
@@ -225,9 +225,9 @@
     align-items: center;
     justify-content: center;
     padding: 2px 12px;
-    background-color: rgba(110, 118, 129, 0.1);
+    background-color: var(--bg-canvas-subtle);
     border-radius: 4px;
-    color: #7d8590;
+    color: var(--fg-muted);
     transition: all 0.2s ease;
     position: relative;
     z-index: 1;
