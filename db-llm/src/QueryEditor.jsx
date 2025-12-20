@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import { sql } from '@codemirror/lang-sql'
 import { autocompletion } from '@codemirror/autocomplete'
@@ -53,7 +53,7 @@ function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250,
     }, [query])
 
     // Sync editor theme with app theme
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (theme === 'light') {
             const lightTheme = THEMES.find(t => t.value === 'github-light')
             if (lightTheme) setSelectedTheme(lightTheme)

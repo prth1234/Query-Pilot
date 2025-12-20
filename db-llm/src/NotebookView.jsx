@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
 import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
@@ -41,7 +41,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
     })
 
     // Sync editor theme with app theme
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (theme === 'light') {
             const lightTheme = THEMES.find(t => t.value === 'github-light')
             if (lightTheme) setSelectedTheme(lightTheme)
