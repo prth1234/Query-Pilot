@@ -14,10 +14,11 @@ import {
     SortDescIcon,
     GearIcon,
     DownloadIcon,
-    CopyIcon,
-    FileIcon
+    FileIcon,
+    CheckIcon,
+    TableIcon
 } from '@primer/octicons-react'
-import { MdFullscreen, MdFullscreenExit } from "react-icons/md"
+import { MdFullscreen, MdFullscreenExit, MdOutlineContentCopy } from "react-icons/md"
 import TableSettings from './TableSettings'
 import './ResultsTable.css'
 
@@ -61,12 +62,15 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
     })
 
     // Export functionality state
-    const [showExportMenu, setShowExportMenu] = useState(false)
+    const [showDownloadMenu, setShowDownloadMenu] = useState(false)
+    const [showCopyMenu, setShowCopyMenu] = useState(false)
+    const [copySuccess, setCopySuccess] = useState(false)
 
     const rowsPerPage = 300
 
     const settingsRef = useRef(null)
-    const exportMenuRef = useRef(null)
+    const downloadMenuRef = useRef(null)
+    const copyMenuRef = useRef(null)
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -80,18 +84,31 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
         }
     }, [settingsRef])
 
-    // Close export menu on outside click
+    // Close download menu on outside click
     useEffect(() => {
         function handleClickOutside(event) {
-            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
-                setShowExportMenu(false)
+            if (downloadMenuRef.current && !downloadMenuRef.current.contains(event.target)) {
+                setShowDownloadMenu(false)
             }
         }
         document.addEventListener("mousedown", handleClickOutside)
         return () => {
             document.removeEventListener("mousedown", handleClickOutside)
         }
-    }, [exportMenuRef])
+    }, [downloadMenuRef])
+
+    // Close copy menu on outside click
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (copyMenuRef.current && !copyMenuRef.current.contains(event.target)) {
+                setShowCopyMenu(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [copyMenuRef])
 
     // Save settings to localStorage
     useEffect(() => {
@@ -307,7 +324,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-        setShowExportMenu(false)
+        setShowDownloadMenu(false)
     }
 
     // Export as PDF (download)
@@ -353,7 +370,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
             })
 
             doc.save(`query_results_${Date.now()}.pdf`)
-            setShowExportMenu(false)
+            setShowDownloadMenu(false)
         } catch (error) {
             console.error('Error exporting PDF:', error)
             alert('Failed to export PDF. Please try again.')
@@ -400,8 +417,41 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
         const csvContent = csvRows.join('\n')
         navigator.clipboard.writeText(csvContent).then(() => {
-            alert('Copied as CSV to clipboard!')
-            setShowExportMenu(false)
+            setCopySuccess(true)
+            setShowCopyMenu(false)
+            setTimeout(() => setCopySuccess(false), 2000)
+        }).catch(err => {
+            console.error('Failed to copy:', err)
+            alert('Failed to copy to clipboard')
+        })
+    }
+
+    // Copy as Table (TSV)
+    const copyAsTable = () => {
+        if (!results) return
+
+        const { columns, rows } = results
+        const tsvRows = []
+
+        // Add header
+        tsvRows.push(columns.join('\t'))
+
+        // Add data rows
+        filteredRows.forEach(row => {
+            const values = columns.map(col => {
+                const val = row[col]
+                if (val === null || val === undefined) return ''
+                // Replace tabs and newlines with spaces to maintain table structure
+                return String(val).replace(/[\t\n\r]/g, ' ')
+            })
+            tsvRows.push(values.join('\t'))
+        })
+
+        const tsvContent = tsvRows.join('\n')
+        navigator.clipboard.writeText(tsvContent).then(() => {
+            setCopySuccess(true)
+            setShowCopyMenu(false)
+            setTimeout(() => setCopySuccess(false), 2000)
         }).catch(err => {
             console.error('Failed to copy:', err)
             alert('Failed to copy to clipboard')
@@ -517,19 +567,19 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                         )}
                     </div>
 
-                    {/* Export Menu */}
-                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={exportMenuRef}>
+                    {/* Download Menu */}
+                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={downloadMenuRef}>
                         <button
-                            className={`icon-button ${showExportMenu ? 'active' : ''}`}
-                            onClick={() => setShowExportMenu(!showExportMenu)}
-                            title="Export results"
+                            className={`icon-button ${showDownloadMenu ? 'active' : ''}`}
+                            onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                            title="Download results"
                             disabled={!results || filteredRows.length === 0}
                         >
                             <DownloadIcon size={16} />
                         </button>
-                        {showExportMenu && (
+                        {showDownloadMenu && (
                             <div className="export-menu">
-                                <div className="export-menu-header">Export Results</div>
+                                <div className="export-menu-header">Download Results</div>
 
                                 <button
                                     onClick={exportAsCSV}
@@ -546,23 +596,42 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                                     <FileIcon size={14} />
                                     <span>Download PDF</span>
                                 </button>
+                            </div>
+                        )}
+                    </div>
 
-                                <div className="export-menu-divider"></div>
+                    {/* Copy Menu */}
+                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={copyMenuRef}>
+                        <button
+                            className={`icon-button ${showCopyMenu ? 'active' : ''}`}
+                            onClick={() => setShowCopyMenu(!showCopyMenu)}
+                            title="Copy options"
+                            disabled={!results || filteredRows.length === 0}
+                        >
+                            {copySuccess ? (
+                                <CheckIcon size={16} className="success-icon" />
+                            ) : (
+                                <MdOutlineContentCopy size={16} />
+                            )}
+                        </button>
+                        {showCopyMenu && (
+                            <div className="export-menu">
+                                <div className="export-menu-header">Copy Results</div>
 
                                 <button
                                     onClick={copyAsCSV}
                                     className="export-menu-item"
                                 >
-                                    <CopyIcon size={14} />
+                                    <FileIcon size={14} />
                                     <span>Copy as CSV</span>
                                 </button>
 
                                 <button
-                                    onClick={copyAsJSON}
+                                    onClick={copyAsTable}
                                     className="export-menu-item"
                                 >
-                                    <CopyIcon size={14} />
-                                    <span>Copy as JSON</span>
+                                    <TableIcon size={14} />
+                                    <span>Copy as Table</span>
                                 </button>
                             </div>
                         )}

@@ -229,7 +229,6 @@
 
 .global-search:focus-within {
     border-color: #58a6ff;
-    background: rgba(22, 27, 34, 1);
     box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
 }
 
@@ -240,12 +239,14 @@
 
 .global-search-input {
     background: transparent;
-    border: none;
+    border: none !important;
+    outline: none !important;
     color: var(--fg-default);
     font-size: 12px;
-    outline: none;
-    width: 150px;
+    width: 140px;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
 .global-search-input::placeholder {
@@ -673,7 +674,6 @@
 
 .filter-input-wrapper:focus-within {
     border-color: #58a6ff;
-    background: rgba(22, 27, 34, 1);
     box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
 }
 
@@ -685,12 +685,13 @@
 .filter-input {
     width: 100%;
     padding: 2px 4px;
-    background: transparent;
-    border: none;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     color: var(--fg-default);
     font-size: 12px;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-    outline: none;
+    outline: none !important;
 }
 
 .filter-input::placeholder {
