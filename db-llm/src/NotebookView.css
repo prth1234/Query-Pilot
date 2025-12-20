@@ -637,3 +637,97 @@ kbd {
         transform: translateY(0);
     }
 }
+/* Run Button Group - Copied from QueryEditor.css for consistency */
+.run-button-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-right: 8px;
+}
+
+.execute-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px 4px 16px !important;
+    background: rgba(46, 160, 67, 0.1) !important;
+    border: 1px solid var(--success-emphasis) !important;
+    border-radius: 50px 0 0 50px !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    color: var(--success-emphasis) !important;
+    height: 28px;
+    margin-right: -1px; /* Overlap borders */
+    z-index: 1;
+}
+
+.execute-button:hover:not(:disabled) {
+    z-index: 2; /* Bring to front on hover */
+}
+
+.execute-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0 !important;
+    background: rgba(46, 160, 67, 0.1) !important;
+    border: 1px solid var(--success-emphasis) !important;
+    border-radius: 0 50px 50px 0 !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    color: var(--success-emphasis) !important;
+    margin-left: -1px; /* Overlap borders */
+}
+
+.execute-dropdown-trigger svg {
+    color: var(--success-emphasis) !important;
+    fill: var(--success-emphasis) !important;
+}
+
+.execute-button:hover:not(:disabled),
+.execute-dropdown-trigger:hover:not(:disabled) {
+    background: rgba(46, 160, 67, 0.15) !important;
+    border-color: var(--success-fg) !important;
+    color: var(--success-fg) !important;
+    box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2) !important;
+}
+
+.execute-button:hover:not(:disabled) svg,
+.execute-dropdown-trigger:hover:not(:disabled) svg {
+    color: var(--success-fg) !important;
+    fill: var(--success-fg) !important;
+}
+
+.execute-button:active:not(:disabled),
+.execute-dropdown-trigger:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.execute-button:disabled,
+.execute-dropdown-trigger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--border-default) !important;
+    color: var(--fg-muted) !important;
+}
+
+.execute-text {
+    color: currentColor;
+}
+
+.execute-button svg {
+    color: var(--success-emphasis) !important;
+    fill: var(--success-emphasis) !important;
+}
+
+.run-dropdown {
+    width: 160px;
+    right: 0;
+    left: auto;
+}

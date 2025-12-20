@@ -803,33 +803,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                             )}
                         </div>
 
-                        {/* Limit Dropdown */}
-                        <div className="dropdown-wrapper" ref={limitDropdownRef}>
-                            <button
-                                className="notebook-action-button secondary"
-                                onClick={() => setShowLimitDropdown(!showLimitDropdown)}
-                                title="Run Limit"
-                            >
-                                <span>{selectedLimit.label.replace('Run ', '')}</span>
-                                <ChevronDownIcon size={12} />
-                            </button>
-                            {showLimitDropdown && (
-                                <div className="dropdown-menu run-dropdown">
-                                    {RUN_OPTIONS.map((option) => (
-                                        <div
-                                            key={option.value}
-                                            className={`dropdown-item ${selectedLimit.value === option.value ? 'active' : ''}`}
-                                            onClick={() => {
-                                                setSelectedLimit(option)
-                                                setShowLimitDropdown(false)
-                                            }}
-                                        >
-                                            {option.label}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+
                     </div>
 
                     <div className="notebook-divider-vertical"></div>
@@ -874,14 +848,46 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                         <TrashIcon size={12} />
                         Delete All
                     </button>
-                    <button
-                        className="notebook-action-button primary"
-                        onClick={handleRunAll}
-                        title="Run all cells (Shift+Enter in each cell to run individually)"
-                    >
-                        <PlayIcon size={12} />
-                        Run All
-                    </button>
+                    {/* Run All Button Group */}
+                    <div className="run-button-group" ref={limitDropdownRef}>
+                        <button
+                            className="execute-button"
+                            onClick={handleRunAll}
+                            title="Run all cells (Shift+Enter in each cell to run individually)"
+                        >
+                            <PlayIcon size={12} />
+                            <span className="execute-text">
+                                Run All <span style={{ opacity: 0.7, marginLeft: '4px' }}>
+                                    {selectedLimit.value === -1 ? '(All)' : `(${selectedLimit.value})`}
+                                </span>
+                            </span>
+                        </button>
+                        <div className="dropdown-wrapper">
+                            <button
+                                className="execute-dropdown-trigger"
+                                onClick={() => setShowLimitDropdown(!showLimitDropdown)}
+                                title={`Current Limit: ${selectedLimit.label}`}
+                            >
+                                <ChevronDownIcon size={12} />
+                            </button>
+                            {showLimitDropdown && (
+                                <div className="dropdown-menu run-dropdown">
+                                    {RUN_OPTIONS.map((option) => (
+                                        <div
+                                            key={option.value}
+                                            className={`dropdown-item ${selectedLimit.value === option.value ? 'active' : ''}`}
+                                            onClick={() => {
+                                                setSelectedLimit(option)
+                                                setShowLimitDropdown(false)
+                                            }}
+                                        >
+                                            {option.label}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <button
                         className="notebook-action-button add"
                         onClick={handleAddMarkdownCell}
