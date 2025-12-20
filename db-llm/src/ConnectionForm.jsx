@@ -534,7 +534,7 @@ function ConnectionForm({ database, onBack, onConnect }) {
                     >
                         {isTesting ? 'Testing Connection...' : 'Test Connection'}
                     </Button>
-                    <Button variant="invisible" onClick={onBack} type="button" className="cancel-button">
+                    <Button variant="invisible" onClick={onBack} type="button" className="connection-cancel-button">
                         Cancel
                     </Button>
                 </Box>

@@ -473,11 +473,11 @@ input[type=number] {
     cursor: not-allowed;
 }
 
-.cancel-button {
+.connection-cancel-button {
     color: var(--fg-default) !important;
 }
 
-.cancel-button:hover {
+.connection-cancel-button:hover {
     color: var(--accent-fg) !important;
 }
 
