@@ -19,6 +19,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
     })
     const [queryError, setQueryError] = useState(null)
     const [isExecuting, setIsExecuting] = useState(false)
+    const [isConnected, setIsConnected] = useState(true)
     const [executionTime, setExecutionTime] = useState(() => {
         const saved = localStorage.getItem('executionTime')
         return saved ? JSON.parse(saved) : null
@@ -61,9 +62,11 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
 
                 const data = await response.json()
                 setSchema(data)
+                setIsConnected(true)
                 console.log('Schema loaded:', data)
             } catch (error) {
                 console.error('Failed to fetch schema:', error)
+                setIsConnected(false)
             } finally {
                 setIsLoadingSchema(false)
             }
@@ -134,6 +137,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
                 return
             }
             setQueryError(`Connection error: ${error.message} `)
+            setIsConnected(false)
         } finally {
             if (abortControllerRef.current === controller) {
                 setIsExecuting(false)
@@ -204,9 +208,9 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
         <Box className="workspace-container">
             <div className="workspace-header">
                 <div className="header-left">
-                    <div className="status-badge">
+                    <div className={`status-badge ${isConnected ? 'connected' : 'disconnected'}`}>
                         <div className="status-dot"></div>
-                        <span>Connected</span>
+                        <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
                     </div>
                     <h1 className="workspace-title">{database?.category === 'NoSQL' ? 'NoSQL Warehouse' : 'SQL Warehouse'}</h1>
                     <div className="workspace-subtitle">

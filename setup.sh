@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Database LLM - Full Setup Script
-# This script completely resets and reinstalls all dependencies
+# This script completely resets and reinstalls all dependencies for both backend and frontend.
 
 set -e  # Exit on any error
 
@@ -25,25 +25,32 @@ echo ""
 
 cd backend
 
-# Remove existing virtual environment if present
+# 1. DELETE env/venv if it is there
 if [ -d "venv" ]; then
-    echo "🗑️  Removing existing Python virtual environment..."
+    echo "1. 🗑️  Deleting existing virtual environment (venv)..."
     rm -rf venv
-    echo "   ✓ Removed old venv"
+    echo "   ✓ Deleted venv"
+else
+    echo "1. ℹ️  No existing virtual environment found."
 fi
 
-# Create new virtual environment
-echo "📦 Creating new Python virtual environment..."
+# 2. CREATE venv
+echo "2. 📦 Creating new virtual environment..."
 python3 -m venv venv
 echo "   ✓ Created new venv"
 
-# Activate and install dependencies
-echo "📥 Installing Python dependencies..."
+# 3. DOWNLOAD required packages (Setup everything)
+echo "3. 📥 Activate venv and installing requirements..."
 source venv/bin/activate
-pip install --upgrade pip > /dev/null 2>&1
-pip install -r requirements.txt
-echo "   ✓ Installed all Python packages"
+pip install --upgrade pip
+if [ -f "requirements.txt" ]; then
+    pip install -r requirements.txt
+    echo "   ✓ Installed requirements.txt"
+else
+    echo "   ⚠️  requirements.txt not found!"
+fi
 
+# Deactivate venv
 deactivate
 cd "$SCRIPT_DIR"
 
@@ -61,24 +68,19 @@ echo ""
 
 cd db-llm
 
-# Remove existing node_modules if present
+# 1. DELETE node_modules if it is there
 if [ -d "node_modules" ]; then
-    echo "🗑️  Removing existing node_modules..."
+    echo "1. 🗑️  Deleting existing node_modules..."
     rm -rf node_modules
-    echo "   ✓ Removed old node_modules"
+    echo "   ✓ Deleted node_modules"
+else
+    echo "1. ℹ️  No existing node_modules found."
 fi
 
-# Remove package-lock.json to ensure fresh install
-if [ -f "package-lock.json" ]; then
-    echo "🗑️  Removing existing package-lock.json..."
-    rm -f package-lock.json
-    echo "   ✓ Removed old package-lock.json"
-fi
-
-# Install dependencies
-echo "📥 Installing Node.js dependencies..."
+# 2. DOWNLOAD modules again (npm install)
+echo "2. 📥 Installing Node.js dependencies..."
 npm install
-echo "   ✓ Installed all Node.js packages"
+echo "   ✓ Installed node modules"
 
 cd "$SCRIPT_DIR"
 

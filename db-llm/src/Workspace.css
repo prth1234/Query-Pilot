@@ -38,27 +38,53 @@
 }
 
 /* Status Badge */
+/* Status Badge */
 .status-badge {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--success-muted);
-    border: 1px solid var(--success-emphasis);
     padding: 2px 8px;
     border-radius: 12px;
     margin-bottom: 4px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.status-badge.connected {
+    background: var(--success-muted);
+    border: 1px solid var(--success-emphasis);
+}
+
+.status-badge.connected .status-dot {
+    background: var(--success-fg);
+    box-shadow: 0 0 6px var(--success-muted);
+}
+
+.status-badge.connected span {
+    color: var(--success-fg);
+}
+
+.status-badge.disconnected {
+    background: var(--danger-muted);
+    border: 1px solid var(--danger-emphasis);
+}
+
+.status-badge.disconnected .status-dot {
+    background: var(--danger-fg);
+    box-shadow: 0 0 6px var(--danger-muted);
+}
+
+.status-badge.disconnected span {
+    color: var(--danger-fg);
 }
 
 .status-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--success-fg);
-    box-shadow: 0 0 6px var(--success-muted);
 }
 
 .status-badge span {
-    color: var(--success-fg);
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
