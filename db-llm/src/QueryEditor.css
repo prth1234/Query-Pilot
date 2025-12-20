@@ -892,30 +892,29 @@
     margin: 0;
 }
 
-.query-name-wrapper .edit-icon {
-    color: #8b949e;
-    opacity: 0.6;
-    transition: opacity 0.2s, color 0.2s;
-}
-
 .query-name-wrapper:hover .edit-icon {
     opacity: 1;
-    color: #e6edf3;
-    color: #e6edf3;
-    background: #0d1117;
-    border: 1px solid #30363d;
+    color: var(--fg-default);
+}
+
+/* Query name input - matching NotebookView style */
+.query-name-input {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg-default);
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-default);
     border-radius: 4px;
     padding: 2px 6px;
     outline: none;
-    width: auto;
-    min-width: 150px;
-    max-width: 300px;
+    width: 250px;
+    /* Fixed width like NotebookView (which is 300px) but slightly smaller for editor header */
     font-family: inherit;
 }
 
 .query-name-input:focus {
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 3px var(--accent-muted);
 }
 
 /* Query title actions container */
