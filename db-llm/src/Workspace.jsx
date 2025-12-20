@@ -60,6 +60,9 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
                     }),
                 })
 
+                if (!response.ok) {
+                    throw new Error('Failed to fetch schema')
+                }
                 const data = await response.json()
                 setSchema(data)
                 setIsConnected(true)

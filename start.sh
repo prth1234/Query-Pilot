@@ -57,6 +57,13 @@ trap cleanup INT TERM
 # ============================================
 echo "🔧 Starting FastAPI backend..."
 
+# Kill process on port 8000 if it exists
+if lsof -ti:8000 >/dev/null; then
+    echo "⚠️  Port 8000 is occupied. Killing the process..."
+    lsof -ti:8000 | xargs kill -9
+    echo "   ✓ Process killed"
+fi
+
 cd "$SCRIPT_DIR/backend"
 ./venv/bin/python -m uvicorn main:app --reload --port 8000 &
 BACKEND_PID=$!
