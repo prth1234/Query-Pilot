@@ -9,7 +9,7 @@ import './NotebookView.css'
 
 
 
-function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onImportToEditor }) {
+function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onImportToEditor, theme }) {
     const [cells, setCells] = useState(() => {
         // Load cells from localStorage or create default cell
         const saved = localStorage.getItem('notebookCells')
@@ -39,6 +39,21 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         const saved = localStorage.getItem('notebookTheme')
         return THEMES.find(t => t.value === saved) || THEMES[0]
     })
+
+    // Sync editor theme with app theme
+    useEffect(() => {
+        if (theme === 'light') {
+            const lightTheme = THEMES.find(t => t.value === 'github-light')
+            if (lightTheme) setSelectedTheme(lightTheme)
+        } else {
+            // Revert to dark theme if currently on light theme
+            if (selectedTheme.value === 'github-light') {
+                const darkTheme = THEMES.find(t => t.value === 'vscode')
+                if (darkTheme) setSelectedTheme(darkTheme)
+            }
+        }
+    }, [theme])
+
     const [fontSize, setFontSize] = useState(() => {
         return parseInt(localStorage.getItem('notebookFontSize')) || 13
     })
@@ -785,23 +800,23 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                     <div className="notebook-divider-vertical"></div>
 
                     <div className="keyboard-hints" style={{ marginRight: '8px' }}>
-                        <span className="hint" style={{ fontSize: '11px', color: '#8b949e' }}>
+                        <span className="hint" style={{ fontSize: '11px', color: 'var(--fg-muted)' }}>
                             <kbd style={{
-                                background: 'rgba(110, 118, 129, 0.1)',
-                                border: '1px solid rgba(110, 118, 129, 0.2)',
+                                background: 'var(--bg-canvas-subtle)',
+                                border: '1px solid var(--border-subtle)',
                                 borderRadius: '3px',
                                 padding: '2px 4px',
                                 fontFamily: 'monospace',
                                 fontSize: '10px',
-                                color: '#c9d1d9'
+                                color: 'var(--fg-default)'
                             }}>Cmd</kbd> + <kbd style={{
-                                background: 'rgba(110, 118, 129, 0.1)',
-                                border: '1px solid rgba(110, 118, 129, 0.2)',
+                                background: 'var(--bg-canvas-subtle)',
+                                border: '1px solid var(--border-subtle)',
                                 borderRadius: '3px',
                                 padding: '2px 4px',
                                 fontFamily: 'monospace',
                                 fontSize: '10px',
-                                color: '#c9d1d9'
+                                color: 'var(--fg-default)'
                             }}>Enter</kbd> to run
                         </span>
                     </div>

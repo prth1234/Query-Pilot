@@ -7,7 +7,8 @@ import { Box } from '@primer/react-brand'
 import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon, PlusIcon } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
-import { githubDark } from '@uiw/codemirror-theme-github'
+
+import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import { dracula } from '@uiw/codemirror-theme-dracula'
 import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night'
 import { createSQLAutocomplete } from './sqlAutocomplete'
@@ -27,6 +28,7 @@ export const RUN_OPTIONS = [
 export const THEMES = [
     { name: 'VS Code Dark', value: 'vscode', theme: vscodeDark },
     { name: 'GitHub Dark', value: 'github', theme: githubDark },
+    { name: 'GitHub Light', value: 'github-light', theme: githubLight },
     { name: 'Dracula', value: 'dracula', theme: dracula },
     { name: 'Tokyo Night', value: 'tokyo', theme: tokyoNight }
 ]
@@ -40,7 +42,7 @@ export const FONT_FAMILIES = [
     { name: 'Courier New', value: 'courier', family: "'Courier New', monospace" }
 ]
 
-function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported, queryResults, queryError, executionTime }) {
+function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported, queryResults, queryError, executionTime, theme }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
     const [isAiGenerating, setIsAiGenerating] = useState(false)
     const [aiSuggestion, setAiSuggestion] = useState(null)
@@ -48,6 +50,23 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
     useEffect(() => {
         localStorage.setItem('savedQuery', query)
     }, [query])
+
+    // Sync editor theme with app theme
+    useEffect(() => {
+        if (theme === 'light') {
+            const lightTheme = THEMES.find(t => t.value === 'github-light')
+            if (lightTheme) setSelectedTheme(lightTheme)
+        } else {
+            // Default to VS Code Dark if in dark mode, unless already on a dark theme
+            // But for simplicity/consistency, let's revert to a standard dark theme or last saved?
+            // If the current theme is light, switch to default dark.
+            // If it's already a dark theme (vscode, github-dark, dracula, tokyo), keep it.
+            if (selectedTheme.value === 'github-light') {
+                const darkTheme = THEMES.find(t => t.value === 'vscode')
+                if (darkTheme) setSelectedTheme(darkTheme)
+            }
+        }
+    }, [theme]) // Run when app theme changes
 
     // Handle imported query from notebook
     useEffect(() => {
@@ -63,6 +82,7 @@ function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoad
         const saved = parseInt(localStorage.getItem('runLimit'))
         return RUN_OPTIONS.find(o => o.value === saved) || RUN_OPTIONS[0]
     })
+
 
     useEffect(() => {
         localStorage.setItem('runLimit', selectedLimit.value)

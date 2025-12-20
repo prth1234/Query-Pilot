@@ -15,7 +15,7 @@ function MarkdownCell({ cell, onChange, onDelete, isFirst, theme, fontSize, font
         <div className="query-cell markdown-cell">
             <div className="cell-header">
                 <div className="cell-left-actions">
-                    <div className="cell-label" style={{ background: 'transparent', color: '#8b949e', border: '1px solid #30363d' }}>
+                    <div className="cell-label" style={{ background: 'transparent', color: 'var(--fg-muted)', border: '1px solid var(--border-default)' }}>
                         Markdown
                     </div>
                 </div>
@@ -25,7 +25,7 @@ function MarkdownCell({ cell, onChange, onDelete, isFirst, theme, fontSize, font
                             className="cell-action-button"
                             onClick={() => setIsEditing(false)}
                             title="Done (Show as text)"
-                            style={{ color: '#3fb950' }}
+                            style={{ color: 'var(--success-fg)' }}
                         >
                             <CheckIcon size={14} />
                         </button>
@@ -73,13 +73,13 @@ function MarkdownCell({ cell, onChange, onDelete, isFirst, theme, fontSize, font
                         {/* Live Preview in Edit Mode */}
                         {cell.content && (
                             <div className="markdown-live-preview" style={{
-                                borderTop: '1px dashed #30363d',
+                                borderTop: '1px dashed var(--border-default)',
                                 padding: '12px',
-                                background: 'rgba(13, 17, 23, 0.5)'
+                                background: 'var(--bg-canvas-subtle)'
                             }}>
                                 <div style={{
                                     fontSize: '10px',
-                                    color: '#8b949e',
+                                    color: 'var(--fg-muted)',
                                     marginBottom: '8px',
                                     textTransform: 'uppercase',
                                     fontWeight: '600',

@@ -16,14 +16,14 @@
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    background: #0d1117;
+    background: var(--bg-canvas);
     padding: 0;
 }
 
 .notebook-view.full-screen-mode .notebook-header {
     padding: 16px 32px;
-    background: #0d1117;
-    border-bottom: 1px solid rgba(110, 118, 129, 0.3);
+    background: var(--bg-canvas);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .notebook-view.full-screen-mode .notebook-cells-container {
@@ -35,7 +35,7 @@
     padding: 4px 16px 8px 16px;
     /* Reduced top padding from 8px to 4px */
     background: transparent;
-    border-bottom: 1px solid rgba(110, 118, 129, 0.15);
+    border-bottom: 1px solid var(--border-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -65,7 +65,7 @@
     position: absolute;
     top: -4px;
     right: -4px;
-    background: #a371f7;
+    background: var(--accent-emphasis);
     color: white;
     font-size: 9px;
     font-weight: 600;
@@ -85,7 +85,7 @@
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #e6edf3;
+    color: var(--fg-default);
     cursor: pointer;
     padding: 2px 6px;
     border-radius: 4px;
@@ -103,26 +103,26 @@
 }
 
 .notebook-name-wrapper:hover {
-    background: rgba(110, 118, 129, 0.1);
+    background: var(--bg-canvas-subtle);
 }
 
 .edit-icon {
-    color: #8b949e;
+    color: var(--fg-muted);
     opacity: 0.6;
     transition: opacity 0.2s, color 0.2s;
 }
 
 .notebook-name-wrapper:hover .edit-icon {
     opacity: 1;
-    color: #e6edf3;
+    color: var(--fg-default);
 }
 
 .notebook-name-input {
     font-size: 18px;
     font-weight: 600;
-    color: #e6edf3;
-    background: #0d1117;
-    border: 1px solid #30363d;
+    color: var(--fg-default);
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-default);
     border-radius: 4px;
     padding: 2px 6px;
     outline: none;
@@ -131,14 +131,14 @@
 }
 
 .notebook-name-input:focus {
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 3px var(--accent-muted);
 }
 
 .notebook-subtitle {
     margin: 0;
     font-size: 12px;
-    color: #8b949e;
+    color: var(--fg-muted);
     display: none;
     /* Hide subtitle to save space */
 }
@@ -164,50 +164,50 @@
 }
 
 .notebook-action-button.secondary {
-    background: rgba(110, 118, 129, 0.1);
-    border: 1px solid rgba(110, 118, 129, 0.2);
-    color: #c9d1d9;
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--fg-default);
 }
 
 .notebook-action-button.secondary:hover {
-    background: rgba(110, 118, 129, 0.2);
-    border-color: #8b949e;
+    background: var(--bg-canvas-subtle);
+    border-color: var(--fg-muted);
 }
 
 .notebook-action-button.primary {
-    background: #238636;
+    background: var(--success-emphasis);
     border: 1px solid rgba(240, 246, 252, 0.1);
-    color: white;
+    color: var(--fg-on-emphasis);
 }
 
 .notebook-action-button.primary:hover {
-    background: #2ea043;
+    background: var(--success-emphasis);
     border-color: rgba(240, 246, 252, 0.1);
-    color: white;
+    color: var(--fg-on-emphasis);
 }
 
 .notebook-action-button.add {
-    background: rgba(56, 139, 253, 0.15);
-    border: 1px solid rgba(88, 166, 255, 0.4);
-    color: #58a6ff;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent-muted);
+    color: var(--accent-fg);
 }
 
 .notebook-action-button.add:hover {
-    background: #1f6feb;
-    color: white;
-    border-color: #1f6feb;
+    background: var(--accent-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--accent-emphasis);
 }
 
 .notebook-action-button.destructive {
-    background: rgba(218, 54, 51, 0.15);
-    border: 1px solid rgba(248, 81, 73, 0.4);
-    color: #f85149;
+    background: var(--danger-muted);
+    border: 1px solid var(--danger-muted);
+    color: var(--danger-fg);
 }
 
 .notebook-action-button.destructive:hover {
-    background: #da3633;
-    color: white;
-    border-color: #da3633;
+    background: var(--danger-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--danger-emphasis);
 }
 
 .notebook-action-button.icon-only {
@@ -259,21 +259,21 @@
 
 /* Fine tune visuals for each badge inside the toolbar to blend with design */
 .notebook-actions .results-badge {
-    background: rgba(88, 166, 255, 0.12);
-    border: 1px solid rgba(88, 166, 255, 0.2);
-    color: #58a6ff;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent-muted);
+    color: var(--accent-fg);
 }
 
 .notebook-actions .clear-results-badge {
-    background: rgba(218, 54, 51, 0.12);
-    color: #f85149;
-    border: 1px solid rgba(248, 81, 73, 0.14);
+    background: var(--danger-muted);
+    color: var(--danger-fg);
+    border: 1px solid var(--danger-muted);
 }
 
 .notebook-actions .coming-soon-badge {
-    background: #238636;
+    background: var(--success-emphasis);
     /* keep the same green color used elsewhere */
-    color: #ffffff;
+    color: var(--fg-on-emphasis);
     border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -295,7 +295,7 @@
 .notebook-divider-vertical {
     width: 1px;
     height: 16px;
-    background: rgba(110, 118, 129, 0.2);
+    background: var(--border-subtle);
     margin: 0 4px;
 }
 
@@ -310,8 +310,8 @@
     top: 100%;
     right: 0;
     margin-top: 6px;
-    background: #161b22;
-    border: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 1000;
@@ -329,10 +329,10 @@
     padding: 8px 12px;
     font-size: 11px;
     font-weight: 600;
-    color: #7d8590;
+    color: var(--fg-subtle);
     text-transform: uppercase;
-    border-bottom: 1px solid rgba(110, 118, 129, 0.2);
-    background: rgba(22, 27, 34, 0.5);
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-canvas-subtle);
 }
 
 .dropdown-content-column {
@@ -356,26 +356,26 @@
 
 .setting-label {
     font-size: 12px;
-    color: #8b949e;
+    color: var(--fg-muted);
 }
 
 .setting-value {
     font-size: 11px;
-    color: #c9d1d9;
+    color: var(--fg-default);
     font-family: monospace;
 }
 
 .dropdown-divider-vertical {
     height: 1px;
     width: 100%;
-    background: rgba(110, 118, 129, 0.2);
+    background: var(--border-subtle);
     margin: 4px 0;
 }
 
 .slider {
     width: 100%;
     height: 4px;
-    background: #30363d;
+    background: var(--border-default);
     border-radius: 2px;
     outline: none;
     -webkit-appearance: none;
@@ -387,15 +387,15 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #58a6ff;
+    background: var(--accent-fg);
     cursor: pointer;
 }
 
 .select-input {
     width: 100%;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    color: #c9d1d9;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-default);
+    color: var(--fg-default);
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 12px;
@@ -411,20 +411,20 @@
 .dropdown-item {
     padding: 6px 12px;
     font-size: 13px;
-    color: #c9d1d9;
+    color: var(--fg-default);
     cursor: pointer;
     transition: background 0.1s;
     border-radius: 4px;
 }
 
 .dropdown-item:hover {
-    background: #1f6feb;
-    color: white;
+    background: var(--accent-emphasis);
+    color: var(--fg-on-emphasis);
 }
 
 .dropdown-item.active {
-    background: rgba(31, 111, 235, 0.2);
-    color: #58a6ff;
+    background: var(--accent-muted);
+    color: var(--accent-fg);
     font-weight: 500;
 }
 
@@ -441,7 +441,7 @@
 /* Notebook Footer */
 .notebook-footer {
     padding: 12px 24px;
-    border-top: 1px solid rgba(110, 118, 129, 0.15);
+    border-top: 1px solid var(--border-subtle);
     background: transparent;
     display: flex;
     justify-content: space-between;
@@ -454,18 +454,18 @@
     gap: 8px;
     padding: 8px 16px;
     background: transparent;
-    border: 1px dashed rgba(110, 118, 129, 0.4);
+    border: 1px dashed var(--border-default);
     border-radius: 6px;
-    color: #7d8590;
+    color: var(--fg-subtle);
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .add-cell-button:hover {
-    border-color: #58a6ff;
-    color: #58a6ff;
-    background: rgba(88, 166, 255, 0.05);
+    border-color: var(--accent-fg);
+    color: var(--accent-fg);
+    background: var(--accent-muted);
 }
 
 .keyboard-hints {
@@ -475,17 +475,17 @@
 
 .hint {
     font-size: 12px;
-    color: #8b949e;
+    color: var(--fg-muted);
 }
 
 kbd {
-    background: rgba(110, 118, 129, 0.1);
-    border: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-subtle);
     border-radius: 3px;
     padding: 2px 4px;
     font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
     font-size: 11px;
-    color: #c9d1d9;
+    color: var(--fg-default);
 }
 
 /* Saved Notebooks Dropdown */
@@ -493,8 +493,8 @@ kbd {
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
-    background: #161b22;
-    border: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 1001;
@@ -515,18 +515,18 @@ kbd {
 .no-saved-notebooks {
     padding: 32px 24px;
     text-align: center;
-    color: #8b949e;
+    color: var(--fg-muted);
 }
 
 .no-saved-notebooks p {
     margin: 0 0 8px 0;
     font-size: 14px;
-    color: #c9d1d9;
+    color: var(--fg-default);
 }
 
 .no-saved-notebooks small {
     font-size: 12px;
-    color: #7d8590;
+    color: var(--fg-subtle);
 }
 
 .saved-notebook-item {
@@ -535,8 +535,8 @@ kbd {
     justify-content: space-between;
     padding: 12px;
     margin-bottom: 6px;
-    background: rgba(110, 118, 129, 0.05);
-    border: 1px solid rgba(110, 118, 129, 0.1);
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -547,8 +547,8 @@ kbd {
 }
 
 .saved-notebook-item:hover {
-    background: rgba(56, 139, 253, 0.1);
-    border-color: rgba(88, 166, 255, 0.3);
+    background: var(--accent-muted);
+    border-color: var(--accent-muted);
     transform: translateX(-2px);
 }
 
@@ -560,7 +560,7 @@ kbd {
 .saved-notebook-name {
     font-size: 14px;
     font-weight: 600;
-    color: #e6edf3;
+    color: var(--fg-default);
     margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -572,7 +572,7 @@ kbd {
     align-items: center;
     gap: 8px;
     font-size: 11px;
-    color: #7d8590;
+    color: var(--fg-subtle);
 }
 
 .saved-notebook-meta span {
@@ -588,42 +588,42 @@ kbd {
     background: transparent;
     border: 1px solid transparent;
     border-radius: 4px;
-    color: #7d8590;
+    color: var(--fg-subtle);
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
 
 .delete-saved-notebook:hover {
-    background: rgba(218, 54, 51, 0.15);
-    border-color: rgba(248, 81, 73, 0.4);
-    color: #f85149;
+    background: var(--danger-muted);
+    border-color: var(--danger-muted);
+    color: var(--danger-fg);
 }
 
 /* New Notebook Button */
 .notebook-action-button.new {
-    background: rgba(46, 160, 67, 0.15);
-    border: 1px solid rgba(46, 160, 67, 0.4);
-    color: #3fb950;
+    background: var(--success-muted);
+    border: 1px solid var(--success-muted);
+    color: var(--success-fg);
 }
 
 .notebook-action-button.new:hover {
-    background: #238636;
-    color: white;
-    border-color: #238636;
+    background: var(--success-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--success-emphasis);
 }
 
 /* Save Notebook Button */
 .notebook-action-button.save {
-    background: rgba(163, 113, 247, 0.15);
-    border: 1px solid rgba(163, 113, 247, 0.4);
-    color: #a371f7;
+    background: var(--accent-muted);
+    border: 1px solid var(--accent-muted);
+    color: var(--accent-fg);
 }
 
 .notebook-action-button.save:hover {
-    background: #8957e5;
-    color: white;
-    border-color: #8957e5;
+    background: var(--accent-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--accent-emphasis);
 }
 
 @keyframes fadeIn {

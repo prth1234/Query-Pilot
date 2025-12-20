@@ -13,13 +13,13 @@
 .selector-header h2 {
     font-size: 42px;
     font-weight: 600;
-    color: #fff;
+    color: var(--fg-default);
     margin-bottom: 12px;
 }
 
 .subtitle {
     font-size: 18px;
-    color: #999;
+    color: var(--fg-muted);
     margin: 0;
 }
 
@@ -58,8 +58,8 @@
 
 /* Database Card */
 .database-card {
-    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-    border: 2px solid #2a2a2a;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-canvas) 100%);
+    border: 2px solid var(--border-default);
     border-radius: 16px;
     padding: 24px;
     cursor: pointer;
@@ -80,7 +80,7 @@
     inset: 0;
     border-radius: 16px;
     padding: 2px;
-    background: linear-gradient(135deg, #956afa, #5e3aff);
+    background: linear-gradient(135deg, var(--accent-fg), var(--accent-emphasis));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -95,14 +95,14 @@
 
 .database-card:hover {
     transform: translateY(-8px);
-    border-color: #956afa;
-    box-shadow: 0 12px 40px rgba(149, 106, 250, 0.3);
+    border-color: var(--accent-fg);
+    box-shadow: 0 12px 40px var(--accent-muted);
 }
 
 .database-card.selected {
-    border-color: #956afa;
-    background: linear-gradient(135deg, #2a1a4a 0%, #1a0d3a 100%);
-    box-shadow: 0 8px 32px rgba(149, 106, 250, 0.4);
+    border-color: var(--accent-fg);
+    background: linear-gradient(135deg, var(--accent-muted) 0%, var(--bg-canvas) 100%);
+    box-shadow: 0 8px 32px var(--accent-muted);
 }
 
 .database-card.selected::before {
@@ -112,12 +112,12 @@
 .database-card.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: linear-gradient(135deg, #151515 0%, #0a0a0a 100%);
+    background: linear-gradient(135deg, var(--bg-canvas-subtle) 0%, var(--bg-canvas) 100%);
 }
 
 .database-card.disabled:hover {
     transform: none;
-    border-color: #2a2a2a;
+    border-color: var(--border-default);
     box-shadow: none;
 }
 
@@ -141,14 +141,14 @@
 .db-name {
     font-size: 20px;
     font-weight: 600;
-    color: #fff;
+    color: var(--fg-default);
     margin: 0 0 8px 0;
 }
 
 /* Database Category */
 .db-category {
     font-size: 12px;
-    color: #956afa;
+    color: var(--accent-fg);
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
@@ -158,7 +158,7 @@
 /* Database Description */
 .db-description {
     font-size: 13px;
-    color: #999;
+    color: var(--fg-muted);
     margin: 0;
     line-height: 1.5;
 }

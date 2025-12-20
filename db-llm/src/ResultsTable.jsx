@@ -14,10 +14,11 @@ import {
     SortDescIcon,
     GearIcon,
     DownloadIcon,
-    CopyIcon,
-    FileIcon
+    FileIcon,
+    CheckIcon,
+    TableIcon
 } from '@primer/octicons-react'
-import { MdFullscreen, MdFullscreenExit } from "react-icons/md"
+import { MdFullscreen, MdFullscreenExit, MdOutlineContentCopy } from "react-icons/md"
 import TableSettings from './TableSettings'
 import './ResultsTable.css'
 
@@ -61,12 +62,15 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
     })
 
     // Export functionality state
-    const [showExportMenu, setShowExportMenu] = useState(false)
+    const [showDownloadMenu, setShowDownloadMenu] = useState(false)
+    const [showCopyMenu, setShowCopyMenu] = useState(false)
+    const [copySuccess, setCopySuccess] = useState(false)
 
     const rowsPerPage = 300
 
     const settingsRef = useRef(null)
-    const exportMenuRef = useRef(null)
+    const downloadMenuRef = useRef(null)
+    const copyMenuRef = useRef(null)
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -80,18 +84,31 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
         }
     }, [settingsRef])
 
-    // Close export menu on outside click
+    // Close download menu on outside click
     useEffect(() => {
         function handleClickOutside(event) {
-            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
-                setShowExportMenu(false)
+            if (downloadMenuRef.current && !downloadMenuRef.current.contains(event.target)) {
+                setShowDownloadMenu(false)
             }
         }
         document.addEventListener("mousedown", handleClickOutside)
         return () => {
             document.removeEventListener("mousedown", handleClickOutside)
         }
-    }, [exportMenuRef])
+    }, [downloadMenuRef])
+
+    // Close copy menu on outside click
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (copyMenuRef.current && !copyMenuRef.current.contains(event.target)) {
+                setShowCopyMenu(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [copyMenuRef])
 
     // Save settings to localStorage
     useEffect(() => {
@@ -101,6 +118,9 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
             console.error('Failed to save settings:', err)
         }
     }, [settings])
+
+    // Error state management
+    const [isErrorExpanded, setIsErrorExpanded] = useState(false)
 
     if (isLoading) {
         return (
@@ -114,16 +134,55 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
     }
 
     if (error) {
+        const errorLines = error.split('\n')
+        const isLongError = errorLines.length > 2
+        const isVeryLongError = errorLines.length > 6
+
+        const downloadErrorLog = () => {
+            const blob = new Blob([error], { type: 'text/plain' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `query_error_${Date.now()}.log`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+        }
+
         return (
             <Box className="results-container error">
                 <div className="error-state">
                     <XCircleIcon size={48} className="error-icon" />
                     <h3 className="error-title">Query Failed</h3>
-                    <p className="error-message">{error}</p>
+                    <div className="error-message-container">
+                        <p className={`error-message ${!isErrorExpanded ? 'truncated' : ''}`}>
+                            {isErrorExpanded ? error : errorLines.slice(0, 2).join('\n')}
+                        </p>
+                        {isLongError && (
+                            <div className="error-actions">
+                                <button
+                                    className="error-toggle-button"
+                                    onClick={() => setIsErrorExpanded(!isErrorExpanded)}
+                                >
+                                    {isErrorExpanded ? 'Show Less' : 'Read More'}
+                                </button>
+                                {isVeryLongError && (
+                                    <button
+                                        className="error-download-button"
+                                        onClick={downloadErrorLog}
+                                    >
+                                        <DownloadIcon size={14} />
+                                        <span>Download Error Log</span>
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </Box>
         )
-    }
+    } // End if (error)
 
     if (!results) {
         return (
@@ -140,6 +199,8 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
     }
 
     const { columns, rows } = results
+
+
 
     // Apply global filter
     let filteredRows = rows.filter(row => {
@@ -263,7 +324,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-        setShowExportMenu(false)
+        setShowDownloadMenu(false)
     }
 
     // Export as PDF (download)
@@ -309,7 +370,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
             })
 
             doc.save(`query_results_${Date.now()}.pdf`)
-            setShowExportMenu(false)
+            setShowDownloadMenu(false)
         } catch (error) {
             console.error('Error exporting PDF:', error)
             alert('Failed to export PDF. Please try again.')
@@ -356,8 +417,41 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
         const csvContent = csvRows.join('\n')
         navigator.clipboard.writeText(csvContent).then(() => {
-            alert('Copied as CSV to clipboard!')
-            setShowExportMenu(false)
+            setCopySuccess(true)
+            setShowCopyMenu(false)
+            setTimeout(() => setCopySuccess(false), 2000)
+        }).catch(err => {
+            console.error('Failed to copy:', err)
+            alert('Failed to copy to clipboard')
+        })
+    }
+
+    // Copy as Table (TSV)
+    const copyAsTable = () => {
+        if (!results) return
+
+        const { columns, rows } = results
+        const tsvRows = []
+
+        // Add header
+        tsvRows.push(columns.join('\t'))
+
+        // Add data rows
+        filteredRows.forEach(row => {
+            const values = columns.map(col => {
+                const val = row[col]
+                if (val === null || val === undefined) return ''
+                // Replace tabs and newlines with spaces to maintain table structure
+                return String(val).replace(/[\t\n\r]/g, ' ')
+            })
+            tsvRows.push(values.join('\t'))
+        })
+
+        const tsvContent = tsvRows.join('\n')
+        navigator.clipboard.writeText(tsvContent).then(() => {
+            setCopySuccess(true)
+            setShowCopyMenu(false)
+            setTimeout(() => setCopySuccess(false), 2000)
         }).catch(err => {
             console.error('Failed to copy:', err)
             alert('Failed to copy to clipboard')
@@ -473,58 +567,23 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
                         )}
                     </div>
 
-                    {/* Export Menu */}
-                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={exportMenuRef}>
+                    {/* Download Menu */}
+                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={downloadMenuRef}>
                         <button
-                            className={`icon-button ${showExportMenu ? 'active' : ''}`}
-                            onClick={() => setShowExportMenu(!showExportMenu)}
-                            title="Export results"
+                            className={`icon-button ${showDownloadMenu ? 'active' : ''}`}
+                            onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                            title="Download results"
                             disabled={!results || filteredRows.length === 0}
                         >
                             <DownloadIcon size={16} />
                         </button>
-                        {showExportMenu && (
-                            <div className="export-menu" style={{
-                                position: 'absolute',
-                                right: 0,
-                                top: '100%',
-                                marginTop: '8px',
-                                background: '#1c1c1e',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '8px',
-                                padding: '8px',
-                                minWidth: '180px',
-                                zIndex: 1000,
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)'
-                            }}>
-                                <div style={{
-                                    fontSize: '11px',
-                                    fontWeight: '600',
-                                    color: '#8b949e',
-                                    padding: '4px 8px',
-                                    marginBottom: '4px',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px'
-                                }}>Export Results</div>
+                        {showDownloadMenu && (
+                            <div className="export-menu">
+                                <div className="export-menu-header">Download Results</div>
 
                                 <button
                                     onClick={exportAsCSV}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
                                     <FileIcon size={14} />
                                     <span>Download CSV</span>
@@ -532,77 +591,47 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
                                 <button
                                     onClick={exportAsPDF}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
                                     <FileIcon size={14} />
                                     <span>Download PDF</span>
                                 </button>
+                            </div>
+                        )}
+                    </div>
 
-                                <div style={{
-                                    height: '1px',
-                                    background: 'rgba(255, 255, 255, 0.1)',
-                                    margin: '4px 0'
-                                }}></div>
+                    {/* Copy Menu */}
+                    <div className="settings-wrapper" style={{ position: 'relative' }} ref={copyMenuRef}>
+                        <button
+                            className={`icon-button ${showCopyMenu ? 'active' : ''}`}
+                            onClick={() => setShowCopyMenu(!showCopyMenu)}
+                            title="Copy options"
+                            disabled={!results || filteredRows.length === 0}
+                        >
+                            {copySuccess ? (
+                                <CheckIcon size={16} className="success-icon" />
+                            ) : (
+                                <MdOutlineContentCopy size={16} />
+                            )}
+                        </button>
+                        {showCopyMenu && (
+                            <div className="export-menu">
+                                <div className="export-menu-header">Copy Results</div>
 
                                 <button
                                     onClick={copyAsCSV}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    className="export-menu-item"
                                 >
-                                    <CopyIcon size={14} />
+                                    <FileIcon size={14} />
                                     <span>Copy as CSV</span>
                                 </button>
 
                                 <button
-                                    onClick={copyAsJSON}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        padding: '8px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: '#c9d1d9',
-                                        cursor: 'pointer',
-                                        borderRadius: '4px',
-                                        fontSize: '13px',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                                    onClick={copyAsTable}
+                                    className="export-menu-item"
                                 >
-                                    <CopyIcon size={14} />
-                                    <span>Copy as JSON</span>
+                                    <TableIcon size={14} />
+                                    <span>Copy as Table</span>
                                 </button>
                             </div>
                         )}

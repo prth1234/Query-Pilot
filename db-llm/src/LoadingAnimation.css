@@ -2,7 +2,7 @@
 .loading-overlay {
     position: fixed;
     inset: 0;
-    background: #000000;
+    background: var(--bg-canvas);
     /* Explicit black */
     display: flex;
     align-items: center;
@@ -19,7 +19,7 @@
 
 /* Card Container */
 .card {
-    --bg-color: #000000;
+    --bg-color: var(--bg-canvas);
     /* Explicit black */
     background-color: var(--bg-color);
     padding: 1rem 2rem;
@@ -28,7 +28,7 @@
 
 /* Loader Container */
 .loader {
-    color: rgb(180, 180, 180);
+    color: var(--fg-muted);
     font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
     font-weight: 500;
     font-size: 25px;
@@ -62,7 +62,7 @@
     display: block;
     height: 100%;
     padding-left: 6px;
-    color: #956afa;
+    color: var(--accent-fg);
     font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
     animation: spin_once 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
 }

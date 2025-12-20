@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Heading, Text, Grid, Stack, Box } from '@primer/react-brand'
 import { ThemeProvider } from '@primer/react-brand'
 import '@primer/react-brand/lib/css/main.css'
 import LoadingAnimation from './LoadingAnimation'
 import ConnectionForm from './ConnectionForm'
 import Workspace from './Workspace'
+import ThemeTransition from './ThemeTransition'
 import { databases } from './databaseConfig'
 import queryPilotLogo from './assets/query-pilot-logo.png'
 import './App.css'
@@ -31,6 +32,42 @@ function App() {
   })
   const [displayedText, setDisplayedText] = useState('')
   const [typingComplete, setTypingComplete] = useState(false)
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'dark'
+  })
+
+  // Theme transition state
+  const [isThemeTransitioning, setIsThemeTransitioning] = useState(false)
+  const [pendingTheme, setPendingTheme] = useState(null)
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    setPendingTheme(newTheme)
+    setIsThemeTransitioning(true)
+
+    // Disable all CSS transitions so everything changes at once
+    document.documentElement.classList.add('theme-transitioning')
+
+    // Change theme immediately
+    setTheme(newTheme)
+
+    // Re-enable transitions after a brief moment
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning')
+    }, 50)
+  }
+
+  const handleThemeTransitionComplete = useCallback(() => {
+    setIsThemeTransitioning(false)
+    setPendingTheme(null)
+  }, [])
 
   const fullText = 'Select Your Database'
 
@@ -108,13 +145,63 @@ function App() {
     <>
       {isLoading && <LoadingAnimation onComplete={handleLoadingComplete} />}
 
-      <ThemeProvider colorMode="dark">
+      {/* Theme Transition Wave Overlay */}
+      <ThemeTransition
+        isTransitioning={isThemeTransitioning}
+        targetTheme={pendingTheme || theme}
+        onComplete={handleThemeTransitionComplete}
+      />
+
+      <ThemeProvider colorMode={theme}>
         <div className={`app-container ${showContent ? 'fade-in' : ''}`}>
+          {/* Global Theme Toggle */}
+          <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000 }}>
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: 'transparent',
+                border: '1px solid var(--border-default)',
+                borderRadius: '50%',
+                width: '48px',
+                height: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--fg-muted)',
+                transition: 'all 0.2s ease',
+                boxShadow: 'var(--shadow-large)',
+                backdropFilter: 'blur(4px)'
+              }}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              )}
+            </button>
+          </div>
+
           {connectedDatabase ? (
             <Workspace
               database={connectedDatabase}
               connectionDetails={connectionDetails}
               onDisconnect={handleDisconnect}
+              theme={theme}
+              toggleTheme={toggleTheme}
             />
           ) : !selectedDatabase ? (
             <Box paddingBlockStart={32} paddingBlockEnd={64} paddingInlineStart={48} paddingInlineEnd={48}>
