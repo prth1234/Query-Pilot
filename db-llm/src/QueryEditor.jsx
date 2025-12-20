@@ -4,8 +4,9 @@ import { sql } from '@codemirror/lang-sql'
 import { autocompletion } from '@codemirror/autocomplete'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
-import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon, PlusIcon } from '@primer/octicons-react'
+import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon, PlusIcon, StopIcon } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
+import { TbCancel } from "react-icons/tb"
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
 
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
@@ -42,7 +43,7 @@ export const FONT_FAMILIES = [
     { name: 'Courier New', value: 'courier', family: "'Courier New', monospace" }
 ]
 
-function QueryEditor({ onExecuteQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported, queryResults, queryError, executionTime, theme }) {
+function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported, queryResults, queryError, executionTime, theme }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
     const [isAiGenerating, setIsAiGenerating] = useState(false)
     const [aiSuggestion, setAiSuggestion] = useState(null)
@@ -714,6 +715,15 @@ ORDER BY total_spent DESC;`
 
                     {/* Run Button Group */}
                     <div className="run-button-group" ref={limitDropdownRef}>
+                        {isExecuting && (
+                            <button
+                                className="cancel-button"
+                                onClick={onCancelQuery}
+                                title="Cancel execution"
+                            >
+                                <TbCancel size={14} />
+                            </button>
+                        )}
                         <button
                             className="execute-button"
                             onClick={handleExecute}

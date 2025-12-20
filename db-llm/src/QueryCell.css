@@ -44,31 +44,69 @@
 }
 
 /* Cell Run Button Icon */
-.cell-run-button-icon {
+/* Cell Run Button */
+.cell-run-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
+    gap: 6px;
+    padding: 4px 10px;
+    height: 28px;
     background: transparent;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid var(--success-emphasis);
+    border-radius: 6px;
     color: var(--success-emphasis);
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.cell-run-button-icon:hover:not(:disabled) {
-    background: var(--success-muted);
+.cell-run-button:hover:not(:disabled) {
+    background: rgba(46, 160, 67, 0.1);
     color: var(--success-fg);
-    transform: scale(1.1);
+    border-color: var(--success-fg);
+    box-shadow: 0 0 8px rgba(46, 160, 67, 0.2);
 }
 
-.cell-run-button-icon:disabled {
+.cell-run-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.cell-run-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     color: var(--fg-muted);
+    border-color: var(--border-default);
+}
+
+/* Cancel Button (Separate) */
+.cell-cancel-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: rgba(209, 36, 47, 0.1);
+    border: 1px solid var(--danger-emphasis);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--danger-emphasis);
+}
+
+.cell-cancel-button:hover {
+    background: rgba(209, 36, 47, 0.2);
+    border-color: var(--danger-fg);
+    color: var(--danger-fg);
+    transform: scale(1.05);
+}
+
+.cell-cancel-button:active {
+    transform: scale(0.95);
 }
 
 /* Cell Delete Button */

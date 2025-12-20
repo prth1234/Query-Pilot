@@ -5,7 +5,8 @@ import { autocompletion } from '@codemirror/autocomplete'
 import { keymap } from '@codemirror/view'
 import { Prec } from '@codemirror/state'
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
-import { PlayIcon, TrashIcon, ScreenFullIcon, ScreenNormalIcon, ChevronDownIcon } from '@primer/octicons-react'
+import { PlayIcon, TrashIcon, ScreenFullIcon, ScreenNormalIcon, ChevronDownIcon, StopIcon } from '@primer/octicons-react'
+import { TbCancel } from "react-icons/tb"
 import { createSQLAutocomplete } from './sqlAutocomplete'
 import AIGeneratorButton from './AIGeneratorButton'
 import ResultsTable from './ResultsTable'
@@ -23,7 +24,8 @@ function QueryCell({
     theme,
     fontFamily,
     fontSize,
-    cellRef // New prop for focusing
+    cellRef,
+    onCancel // New prop
 }) {
     const [isExecuting, setIsExecuting] = useState(false)
     const [isFullScreen, setIsFullScreen] = useState(false)
@@ -218,15 +220,24 @@ function QueryCell({
         <div className={`query-cell ${isFullScreen ? 'fullscreen' : ''}`} ref={cellRef}>
             <div className="cell-header">
                 <div className="cell-left-actions">
+                    {isExecuting && (
+                        <button
+                            className="cell-cancel-button"
+                            onClick={onCancel}
+                            title="Cancel execution"
+                        >
+                            <TbCancel size={16} />
+                        </button>
+                    )}
                     <button
-                        className="cell-run-button-icon"
+                        className="cell-run-button"
                         onClick={handleExecute}
                         disabled={isExecuting || !cell.query.trim()}
                         title="Run cell (Cmd+Enter or Shift+Enter)"
                     >
                         <PlayIcon size={16} />
+                        <span>{isExecuting ? 'Running...' : 'Run'}</span>
                     </button>
-                    <div className="cell-label">Run</div>
                 </div>
                 <div className="cell-right-actions">
                     {/* Query Pilot Button */}

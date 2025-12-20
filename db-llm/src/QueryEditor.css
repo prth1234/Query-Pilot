@@ -188,22 +188,23 @@
     align-items: center;
     gap: 6px;
     /* Added gap */
+    gap: 8px;
 }
 
 .execute-button {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 10px !important;
-    background: var(--success-emphasis) !important;
-    border: none !important;
-    border-radius: 4px !important;
-    font-weight: 500 !important;
+    gap: 6px;
+    padding: 4px 12px !important;
+    background: rgba(46, 160, 67, 0.1) !important;
+    border: 1px solid var(--success-emphasis) !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
     font-size: 11px !important;
     transition: all 0.2s ease !important;
     cursor: pointer;
     box-shadow: none !important;
-    color: var(--fg-on-emphasis) !important;
+    color: var(--success-emphasis) !important;
 }
 
 .dropdown-wrapper {
@@ -214,45 +215,83 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     padding: 0 !important;
-    background: var(--success-emphasis) !important;
-    border: none !important;
+    background: rgba(46, 160, 67, 0.1) !important;
+    border: 1px solid var(--success-emphasis) !important;
     border-radius: 50% !important;
     cursor: pointer;
     transition: all 0.2s ease !important;
-    color: var(--fg-on-emphasis) !important;
+    color: var(--success-emphasis) !important;
 }
 
 .execute-dropdown-trigger svg {
-    color: white !important;
-    fill: white !important;
+    color: var(--success-emphasis) !important;
+    fill: var(--success-emphasis) !important;
 }
 
 .execute-button:hover:not(:disabled),
 .execute-dropdown-trigger:hover:not(:disabled) {
-    background: var(--success-emphasis) !important;
+    background: rgba(46, 160, 67, 0.15) !important;
+    border-color: var(--success-fg) !important;
+    color: var(--success-fg) !important;
+    box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2) !important;
+}
+
+.execute-button:hover:not(:disabled) svg,
+.execute-dropdown-trigger:hover:not(:disabled) svg {
+    color: var(--success-fg) !important;
+    fill: var(--success-fg) !important;
 }
 
 .execute-button:active:not(:disabled),
 .execute-dropdown-trigger:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(1px);
 }
 
 .execute-button:disabled,
 .execute-dropdown-trigger:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    border-color: var(--border-default) !important;
+    color: var(--fg-muted) !important;
 }
 
 .execute-text {
-    color: var(--fg-on-emphasis);
+    color: currentColor;
 }
 
 .execute-button svg {
-    color: var(--fg-on-emphasis);
-    fill: var(--fg-on-emphasis);
+    color: var(--success-emphasis) !important;
+    fill: var(--success-emphasis) !important;
+}
+
+/* Cancel Button (Separate) */
+.cancel-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0 !important;
+    background: rgba(209, 36, 47, 0.1) !important;
+    border: 1px solid var(--danger-emphasis) !important;
+    border-radius: 50% !important;
+    cursor: pointer;
+    transition: all 0.2s ease !important;
+    color: var(--danger-emphasis) !important;
+}
+
+.cancel-button:hover {
+    background: rgba(209, 36, 47, 0.2) !important;
+    border-color: var(--danger-fg) !important;
+    color: var(--danger-fg) !important;
+    transform: scale(1.05);
+}
+
+.cancel-button:active {
+    transform: scale(0.95);
 }
 
 /* Dropdown Menus */

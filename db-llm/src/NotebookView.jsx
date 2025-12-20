@@ -90,6 +90,8 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
     const themeDropdownRef = useRef(null)
     const savedNotebooksRef = useRef(null)
     const cellRefs = useRef({})
+    // Store abort controllers for each cell execution
+    const abortControllersRef = useRef({})
 
     // Click outside to close dropdowns
     useEffect(() => {
@@ -194,7 +196,32 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         }))
     }
 
+    const handleCancelExecution = (cellId) => {
+        const controller = abortControllersRef.current[cellId]
+        if (controller) {
+            controller.abort()
+            delete abortControllersRef.current[cellId]
+
+            // Update cell state to show cancellation clearly
+            setCells(prev => prev.map(cell =>
+                cell.id === cellId
+                    ? { ...cell, error: 'Query execution cancelled by user', executionTime: null }
+                    : cell
+            ))
+        }
+    }
+
     const handleExecuteCell = async (cellId, query) => {
+        // Cancel any existing execution for this cell
+        if (abortControllersRef.current[cellId]) {
+            abortControllersRef.current[cellId].abort()
+        }
+
+        // Create new controller
+        const controller = new AbortController()
+        abortControllersRef.current[cellId] = controller
+        const signal = controller.signal
+
         let queryToExecute = query.trim()
 
         // Append LIMIT if needed
@@ -222,6 +249,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                     connectionString: connectionDetails.connectionString,
                     db_type: database?.id || connectionDetails.db_type || 'mysql'
                 }),
+                signal: signal // Pass the abort signal
             })
 
             const data = await response.json()
@@ -250,11 +278,18 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                 ))
             }
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Query execution aborted')
+                // State update handled in handleCancelExecution or implicitly by not updating success
+                return
+            }
             setCells(prev => prev.map(cell =>
                 cell.id === cellId
                     ? { ...cell, results: null, error: `Connection error: ${error.message}` }
                     : cell
             ))
+        } finally {
+            delete abortControllersRef.current[cellId]
         }
     }
 
@@ -887,6 +922,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                             cell={cell}
                             cellRef={(el) => cellRefs.current[cell.id] = el}
                             onExecute={handleExecuteCell}
+                            onCancel={() => handleCancelExecution(cell.id)}
                             onDelete={handleDeleteCell}
                             onClearResult={handleClearResult}
                             onQueryChange={handleContentChange}

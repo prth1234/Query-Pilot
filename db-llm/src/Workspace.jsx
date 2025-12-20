@@ -30,6 +30,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
     const [importedQuery, setImportedQuery] = useState(null) // For importing from notebook
     const containerRef = useRef(null)
     const resizerRef = useRef(null)
+    const abortControllerRef = useRef(null)
 
     // Handle import from notebook to editor
     const handleImportFromNotebook = (query) => {
@@ -71,7 +72,25 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
         fetchSchema()
     }, [connectionDetails])
 
+    const handleCancelExecution = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+            abortControllerRef.current = null
+            setIsExecuting(false)
+            setQueryError('Query execution cancelled by user')
+        }
+    }
+
     const handleExecuteQuery = async (query) => {
+        // Cancel any existing execution
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+        }
+
+        const controller = new AbortController()
+        abortControllerRef.current = controller
+        const signal = controller.signal
+
         setIsExecuting(true)
         setQueryError(null)
         setQueryResults(null)
@@ -94,6 +113,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
                     connectionString: connectionDetails.connectionString,
                     db_type: database.id // 'mysql' or 'postgresql'
                 }),
+                signal: signal
             })
 
             const data = await response.json()
@@ -109,9 +129,16 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
                 setQueryError(data.error || 'Query execution failed')
             }
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Query execution aborted')
+                return
+            }
             setQueryError(`Connection error: ${error.message} `)
         } finally {
-            setIsExecuting(false)
+            if (abortControllerRef.current === controller) {
+                setIsExecuting(false)
+                abortControllerRef.current = null
+            }
         }
     }
 
@@ -227,6 +254,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
                         <div className="editor-section" style={{ height: `${editorHeight}px` }}>
                             <QueryEditor
                                 onExecuteQuery={handleExecuteQuery}
+                                onCancelQuery={handleCancelExecution}
                                 isExecuting={isExecuting}
                                 height={editorHeight}
                                 schema={schema}
