@@ -205,7 +205,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
             // Update cell state to show cancellation clearly
             setCells(prev => prev.map(cell =>
                 cell.id === cellId
-                    ? { ...cell, error: 'Query execution cancelled by user', executionTime: null }
+                    ? { ...cell, error: 'Query execution cancelled by user', executionTime: null, isExecuting: false }
                     : cell
             ))
         }
@@ -233,6 +233,11 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                 queryToExecute += ` LIMIT ${selectedLimit.value}`
             }
         }
+
+        // Set executing state
+        setCells(prev => prev.map(cell =>
+            cell.id === cellId ? { ...cell, isExecuting: true, error: null } : cell
+        ))
 
         try {
             const response = await fetch('http://localhost:8000/api/execute-query', {
@@ -266,14 +271,15 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                             },
                             executionTime: data.executionTime,
                             lastRunAt: Date.now(),
-                            error: null
+                            error: null,
+                            isExecuting: false
                         }
                         : cell
                 ))
             } else {
                 setCells(prev => prev.map(cell =>
                     cell.id === cellId
-                        ? { ...cell, results: null, error: data.error || 'Query execution failed' }
+                        ? { ...cell, results: null, error: data.error || 'Query execution failed', isExecuting: false }
                         : cell
                 ))
             }
@@ -285,7 +291,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
             }
             setCells(prev => prev.map(cell =>
                 cell.id === cellId
-                    ? { ...cell, results: null, error: `Connection error: ${error.message}` }
+                    ? { ...cell, results: null, error: `Connection error: ${error.message}`, isExecuting: false }
                     : cell
             ))
         } finally {

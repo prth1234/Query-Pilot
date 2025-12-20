@@ -27,7 +27,7 @@ function QueryCell({
     cellRef,
     onCancel // New prop
 }) {
-    const [isExecuting, setIsExecuting] = useState(false)
+    const isExecuting = cell.isExecuting || false
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
     const viewRef = useRef(null)
@@ -47,13 +47,8 @@ function QueryCell({
         const currentQuery = queryRef.current
         if (isExecuting || !currentQuery.trim()) return
 
-        setIsExecuting(true)
         if (isCollapsed) setIsCollapsed(false) // Auto-expand on run
-        try {
-            await onExecute(cell.id, currentQuery)
-        } finally {
-            setIsExecuting(false)
-        }
+        await onExecute(cell.id, currentQuery)
     }, [isExecuting, cell.id, onExecute, isCollapsed])
 
     const handleKeyDown = (event) => {
@@ -345,7 +340,7 @@ function QueryCell({
                 </>
             )}
 
-            {cell.error && !cell.results && (
+            {cell.error && !cell.results && !isExecuting && (
                 <div className="cell-error">
                     <div className="error-icon">⚠️</div>
                     <div className="error-message">{cell.error}</div>
