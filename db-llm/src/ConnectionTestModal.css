@@ -14,6 +14,31 @@
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Light Mode Specific - Darker overlay for visibility */
+:root[data-theme="light"] .modal-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+/* Ensure success text is visible on dark overlay in light mode */
+:root[data-theme="light"] .result-section.success .result-title {
+    color: #3fb950 !important;
+    /* Force bright green (dark mode green) */
+}
+
+/* Ensure invisible/secondary buttons are white in light mode on dark overlay */
+:root[data-theme="light"] .modal-content .action-button:not(.primary) {
+    color: white !important;
+}
+
+:root[data-theme="light"] .modal-content .action-button:not(.primary) span {
+    color: white !important;
+}
+
+:root[data-theme="light"] .modal-content .action-button:not(.primary):hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

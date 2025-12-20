@@ -23,7 +23,6 @@ function ThemeTransition({ isTransitioning, targetTheme, onComplete }) {
     return (
         <div className={`theme-transition-overlay ${targetTheme}`}>
             <div className="glow-bar-top"></div>
-            <div className="glow-bar-bottom"></div>
         </div>
     )
 }

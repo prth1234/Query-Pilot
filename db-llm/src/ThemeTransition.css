@@ -26,47 +26,9 @@
         0 0 10px rgba(88, 166, 255, 0.8),
         0 0 20px rgba(88, 166, 255, 0.5),
         0 0 40px rgba(88, 166, 255, 0.3);
-    animation: glowPulse 0.6s ease-out forwards;
 }
 
-/* Bottom center glow */
-.glow-bar-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 4px;
-    border-radius: 2px;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            #58a6ff 30%,
-            #1f6feb 50%,
-            #58a6ff 70%,
-            transparent 100%);
-    box-shadow:
-        0 0 15px rgba(88, 166, 255, 0.9),
-        0 0 30px rgba(88, 166, 255, 0.6),
-        0 0 60px rgba(88, 166, 255, 0.4);
-    animation: glowPulse 0.6s ease-out forwards;
-}
 
-@keyframes glowPulse {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) scaleX(0.3);
-    }
-
-    30% {
-        opacity: 1;
-        transform: translateX(-50%) scaleX(1);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(-50%) scaleX(1.2);
-    }
-}
 
 /* Top bar animation (no translateX) */
 .glow-bar-top {
@@ -88,8 +50,7 @@
 }
 
 /* Light theme uses blue too, but slightly different shade */
-.theme-transition-overlay.light .glow-bar-top,
-.theme-transition-overlay.light .glow-bar-bottom {
+.theme-transition-overlay.light .glow-bar-top {
     background: linear-gradient(90deg,
             transparent 0%,
             #0969da 20%,
