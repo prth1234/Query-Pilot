@@ -165,6 +165,7 @@
 
 /* Coming Soon Badge */
 /* Coming Soon Badge */
+/* Coming Soon Badge */
 .coming-soon-badge {
     position: absolute;
     top: 12px;
@@ -175,26 +176,53 @@
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: transparent;
+    background: var(--bg-canvas);
+    /* Ensure background is opaque */
+    border: 1px solid var(--border-default);
+    color: var(--fg-muted);
+    /* Fallback color */
 
-    /* Text Gradient */
-    background-image: linear-gradient(108deg, #0090f7, #ba62fc 33%, #f2416b 66%, #f55600);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    /* Gradient Border Trick */
+    background-image: linear-gradient(var(--bg-canvas), var(--bg-canvas)), linear-gradient(108deg, #0090f7, #ba62fc 33%, #f2416b 66%, #f55600);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border: 2px solid transparent;
+
+    /* Make text gradient too, or just solid */
+    /* Let's make text solid specific color for readability */
+    color: var(--fg-default);
+    /* Actually the user wants it visible. Let's make it simple solid green like "Connected" or similar, OR keep the gradient idea but make it work. */
+    /* Let's try a solid pill style that stands out */
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-default);
+    color: var(--fg-muted);
     z-index: 2;
 }
 
-.coming-soon-badge::before {
-    content: '';
+/* Let's actually match the user's likely preference for the "gradient chip" mentioned in history but make it visible. 
+   The previous code was attempting text gradient. 
+   Let's do a simple solid badge with the gradient text but ensure fallback. 
+   Actually, the user said "not visible", likely implying the transparent text clip failed.
+   Let's just make it a solid green/grey badge.
+*/
+.coming-soon-badge {
     position: absolute;
-    inset: 0;
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
     border-radius: 20px;
-    padding: 1px;
-    background: linear-gradient(108deg, #0090f7, #ba62fc 33%, #f2416b 66%, #f55600);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    /* Visible Gradient Background */
+    background: linear-gradient(135deg, #0090f7, #ba62fc, #f2416b);
+    color: white !important;
+    border: none;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    opacity: 1 !important;
+    /* Force opacity ignoring parent disabled state */
 }

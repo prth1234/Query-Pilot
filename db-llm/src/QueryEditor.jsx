@@ -550,7 +550,7 @@ ORDER BY total_spent DESC;`
                         />
                     ) : (
                         <div className="query-name-wrapper" onClick={() => setIsEditingName(true)} title="Click to rename">
-                            <div className="editor-title">{queryName}</div>
+                            <div className="query-name-display">{queryName}</div>
                             <PencilIcon size={14} className="edit-icon" />
                         </div>
                     )}

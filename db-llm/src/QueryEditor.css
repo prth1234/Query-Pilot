@@ -874,7 +874,7 @@
 .query-name-wrapper {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     cursor: pointer;
     padding: 2px 6px;
     border-radius: 4px;
@@ -882,7 +882,14 @@
 }
 
 .query-name-wrapper:hover {
-    background: rgba(110, 118, 129, 0.1);
+    background: var(--bg-canvas-subtle);
+}
+
+.query-name-display {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg-default);
+    margin: 0;
 }
 
 .query-name-wrapper .edit-icon {
@@ -900,7 +907,9 @@
     border-radius: 4px;
     padding: 2px 6px;
     outline: none;
-    min-width: 200px;
+    width: auto;
+    min-width: 150px;
+    max-width: 300px;
     font-family: inherit;
 }
 

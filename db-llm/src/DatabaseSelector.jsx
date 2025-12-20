@@ -30,7 +30,7 @@ function DatabaseSelector({ onSelectDatabase }) {
                         <h3 className="db-name">{db.name}</h3>
                         <p className="db-category">{db.category}</p>
                         <p className="db-description">{db.description}</p>
-                        {db.comingSoon && <span className="coming-soon-badge">Coming Soon</span>}
+                        {/* {db.comingSoon && <span className="coming-soon-badge">Coming Soon</span>} */}
                     </div>
                 ))}
             </div>

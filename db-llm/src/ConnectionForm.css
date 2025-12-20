@@ -5,10 +5,10 @@
     margin-left: 20%;
     padding: 32px 40px;
     animation: slideIn 0.4s ease-out;
-    border: 1px solid var(--border-default);
+    /* border: 1px solid var(--border-default); */
     border-radius: 12px;
     background: transparent;
-    box-shadow: 0 0 0 1px var(--border-subtle);
+    /* box-shadow: 0 0 0 1px var(--border-subtle); */
     margin-top: 5vh;
     margin-bottom: 5vh;
 }
