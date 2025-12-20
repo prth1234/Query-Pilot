@@ -937,10 +937,10 @@
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
-    background: #161b22;
-    border: 1px solid rgba(110, 118, 129, 0.2);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-large);
     z-index: 10001;
     width: 360px;
     max-height: 500px;
@@ -959,18 +959,18 @@
 .no-saved-queries {
     padding: 32px 24px;
     text-align: center;
-    color: #8b949e;
+    color: var(--fg-muted);
 }
 
 .no-saved-queries p {
     margin: 0 0 8px 0;
     font-size: 14px;
-    color: #c9d1d9;
+    color: var(--fg-default);
 }
 
 .no-saved-queries small {
     font-size: 12px;
-    color: #7d8590;
+    color: var(--fg-subtle);
 }
 
 .saved-query-item {
@@ -979,8 +979,8 @@
     justify-content: space-between;
     padding: 12px;
     margin-bottom: 6px;
-    background: rgba(110, 118, 129, 0.05);
-    border: 1px solid rgba(110, 118, 129, 0.1);
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -991,8 +991,8 @@
 }
 
 .saved-query-item:hover {
-    background: rgba(56, 139, 253, 0.1);
-    border-color: rgba(88, 166, 255, 0.3);
+    background: var(--accent-muted);
+    border-color: var(--accent-fg);
     transform: translateX(-2px);
 }
 
@@ -1004,7 +1004,7 @@
 .saved-query-name {
     font-size: 14px;
     font-weight: 600;
-    color: #e6edf3;
+    color: var(--fg-default);
     margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -1016,7 +1016,7 @@
     align-items: center;
     gap: 8px;
     font-size: 11px;
-    color: #7d8590;
+    color: var(--fg-subtle);
 }
 
 .saved-query-meta span {
@@ -1032,16 +1032,16 @@
     background: transparent;
     border: 1px solid transparent;
     border-radius: 4px;
-    color: #7d8590;
+    color: var(--fg-subtle);
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
 
 .delete-saved-query:hover {
-    background: rgba(218, 54, 51, 0.15);
-    border-color: rgba(248, 81, 73, 0.4);
-    color: #f85149;
+    background: var(--danger-muted);
+    border-color: var(--danger-fg);
+    color: var(--danger-fg);
 }
 
 @keyframes fadeIn {

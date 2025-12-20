@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Heading, Text, Grid, Stack, Box } from '@primer/react-brand'
 import { ThemeProvider } from '@primer/react-brand'
 import '@primer/react-brand/lib/css/main.css'
 import LoadingAnimation from './LoadingAnimation'
 import ConnectionForm from './ConnectionForm'
 import Workspace from './Workspace'
+import ThemeTransition from './ThemeTransition'
 import { databases } from './databaseConfig'
 import queryPilotLogo from './assets/query-pilot-logo.png'
 import './App.css'
@@ -36,6 +37,10 @@ function App() {
     return localStorage.getItem('theme') || 'dark'
   })
 
+  // Theme transition state
+  const [isThemeTransitioning, setIsThemeTransitioning] = useState(false)
+  const [pendingTheme, setPendingTheme] = useState(null)
+
   // Apply theme to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -43,8 +48,26 @@ function App() {
   }, [theme])
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    setPendingTheme(newTheme)
+    setIsThemeTransitioning(true)
+
+    // Disable all CSS transitions so everything changes at once
+    document.documentElement.classList.add('theme-transitioning')
+
+    // Change theme immediately
+    setTheme(newTheme)
+
+    // Re-enable transitions after a brief moment
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning')
+    }, 50)
   }
+
+  const handleThemeTransitionComplete = useCallback(() => {
+    setIsThemeTransitioning(false)
+    setPendingTheme(null)
+  }, [])
 
   const fullText = 'Select Your Database'
 
@@ -121,6 +144,13 @@ function App() {
   return (
     <>
       {isLoading && <LoadingAnimation onComplete={handleLoadingComplete} />}
+
+      {/* Theme Transition Wave Overlay */}
+      <ThemeTransition
+        isTransitioning={isThemeTransitioning}
+        targetTheme={pendingTheme || theme}
+        onComplete={handleThemeTransitionComplete}
+      />
 
       <ThemeProvider colorMode={theme}>
         <div className={`app-container ${showContent ? 'fade-in' : ''}`}>

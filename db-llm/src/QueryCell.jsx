@@ -305,7 +305,10 @@ function QueryCell({
                     <div
                         className="cell-results-wrapper"
                         style={{
-                            height: resultsHeight ? `${resultsHeight}px` : 'auto'
+                            // When loading with no results, use auto height to prevent overlap
+                            height: isExecuting && !cell.results
+                                ? 'auto'
+                                : (resultsHeight ? `${resultsHeight}px` : 'auto')
                         }}
                         ref={resultsRef}
                     >

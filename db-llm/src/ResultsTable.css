@@ -803,10 +803,13 @@
 
 /* Loading State */
 .results-container.loading {
-    min-height: 300px;
+    /* Don't use fixed min-height - let the container size be determined by parent */
+    min-height: 80px;
+    max-height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .loading-state {
