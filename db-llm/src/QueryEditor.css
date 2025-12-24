@@ -50,6 +50,7 @@
     flex-shrink: 0 !important;
     min-height: 0 !important;
     overflow: auto !important;
+    height: auto !important;
 }
 
 /* Fullscreen Resizer */
@@ -281,6 +282,7 @@
     cursor: pointer;
     transition: all 0.2s ease !important;
     color: var(--danger-emphasis) !important;
+    margin-right: 8px;
 }
 
 .cancel-button:hover {

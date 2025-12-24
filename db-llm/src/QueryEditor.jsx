@@ -407,7 +407,7 @@ ORDER BY total_spent DESC;`
 
     // Load a saved query
     const handleLoadQuery = (savedQuery) => {
-        // Check if there are unsaved changes (current state doesn't match any saved query)
+        // Check if there is a selection
         const hasUnsavedChanges = !isCurrentQueryMatchingAnySaved()
         if (hasUnsavedChanges) {
             if (!window.confirm(`You have unsaved changes.Load "${savedQuery.name}" anyway ? `)) {
@@ -840,9 +840,11 @@ ORDER BY total_spent DESC;`
                     </div>
                     <div style={{
                         flex: 1,
-                        overflow: 'auto',
-                        background: '#0d1117',
-                        minHeight: 0
+                        overflow: 'hidden',
+                        background: 'var(--bg-canvas)',
+                        minHeight: 0,
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}>
                         <ResultsTable
                             results={queryResults}
