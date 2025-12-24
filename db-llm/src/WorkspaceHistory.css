@@ -1,0 +1,259 @@
+/* Workspace History Container */
+.workspace-history-container {
+    width: 100%;
+    margin-top: 64px;
+    margin-bottom: 48px;
+}
+
+.workspace-section {
+    margin-bottom: 56px;
+}
+
+.workspace-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.section-header:hover {
+    border-bottom-color: var(--border-default);
+    background: linear-gradient(to right, var(--bg-canvas-subtle), transparent);
+    padding-left: 8px;
+    border-radius: 6px;
+}
+
+.section-title-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-muted);
+    font-size: 20px;
+    margin-right: -4px;
+}
+
+.section-header:hover .section-toggle-icon {
+    color: var(--fg-default);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: var(--fg-default) !important;
+    margin: 0 !important;
+}
+
+.workspace-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    background: var(--bg-canvas-subtle);
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+}
+
+/* Workspace Grid */
+.workspace-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+/* Workspace Card - Transparent with clean border */
+.workspace-card {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.workspace-card:hover {
+    border-color: var(--accent-fg);
+    background: var(--bg-canvas-subtle);
+}
+
+.workspace-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.workspace-db-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid var(--border-subtle);
+}
+
+.db-icon-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.db-icon-text {
+    font-size: 24px;
+}
+
+.workspace-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.workspace-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fg-default);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workspace-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--fg-muted);
+}
+
+.workspace-db-name {
+    font-weight: 500;
+    color: var(--accent-fg);
+}
+
+.workspace-separator {
+    color: var(--fg-subtle);
+}
+
+.workspace-db-label {
+    font-family: 'SF Mono', monospace;
+    background: var(--bg-canvas-subtle);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.delete-workspace-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.delete-workspace-btn:hover {
+    background: var(--danger-muted);
+    border-color: var(--danger-muted);
+    color: var(--danger-fg);
+}
+
+.workspace-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Pretty Colored Chips - No animations */
+.workspace-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background: transparent;
+    padding: 4px 10px;
+    border-radius: 16px;
+    transition: background 0.2s ease;
+}
+
+/* Time Chip - Purple/Accent themed */
+.workspace-detail-item:first-child {
+    color: var(--accent-fg);
+    border: 1.5px solid var(--accent-fg);
+}
+
+.workspace-detail-item:first-child svg {
+    opacity: 1;
+    color: var(--accent-fg);
+}
+
+/* Host Chip - Green/Success themed */
+.workspace-detail-item:last-child {
+    color: var(--success-fg);
+    border: 1.5px solid var(--success-fg);
+}
+
+.workspace-detail-item:last-child svg {
+    opacity: 1;
+    color: var(--success-fg);
+}
+
+/* Subtle hover effects for chips - Just background, no scaling */
+.workspace-card:hover .workspace-detail-item:first-child {
+    background: var(--accent-muted);
+}
+
+.workspace-card:hover .workspace-detail-item:last-child {
+    background: var(--success-muted);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .workspace-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .workspace-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

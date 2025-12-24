@@ -236,24 +236,25 @@ async def test_mysql_connection(request: MySQLConnectionRequest):
         except pymysql.err.OperationalError as e:
             steps[-1]["status"] = "failed"
             error_msg = str(e)
-            steps[-1]["error"] = "Authentication failed"
+            steps[-1]["error"] = "Connection failed"
             
-            # Provide user-friendly error messages
+            # Provide detailed, user-friendly error messages
             if "Can't connect" in error_msg or "Unknown MySQL server host" in error_msg:
-                message = f"Cannot reach host '{request.host}:{request.port}'. Check host/port and network."
+                message = f"❌ Cannot reach MySQL server at '{request.host}:{request.port}'.\n\n💡 Possible fixes:\n• Check if MySQL server is running\n• Verify the host address and port number\n• Check your firewall settings\n• Ensure network connectivity"
             elif "Access denied" in error_msg:
-                message = "Access denied. Please check your username and password."
+                message = f"❌ Authentication failed for user '{request.user}'.\n\n💡 Possible fixes:\n• Verify your username is correct\n• Check your password\n• Ensure the user has access from your IP\n• Try: GRANT ALL ON {request.database}.* TO '{request.user}'@'%';"
             elif "cryptography" in error_msg.lower() or "caching_sha2_password" in error_msg.lower() or "sha256_password" in error_msg.lower():
-                # This usually means wrong password with MySQL 8.0+ authentication
-                message = "Authentication failed. Please verify your credentials (username/password)."
+                # MySQL 8.0+ uses caching_sha2_password by default which requires cryptography package
+                message = f"❌ MySQL Authentication Error (caching_sha2_password).\n\n💡 This is likely due to:\n• Incorrect password for user '{request.user}'\n• MySQL 8.0+ authentication method issue\n\n🔧 Solutions:\n1. Verify your password is correct\n2. Install cryptography: pip install cryptography\n3. Or change MySQL auth method:\n   ALTER USER '{request.user}'@'%' IDENTIFIED WITH mysql_native_password BY 'your_password';"
+                steps[-1]["error"] = "Authentication failed - MySQL 8.0+ requires correct password or cryptography package"
             else:
-                message = f"Connection failed: {error_msg}"
+                message = f"❌ Connection failed: {error_msg}\n\n💡 Check your connection details and try again."
             
             return ConnectionResponse(
                 success=False,
                 message=message,
                 steps=steps,
-                error="Authentication failed"
+                error=steps[-1]["error"]
             )
         except Exception as e:
             steps[-1]["status"] = "failed"
@@ -261,10 +262,10 @@ async def test_mysql_connection(request: MySQLConnectionRequest):
             
             # Check if it's a cryptography-related error
             if "cryptography" in error_msg.lower() or "sha256_password" in error_msg.lower() or "caching_sha2_password" in error_msg.lower():
-                steps[-1]["error"] = "Authentication failed"
+                steps[-1]["error"] = "Authentication error - cryptography package needed"
                 return ConnectionResponse(
                     success=False,
-                    message="Authentication failed. Please verify your credentials (username/password).",
+                    message=f"❌ MySQL Authentication Error.\n\n💡 MySQL 8.0+ uses advanced authentication which requires:\n1. Correct password for user '{request.user}'\n2. Python cryptography package: pip install cryptography\n\n🔧 Alternative solution:\nChange user authentication method:\nALTER USER '{request.user}'@'%' IDENTIFIED WITH mysql_native_password BY 'your_password';",
                     steps=steps,
                     error="Authentication failed"
                 )
@@ -272,7 +273,7 @@ async def test_mysql_connection(request: MySQLConnectionRequest):
             steps[-1]["error"] = error_msg
             return ConnectionResponse(
                 success=False,
-                message=f"Connection error: {error_msg}",
+                message=f"❌ Unexpected error: {error_msg}",
                 steps=steps,
                 error=error_msg
             )

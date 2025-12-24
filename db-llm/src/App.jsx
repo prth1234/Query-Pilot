@@ -6,6 +6,7 @@ import LoadingAnimation from './LoadingAnimation'
 import ConnectionForm from './ConnectionForm'
 import Workspace from './Workspace'
 import ThemeTransition from './ThemeTransition'
+import WorkspaceHistory from './WorkspaceHistory'
 import { databases } from './databaseConfig'
 import queryPilotLogo from './assets/query-pilot-logo.png'
 import './App.css'
@@ -130,15 +131,76 @@ function App() {
     setSelectedDatabase(null)
   }
 
+  // Save workspace to recent and optionally to saved
+  const saveWorkspace = (database, credentials, workspaceName = null) => {
+    const workspaceId = `${database.id}-${credentials.host}-${credentials.database}-${Date.now()}`
+    const workspace = {
+      id: workspaceId,
+      name: workspaceName || `${database.name} - ${credentials.database}`,
+      database: database,
+      connectionDetails: credentials,
+      lastUsed: new Date().toISOString()
+    }
+
+    // Always save to recent workspaces
+    try {
+      const recent = JSON.parse(localStorage.getItem('recentWorkspaces') || '[]')
+      // Remove if already exists (to update timestamp)
+      const filtered = recent.filter(w =>
+        !(w.database?.id === database.id &&
+          w.connectionDetails?.host === credentials.host &&
+          w.connectionDetails?.database === credentials.database)
+      )
+      // Add to beginning
+      const updated = [workspace, ...filtered].slice(0, 10) // Keep last 10
+      localStorage.setItem('recentWorkspaces', JSON.stringify(updated))
+    } catch (error) {
+      console.error('Error saving to recent workspaces:', error)
+    }
+  }
+
   const handleConnect = (database, credentials) => {
     console.log('Connecting to:', database.name, 'with credentials:', credentials)
     setConnectedDatabase(database)
     setConnectionDetails(credentials)
+
+    // Save to workspace history
+    saveWorkspace(database, credentials)
+  }
+
+  // Handle selecting a workspace from history
+  const handleSelectWorkspace = (workspace) => {
+    if (workspace.database && workspace.connectionDetails) {
+      setConnectedDatabase(workspace.database)
+      setConnectionDetails(workspace.connectionDetails)
+
+      // Update last used time in recent workspaces
+      try {
+        const recent = JSON.parse(localStorage.getItem('recentWorkspaces') || '[]')
+        const updated = recent.map(w =>
+          w.id === workspace.id
+            ? { ...w, lastUsed: new Date().toISOString() }
+            : w
+        )
+        localStorage.setItem('recentWorkspaces', JSON.stringify(updated))
+      } catch (error) {
+        console.error('Error updating workspace:', error)
+      }
+    }
   }
 
   const handleDisconnect = () => {
     setConnectedDatabase(null)
     setConnectionDetails(null)
+  }
+
+  // Handle updating connection settings
+  const handleUpdateConnection = (database, newConnectionDetails) => {
+    // Update the connection details
+    setConnectionDetails(newConnectionDetails)
+    // Save to localStorage
+    localStorage.setItem('connectionDetails', JSON.stringify(newConnectionDetails))
+    // The workspace will automatically reconnect since connectionDetails prop changed
   }
 
   return (
@@ -200,6 +262,7 @@ function App() {
               database={connectedDatabase}
               connectionDetails={connectionDetails}
               onDisconnect={handleDisconnect}
+              onUpdateConnection={handleUpdateConnection}
               theme={theme}
               toggleTheme={toggleTheme}
             />
@@ -252,6 +315,12 @@ function App() {
                   </div>
                 ))}
               </div>
+
+              {/* Workspace History - Moved below database grid */}
+              <WorkspaceHistory
+                onSelectWorkspace={handleSelectWorkspace}
+                databases={databases}
+              />
             </Box>
           ) : (
             <ConnectionForm

@@ -164,11 +164,11 @@
 }
 
 /* Disconnect Button - Solid Red with White X */
-.disconnect-button {
+.disconnect-button,
+.settings-button {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: var(--danger-fg);
     border: none;
     display: flex;
     align-items: center;
@@ -176,6 +176,24 @@
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
+}
+
+.settings-button {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--fg-muted);
+    margin-right: 8px;
+}
+
+.settings-button:hover {
+    background: var(--bg-canvas-subtle);
+    border-color: var(--accent-fg);
+    color: var(--accent-fg);
+    transform: rotate(45deg);
+}
+
+.disconnect-button {
+    background: var(--danger-fg);
 }
 
 .disconnect-button:hover {

@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Box, Heading, Text } from '@primer/react-brand'
 import { CodeIcon, BookIcon } from '@primer/octicons-react'
+import { GrConfigure } from 'react-icons/gr'
 import QueryEditor from './QueryEditor'
 import ResultsTable from './ResultsTable'
 import NotebookView from './NotebookView'
+import ConnectionSettingsModal from './ConnectionSettingsModal'
 import './Workspace.css'
 
-function Workspace({ database, connectionDetails, onDisconnect, theme }) {
+function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateConnection }) {
     const [viewMode, setViewMode] = useState(() => localStorage.getItem('viewMode') || 'editor') // 'editor' or 'notebook'
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
     useEffect(() => {
         localStorage.setItem('viewMode', viewMode)
@@ -207,6 +210,15 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
         onDisconnect();
     }, [onDisconnect]);
 
+    const handleUpdateConnection = (newConnectionDetails) => {
+        // If parent provides update handler, use it
+        if (onUpdateConnection) {
+            onUpdateConnection(database, newConnectionDetails)
+        }
+        // Close settings modal
+        setIsSettingsModalOpen(false)
+    }
+
     return (
         <Box className="workspace-container">
             <div className="workspace-header">
@@ -244,6 +256,13 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
 
                 <div className="header-right">
                     <button
+                        className="settings-button"
+                        onClick={() => setIsSettingsModalOpen(true)}
+                        title="Edit Connection Settings"
+                    >
+                        <GrConfigure size={18} />
+                    </button>
+                    <button
                         className="disconnect-button"
                         onClick={handleDisconnect}
                         title="Disconnect"
@@ -254,6 +273,15 @@ function Workspace({ database, connectionDetails, onDisconnect, theme }) {
                     </button>
                 </div>
             </div>
+
+            {/* Connection Settings Modal */}
+            <ConnectionSettingsModal
+                isOpen={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+                database={database}
+                connectionDetails={connectionDetails}
+                onUpdate={handleUpdateConnection}
+            />
 
             <div className="workspace-content" ref={containerRef}>
                 {viewMode === 'editor' ? (
