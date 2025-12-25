@@ -141,7 +141,7 @@ textarea.form-textarea {
     height: 48px !important;
     font-size: 16px !important;
     width: 100% !important;
-    border-radius: 6px !important;
+    border-radius: 12px !important;
     padding: 0 16px !important;
     padding-right: 48px !important;
     /* Space for checkmark inside */
@@ -225,7 +225,8 @@ input[type=number] {
     /* Center by half height instead of transform */
     width: 18px;
     height: 18px;
-    background: var(--success-emphasis);
+    background: transparent;
+    border: 2px solid var(--success-emphasis);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -254,11 +255,11 @@ input[type=number] {
 }
 
 .validation-checkmark svg {
-    fill: var(--fg-on-emphasis);
+    fill: var(--success-emphasis);
     width: 11px;
     /* Slightly larger */
     height: 11px;
-    stroke: var(--fg-on-emphasis);
+    stroke: var(--success-emphasis);
     /* Make it bolder */
     stroke-width: 1px;
 }
