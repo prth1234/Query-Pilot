@@ -55,11 +55,11 @@ function ConnectionTestModal({ isOpen, onClose, steps, isSuccess, errorMessage, 
                 <Box className="modal-content">
                     <div className="modal-header">
                         <h2 style={{ paddingBottom: 15, fontSize: 40 }}>Testing Connection</h2>
-                        {/* <button className="close-button" onClick={onClose}>
+                        <button className="close-button" onClick={onClose}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                 <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
                             </svg>
-                        </button> */}
+                        </button>
                     </div>
 
                     {/* Show a fallback loader when there are no steps yet and result hasn't appeared */}
@@ -137,6 +137,8 @@ function ConnectionTestModal({ isOpen, onClose, steps, isSuccess, errorMessage, 
                             </div>
                         ))}
                     </div>
+
+
 
                     {/* Result section */}
                     {showResult && (

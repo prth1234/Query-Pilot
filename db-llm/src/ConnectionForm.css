@@ -442,44 +442,108 @@ input[type=number] {
     }
 }
 
-/* Form Actions */
-.form-actions {
+/* Form Actions Container */
+.form-actions-container {
     display: flex;
-    gap: 16px;
-    justify-content: flex-start;
-    margin-top: 40px;
+    flex-direction: row;
     align-items: center;
+    gap: 12px;
+    margin-top: 48px;
+    width: 100%;
 }
 
-/* Connect Button */
-.connect-button {
-    background-color: var(--success-emphasis) !important;
-    color: var(--fg-on-emphasis) !important;
-    border: 1px solid rgba(240, 246, 252, 0.1) !important;
-    font-weight: 600 !important;
-    padding: 0 24px !important;
-    height: 40px !important;
-    transition: all 0.2s ease;
+/* Base Button */
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-success {
+    height: 40px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    padding: 0 16px;
 }
 
-.connect-button:hover:not(:disabled) {
-    background-color: var(--success-emphasis) !important;
+/* Success Button (Green) - Go to Workspace */
+.btn-success {
+    background: var(--success-emphasis, #2da44e);
+    color: white;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success:hover {
+    filter: brightness(1.05);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--success-muted);
+    box-shadow: 0 4px 12px rgba(45, 164, 78, 0.25);
 }
 
-.connect-button:disabled {
-    background-color: var(--success-emphasis) !important;
-    opacity: 0.7;
-    cursor: not-allowed;
+.btn-success:active {
+    transform: translateY(0);
+    opacity: 0.9;
 }
 
-.connection-cancel-button {
-    color: var(--fg-default) !important;
+/* Primary Button */
+.btn-primary {
+    background: var(--fg-default);
+    /* Black in light mode, White in dark */
+    color: var(--bg-canvas);
+    border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.connection-cancel-button:hover {
-    color: var(--accent-fg) !important;
+.btn-primary:hover {
+    background: var(--fg-muted);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    opacity: 0.9;
+}
+
+/* Secondary Button - Test Connectivity */
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--fg-default);
+    border-radius: 50px;
+}
+
+.btn-secondary:hover {
+    background: var(--bg-canvas-subtle);
+    border-color: var(--fg-muted);
+}
+
+.btn-secondary:active {
+    background: var(--bg-canvas-inset);
+}
+
+/* Ghost Button - Cancel */
+.btn-ghost {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--fg-muted);
+    font-weight: 500;
+}
+
+.btn-ghost:hover {
+    color: var(--fg-default);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+/* Disabled State */
+button:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none !important;
 }
 
 /* Form Footer */

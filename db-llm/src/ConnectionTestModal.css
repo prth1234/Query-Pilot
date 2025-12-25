@@ -61,9 +61,39 @@
     /* Removed overflow: hidden so no clipping happens if we wanted negative margins, but fine to keep logic simple */
 }
 
+
 .modal-content {
     padding: 32px;
+    position: relative;
+    /* Ensure absolute children position relative to this */
 }
+
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    /* Ensure it is on top */
+    transform: scale(1.3);
+}
+
+.close-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Hover state is handled below or by existing styles, but let's ensure base styles are robust */
+
 
 /* Force header text to white */
 .modal-header h2 {

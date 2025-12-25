@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Heading, Text, Button, Box } from '@primer/react-brand'
+import { MdCastConnected } from "react-icons/md"
+import { LuEye, LuEyeOff } from "react-icons/lu";
 import './ConnectionForm.css'
 import ConnectionTestModal from './ConnectionTestModal'
 
@@ -139,6 +141,7 @@ function ConnectionForm({ database, onBack, onConnect }) {
     const [testSuccess, setTestSuccess] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     const [currentStep, setCurrentStep] = useState(-1)
+    const [showPassword, setShowPassword] = useState(false)
 
     // Load saved data on mount and validate
     useEffect(() => {
@@ -390,16 +393,40 @@ function ConnectionForm({ database, onBack, onConnect }) {
                                             className={`form-textarea ${isInvalid ? 'error' : ''} ${isValid ? 'success' : ''}`}
                                         />
                                     ) : (
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            type={field.type}
-                                            placeholder={field.placeholder}
-                                            required={field.required}
-                                            value={formData[field.name] || ''}
-                                            onChange={(e) => handleInputChange(field.name, e.target.value)}
-                                            className={`form-input ${isInvalid ? 'error' : ''} ${isValid ? 'success' : ''}`}
-                                        />
+                                        <div style={{ position: 'relative', width: '100%', display: 'flex' }}>
+                                            <input
+                                                id={field.name}
+                                                name={field.name}
+                                                type={field.type === 'password' ? (showPassword ? 'text' : 'password') : field.type}
+                                                placeholder={field.placeholder}
+                                                required={field.required}
+                                                value={formData[field.name] || ''}
+                                                onChange={(e) => handleInputChange(field.name, e.target.value)}
+                                                className={`form-input ${isInvalid ? 'error' : ''} ${isValid ? 'success' : ''}`}
+                                                style={field.type === 'password' ? { paddingRight: '35px' } : {}}
+                                            />
+                                            {field.type === 'password' && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        right: isValid ? '45px' : '10px',
+                                                        top: '50%',
+                                                        transform: 'translateY(-50%)',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        color: 'rgba(255, 255, 255, 0.5)',
+                                                        padding: 0,
+                                                        display: 'flex',
+                                                        zIndex: 2
+                                                    }}
+                                                >
+                                                    {showPassword ? <LuEyeOff size={16} /> : <LuEye size={16} />}
+                                                </button>
+                                            )}
+                                        </div>
                                     )}
 
                                     {isValid && (
@@ -532,28 +559,29 @@ function ConnectionForm({ database, onBack, onConnect }) {
                     </>
                 )}
 
-                <Box className="form-actions" sx={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center' }}>
-                    <Button
-                        variant="default"
-                        onClick={handleTestConnection}
-                        disabled={isTesting}
-                        className="test-button"
-                        type="button"
-                    >
-                        {isTesting ? 'Testing...' : 'Test Connection'}
-                    </Button>
-                    <Button
-                        variant="primary"
+                <Box className="form-actions-container">
+                    <button
                         onClick={handleDirectConnect}
                         disabled={isTesting}
-                        className="connect-button"
+                        className="btn-success"
                         type="submit"
                     >
                         Go to Workspace
-                    </Button>
-                    <Button variant="invisible" onClick={onBack} type="button" className="connection-cancel-button">
+                    </button>
+
+                    <button
+                        onClick={handleTestConnection}
+                        disabled={isTesting}
+                        className="btn-secondary"
+                        type="button"
+                    >
+                        <MdCastConnected size={18} style={{ marginRight: '8px' }} />
+                        Test Connectivity
+                    </button>
+
+                    <button onClick={onBack} type="button" className="btn-ghost">
                         Cancel
-                    </Button>
+                    </button>
                 </Box>
             </Box>
 

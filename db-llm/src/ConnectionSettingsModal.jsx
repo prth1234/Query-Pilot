@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
 import './ConnectionSettingsModal.css'
+import ConnectionTestModal from './ConnectionTestModal'
+import { MdCastConnected } from "react-icons/md"
+import { LuSave, LuEye, LuEyeOff } from "react-icons/lu";
 
 function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails, onUpdate }) {
     const [formData, setFormData] = useState({
@@ -11,8 +14,16 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
         connectionString: ''
     })
 
+    const [testSteps, setTestSteps] = useState([])
+    const [testSuccess, setTestSuccess] = useState(false)
+    const [testError, setTestError] = useState('')
+    const [isTesting, setIsTesting] = useState(false)
+    const [showTestModal, setShowTestModal] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+
     useEffect(() => {
-        if (connectionDetails) {
+        if (isOpen && connectionDetails) {
+            console.log('ConnectionSettingsModal: Loaded connectionDetails', connectionDetails)
             setFormData({
                 host: connectionDetails.host || '',
                 port: connectionDetails.port || '',
@@ -22,10 +33,12 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
                 connectionString: connectionDetails.connectionString || ''
             })
         }
-    }, [connectionDetails, isOpen])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen])
 
     const handleChange = (e) => {
         const { name, value } = e.target
+        console.log(`ConnectionSettingsModal: Field changed [${name}]`, name === 'password' ? '***' : value)
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -34,7 +47,11 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onUpdate(formData)
+        const updatePayload = {
+            ...formData,
+            user: formData.username
+        }
+        onUpdate(updatePayload)
         onClose()
     }
 
@@ -43,6 +60,74 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
         if (['mysql', 'postgresql', 'sqlite'].includes(dbId)) return 'SQL'
         if (['mongodb', 'redis'].includes(dbId)) return 'NoSQL'
         return 'Database'
+    }
+
+    const handleTestConnection = async () => {
+        setIsTesting(true)
+        setShowTestModal(true)
+        setTestSteps([])
+        setTestSuccess(false)
+        setTestError('')
+
+        try {
+            let endpoint = ''
+            let requestBody = {}
+
+            if (database.id === 'mysql') {
+                endpoint = 'http://localhost:8000/api/test-connection/mysql'
+                requestBody = {
+                    host: formData.host,
+                    port: parseInt(formData.port) || 3306,
+                    database: formData.database,
+                    user: formData.username,
+                    password: formData.password,
+                }
+                console.log('ConnectionSettingsModal: Testing MySQL connection', { ...requestBody, password: '***' })
+            } else if (database.id === 'postgresql') {
+                endpoint = 'http://localhost:8000/api/test-connection/postgresql'
+                requestBody = {
+                    host: formData.host,
+                    port: parseInt(formData.port) || 5432,
+                    database: formData.database,
+                    user: formData.username,
+                    password: formData.password,
+                }
+            } else if (database.id === 'sqlite') {
+                endpoint = 'http://localhost:8000/api/test-connection/sqlite'
+                requestBody = {
+                    connectionString: formData.connectionString
+                }
+            } else if (database.id === 'mongodb') {
+                endpoint = 'http://localhost:8000/api/test-connection/mongodb'
+                requestBody = {
+                    connectionString: formData.connectionString
+                }
+            }
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            })
+
+            const data = await response.json()
+            console.log('ConnectionSettingsModal: Test response', data)
+
+            if (data.steps) {
+                setTestSteps(data.steps)
+            }
+
+            setTestSuccess(data.success)
+            if (!data.success) {
+                setTestError(data.error || data.message || 'Connection failed')
+            }
+        } catch (error) {
+            console.error('Test connection error:', error)
+            setTestError(error.message)
+            setTestSuccess(false)
+        } finally {
+            setIsTesting(false)
+        }
     }
 
     if (!isOpen) return null
@@ -65,8 +150,8 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
                         </div>
                     </div>
                     <button className="settings-close-btn" onClick={onClose}>
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z" />
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
                         </svg>
                     </button>
                 </div>
@@ -143,14 +228,37 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
 
                             <div className="form-group">
                                 <label className="form-label">Password</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="form-input"
-                                    placeholder="••••••••"
-                                />
+                                <div className="password-input-container" style={{ position: 'relative' }}>
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        className="form-input"
+                                        placeholder="••••••••"
+                                        style={{ paddingRight: '35px' }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle-btn"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        style={{
+                                            position: 'absolute',
+                                            right: '10px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: 'rgba(255, 255, 255, 0.5)',
+                                            display: 'flex',
+                                            padding: 0,
+                                            zIndex: 5
+                                        }}
+                                    >
+                                        {showPassword ? <LuEyeOff size={16} /> : <LuEye size={16} />}
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="form-group">
@@ -172,18 +280,33 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
                     )}
 
                     <div className="settings-modal-actions">
+                        <button type="button" className="btn-secondary" onClick={handleTestConnection}>
+                            <MdCastConnected size={16} style={{ marginRight: '8px' }} />
+                            Test Connection
+                        </button>
                         <button type="button" className="btn-secondary" onClick={onClose}>
                             Cancel
                         </button>
                         <button type="submit" className="btn-primary-outline">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z" />
-                            </svg>
+                            <LuSave />
+
                             Save
                         </button>
                     </div>
                 </form>
             </div>
+
+            <ConnectionTestModal
+                isOpen={showTestModal}
+                onClose={() => setShowTestModal(false)}
+                steps={testSteps}
+                isSuccess={testSuccess}
+                errorMessage={testError}
+                onRetry={() => {
+                    setShowTestModal(false)
+                    handleTestConnection()
+                }}
+            />
         </div>
     )
 }

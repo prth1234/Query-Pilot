@@ -6,6 +6,8 @@ import QueryEditor from './QueryEditor'
 import ResultsTable from './ResultsTable'
 import NotebookView from './NotebookView'
 import ConnectionSettingsModal from './ConnectionSettingsModal'
+import ConnectionFailureModal from './ConnectionFailureModal'
+import Notification from './Notification'
 import './Workspace.css'
 
 function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateConnection }) {
@@ -36,6 +38,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
     const resizerRef = useRef(null)
     const abortControllerRef = useRef(null)
     const [notification, setNotification] = useState(null)
+    const [isConnectionFailureModalOpen, setIsConnectionFailureModalOpen] = useState(false)
 
     // Handle import from notebook to editor
     const handleImportFromNotebook = (query) => {
@@ -80,11 +83,8 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
             } catch (error) {
                 console.error('Failed to fetch schema:', error)
                 setIsConnected(false)
-
-                // Show error message and open settings
-                setNotification({ type: 'error', message: 'Connection failed' })
-                setIsSettingsModalOpen(true)
-                setTimeout(() => setNotification(null), 5000)
+                setIsConnectionFailureModalOpen(true)
+                setNotification(null)
             } finally {
                 setIsLoadingSchema(false)
             }
@@ -234,27 +234,13 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
     return (
         <Box className="workspace-container">
             {notification && (
-                <div style={{
-                    position: 'absolute',
-                    top: '80px',
-                    right: '24px',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    backgroundColor: notification.type === 'success' ? 'var(--success-emphasis)' : 'var(--danger-emphasis)',
-                    color: 'white',
-                    zIndex: 100,
-                    boxShadow: 'var(--shadow-medium)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    animation: 'slideIn 0.3s ease-out'
-                }}>
-                    {notification.type === 'success' ? (
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg>
-                    ) : (
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path></svg>
-                    )}
-                    <span style={{ fontWeight: 600 }}>{notification.message}</span>
+                <div style={{ position: 'fixed', top: '96px', right: '24px', zIndex: 1000 }}>
+                    <Notification
+                        type={notification.type}
+                        message={notification.message}
+                        onClose={() => setNotification(null)}
+                        duration={notification.type === 'success' ? 3000 : 5000}
+                    />
                 </div>
             )}
             <div className="workspace-header">
@@ -373,6 +359,29 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
                     />
                 )}
             </div>
+            <ConnectionFailureModal
+                isOpen={isConnectionFailureModalOpen}
+                onClose={() => {
+                    setIsConnectionFailureModalOpen(false)
+                    // Show notification again if closed without action
+                    setNotification({
+                        type: 'error',
+                        message: 'Connection failed',
+                        action: {
+                            label: 'Edit Settings',
+                            onClick: () => {
+                                setIsSettingsModalOpen(true)
+                                setNotification(null)
+                            }
+                        }
+                    })
+                }}
+                onEditConfig={() => {
+                    setIsConnectionFailureModalOpen(false)
+                    setIsSettingsModalOpen(true)
+                }}
+                onDisconnect={onDisconnect}
+            />
         </Box>
     )
 }
