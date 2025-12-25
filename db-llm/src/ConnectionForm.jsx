@@ -198,14 +198,8 @@ function ConnectionForm({ database, onBack, onConnect }) {
         }
     }
 
-    const handleTestConnection = async (e) => {
-        e.preventDefault()
-
-        // Validate all fields first
+    const validateForm = () => {
         const allValid = database.connectionFields.every(field => {
-            const hasValue = !!formData[field.name]
-            const isRequired = field.required
-
             if (field.required && !formData[field.name]) {
                 return false
             }
@@ -217,9 +211,16 @@ function ConnectionForm({ database, onBack, onConnect }) {
         })
 
         if (!allValid) {
-            alert('Please fix all validation errors before testing')
-            return
+            alert('Please fix all validation errors before proceeding')
+            return false
         }
+        return true
+    }
+
+    const handleTestConnection = async (e) => {
+        e.preventDefault()
+
+        if (!validateForm()) return
 
         setIsTesting(true)
         setShowModal(true)
@@ -337,6 +338,13 @@ function ConnectionForm({ database, onBack, onConnect }) {
         onConnect(database, finalFormData)
     }
 
+    const handleDirectConnect = (e) => {
+        e.preventDefault()
+        if (validateForm()) {
+            handleNavigateToWorkspace()
+        }
+    }
+
     return (
         <Box className="connection-form-container">
             <Button onClick={onBack} variant="invisible" className="back-button">
@@ -355,7 +363,7 @@ function ConnectionForm({ database, onBack, onConnect }) {
                 </Box>
             </Box>
 
-            <Box as="form" onSubmit={handleTestConnection} className="connection-form">
+            <Box as="form" onSubmit={handleDirectConnect} className="connection-form">
                 <div className="form-fields-grid">
                     {database.connectionFields.map((field) => {
                         const validation = validationState[field.name]
@@ -524,15 +532,24 @@ function ConnectionForm({ database, onBack, onConnect }) {
                     </>
                 )}
 
-                <Box className="form-actions">
+                <Box className="form-actions" sx={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center' }}>
                     <Button
-                        variant="primary"
-                        type="submit"
+                        variant="default"
                         onClick={handleTestConnection}
                         disabled={isTesting}
-                        className="connect-button"
+                        className="test-button"
+                        type="button"
                     >
-                        {isTesting ? 'Testing Connection...' : 'Test Connection'}
+                        {isTesting ? 'Testing...' : 'Test Connection'}
+                    </Button>
+                    <Button
+                        variant="primary"
+                        onClick={handleDirectConnect}
+                        disabled={isTesting}
+                        className="connect-button"
+                        type="submit"
+                    >
+                        Go to Workspace
                     </Button>
                     <Button variant="invisible" onClick={onBack} type="button" className="connection-cancel-button">
                         Cancel
