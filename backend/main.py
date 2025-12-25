@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import time
+import asyncio
 from urllib.parse import quote_plus, unquote_plus
 
 def fix_mongodb_uri(uri: str) -> str:
@@ -624,41 +625,48 @@ async def execute_query(request: QueryRequest):
             try:
                 import pymysql
                 
-                connection = pymysql.connect(
-                    host=request.host,
-                    port=request.port,
-                    user=request.user,
-                    password=request.password,
-                    database=request.database,
-                    connect_timeout=10,
-                    read_timeout=30,
-                    write_timeout=30,
-                    cursorclass=pymysql.cursors.DictCursor
-                )
+                # Run blocking DB operations in a thread pool to avoid blocking the event loop
+                def execute_mysql_query():
+                    connection = pymysql.connect(
+                        host=request.host,
+                        port=request.port,
+                        user=request.user,
+                        password=request.password,
+                        database=request.database,
+                        connect_timeout=10,
+                        read_timeout=30,
+                        write_timeout=30,
+                        cursorclass=pymysql.cursors.DictCursor
+                    )
+                    
+                    cursor = connection.cursor()
+                    cursor.execute(request.query)
+                    rows = cursor.fetchall()
+                    
+                    # Get column names
+                    columns = [desc[0] for desc in cursor.description] if cursor.description else []
+                    
+                    # Convert rows to list of dicts with string keys
+                    formatted_rows = []
+                    for row in rows:
+                        formatted_row = {}
+                        for key, value in row.items():
+                            # Convert any non-serializable types to strings
+                            if value is None:
+                                formatted_row[key] = None
+                            elif isinstance(value, (int, float, str, bool)):
+                                formatted_row[key] = value
+                            else:
+                                formatted_row[key] = str(value)
+                        formatted_rows.append(formatted_row)
+                    
+                    cursor.close()
+                    connection.close()
+                    
+                    return columns, formatted_rows
                 
-                cursor = connection.cursor()
-                cursor.execute(request.query)
-                rows = cursor.fetchall()
-                
-                # Get column names
-                columns = [desc[0] for desc in cursor.description] if cursor.description else []
-                
-                # Convert rows to list of dicts with string keys
-                formatted_rows = []
-                for row in rows:
-                    formatted_row = {}
-                    for key, value in row.items():
-                        # Convert any non-serializable types to strings
-                        if value is None:
-                            formatted_row[key] = None
-                        elif isinstance(value, (int, float, str, bool)):
-                            formatted_row[key] = value
-                        else:
-                            formatted_row[key] = str(value)
-                    formatted_rows.append(formatted_row)
-                
-                cursor.close()
-                connection.close()
+                # Run the blocking function in a thread pool
+                columns, formatted_rows = await asyncio.to_thread(execute_mysql_query)
                 
                 execution_time = int((time.time() - start_time) * 1000)
                 
@@ -686,39 +694,46 @@ async def execute_query(request: QueryRequest):
                 import psycopg2
                 import psycopg2.extras
                 
-                connection = psycopg2.connect(
-                    host=request.host,
-                    port=request.port,
-                    user=request.user,
-                    password=request.password,
-                    dbname=request.database,
-                    connect_timeout=10
-                )
+                # Run blocking DB operations in a thread pool to avoid blocking the event loop
+                def execute_postgresql_query():
+                    connection = psycopg2.connect(
+                        host=request.host,
+                        port=request.port,
+                        user=request.user,
+                        password=request.password,
+                        dbname=request.database,
+                        connect_timeout=10
+                    )
+                    
+                    cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                    cursor.execute(request.query)
+                    rows = cursor.fetchall()
+                    
+                    # Get column names
+                    columns = [desc[0] for desc in cursor.description] if cursor.description else []
+                    
+                    # Convert rows to list of dicts
+                    formatted_rows = []
+                    for row in rows:
+                        formatted_row = {}
+                        for key in columns:
+                            value = row[key]
+                            # Convert any non-serializable types to strings
+                            if value is None:
+                                formatted_row[key] = None
+                            elif isinstance(value, (int, float, str, bool)):
+                                formatted_row[key] = value
+                            else:
+                                formatted_row[key] = str(value)
+                        formatted_rows.append(formatted_row)
+                    
+                    cursor.close()
+                    connection.close()
+                    
+                    return columns, formatted_rows
                 
-                cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                cursor.execute(request.query)
-                rows = cursor.fetchall()
-                
-                # Get column names
-                columns = [desc[0] for desc in cursor.description] if cursor.description else []
-                
-                # Convert rows to list of dicts
-                formatted_rows = []
-                for row in rows:
-                    formatted_row = {}
-                    for key in columns:
-                        value = row[key]
-                        # Convert any non-serializable types to strings
-                        if value is None:
-                            formatted_row[key] = None
-                        elif isinstance(value, (int, float, str, bool)):
-                            formatted_row[key] = value
-                        else:
-                            formatted_row[key] = str(value)
-                    formatted_rows.append(formatted_row)
-                
-                cursor.close()
-                connection.close()
+                # Run the blocking function in a thread pool
+                columns, formatted_rows = await asyncio.to_thread(execute_postgresql_query)
                 
                 execution_time = int((time.time() - start_time) * 1000)
                 
@@ -760,111 +775,106 @@ async def execute_query(request: QueryRequest):
                 if request.username and request.password:
                     conn_str = inject_credentials(conn_str, request.username, request.password)
                 
-                # Connect to MongoDB
-                try:
-                    client = MongoClient(conn_str, serverSelectionTimeoutMS=10000)
-                except Exception as e:
-                    if "RFC 3986" in str(e) or "must be escaped" in str(e).lower():
-                        fixed_uri = fix_mongodb_uri(conn_str)
-                        client = MongoClient(fixed_uri, serverSelectionTimeoutMS=10000)
-                    else:
-                        raise e
-
-                # Use the explicitly requested database and ignore any database in connection string
-                db = client[request.database]
-                
-                # Parse the query - expect JSON format
-                # Format: {"collection": "users", "query": {...}, "limit": 1000}
-                # or {"collection": "users", "aggregate": [...]}
-                try:
-                    query_obj = json.loads(request.query)
-                except json.JSONDecodeError:
-                    client.close()
-                    return QueryResponse(
-                        success=False,
-                        error="Invalid JSON query format. Expected: {\"collection\": \"name\", \"query\": {...}} or {\"collection\": \"name\", \"aggregate\": [...]}"
-                    )
-                
-                if 'collection' not in query_obj:
-                    client.close()
-                    return QueryResponse(
-                        success=False,
-                        error="Query must specify 'collection' field"
-                    )
-                
-                # Parse collection name to handle "database.collection" format
-                collection_name = query_obj.get('collection')
-                if not collection_name:
-                    client.close()
-                    return QueryResponse(success=False, error="Query must specify 'collection' field")
-                
-                target_db = None
-                target_coll = None
-                
-                if '.' in collection_name:
-                    parts = collection_name.split('.', 1)
-                    target_db_name = parts[0]
-                    target_coll_name = parts[1]
-                    target_db = client[target_db_name]
-                    target_coll = target_db[target_coll_name]
-                else:
-                    # Fallback to requested database if no prefix
-                    target_db = client[request.database]
-                    target_coll = target_db[collection_name]
-                
-                # Execute query
-                if 'aggregate' in query_obj:
-                    # Aggregation pipeline
-                    pipeline = query_obj['aggregate']
-                    cursor = target_coll.aggregate(pipeline)
-                    results = list(cursor)
-                else:
-                    # Regular find query
-                    find_query = query_obj.get('query', {})
-                    projection = query_obj.get('projection', None)
-                    limit = query_obj.get('limit', 1000)
-                    sort = query_obj.get('sort', None)
-                    
-                    cursor = target_coll.find(find_query, projection)
-                    if sort:
-                        cursor = cursor.sort(sort)
-                    cursor = cursor.limit(limit)
-                    results = list(cursor)
-                
-                # Convert MongoDB documents to tabular format
-                if not results:
-                    client.close()
-                    return QueryResponse(
-                        success=True,
-                        columns=[],
-                        rows=[],
-                        rowCount=0,
-                        executionTime=int((time.time() - start_time) * 1000)
-                    )
-                
-                # Get all unique keys from all documents
-                all_keys = set()
-                for doc in results:
-                    all_keys.update(doc.keys())
-                
-                columns = sorted(list(all_keys))
-                
-                # Convert documents to rows
-                formatted_rows = []
-                for doc in results:
-                    row = {}
-                    for key in columns:
-                        value = doc.get(key)
-                        # Convert ObjectId and other MongoDB types to strings
-                        if value is None:
-                            row[key] = None
-                        elif isinstance(value, (int, float, str, bool)):
-                            row[key] = value
+                # Run blocking DB operations in a thread pool to avoid blocking the event loop
+                def execute_mongodb_query():
+                    # Connect to MongoDB
+                    try:
+                        client = MongoClient(conn_str, serverSelectionTimeoutMS=10000)
+                    except Exception as e:
+                        if "RFC 3986" in str(e) or "must be escaped" in str(e).lower():
+                            fixed_uri = fix_mongodb_uri(conn_str)
+                            client = MongoClient(fixed_uri, serverSelectionTimeoutMS=10000)
                         else:
-                            row[key] = str(value)
-                    formatted_rows.append(row)
+                            raise e
+
+                    # Use the explicitly requested database and ignore any database in connection string
+                    db = client[request.database]
+                    
+                    # Parse the query - expect JSON format
+                    # Format: {"collection": "users", "query": {...}, "limit": 1000}
+                    # or {"collection": "users", "aggregate": [...]}
+                    try:
+                        query_obj = json.loads(request.query)
+                    except json.JSONDecodeError:
+                        client.close()
+                        raise ValueError("Invalid JSON query format. Expected: {\"collection\": \"name\", \"query\": {...}} or {\"collection\": \"name\", \"aggregate\": [...]}")
+                    
+                    if 'collection' not in query_obj:
+                        client.close()
+                        raise ValueError("Query must specify 'collection' field")
+                    
+                    # Parse collection name to handle "database.collection" format
+                    collection_name = query_obj.get('collection')
+                    if not collection_name:
+                        client.close()
+                        raise ValueError("Query must specify 'collection' field")
+                    
+                    target_db = None
+                    target_coll = None
+                    
+                    if '.' in collection_name:
+                        parts = collection_name.split('.', 1)
+                        target_db_name = parts[0]
+                        target_coll_name = parts[1]
+                        target_db = client[target_db_name]
+                        target_coll = target_db[target_coll_name]
+                    else:
+                        # Fallback to requested database if no prefix
+                        target_db = client[request.database]
+                        target_coll = target_db[collection_name]
+                    
+                    # Execute query
+                    if 'aggregate' in query_obj:
+                        # Aggregation pipeline
+                        pipeline = query_obj['aggregate']
+                        cursor = target_coll.aggregate(pipeline)
+                        results = list(cursor)
+                    else:
+                        # Regular find query
+                        find_query = query_obj.get('query', {})
+                        projection = query_obj.get('projection', None)
+                        limit = query_obj.get('limit', 1000)
+                        sort = query_obj.get('sort', None)
+                        
+                        cursor = target_coll.find(find_query, projection)
+                        if sort:
+                            cursor = cursor.sort(sort)
+                        cursor = cursor.limit(limit)
+                        results = list(cursor)
+                    
+                    # Convert MongoDB documents to tabular format
+                    if not results:
+                        client.close()
+                        return [], [], 0
+                    
+                    # Get all unique keys from all documents
+                    all_keys = set()
+                    for doc in results:
+                        all_keys.update(doc.keys())
+                    
+                    columns = sorted(list(all_keys))
+                    
+                    # Convert documents to rows
+                    formatted_rows = []
+                    for doc in results:
+                        row = {}
+                        for key in columns:
+                            value = doc.get(key)
+                            # Convert ObjectId and other MongoDB types to strings
+                            if value is None:
+                                row[key] = None
+                            elif isinstance(value, (int, float, str, bool)):
+                                row[key] = value
+                            else:
+                                row[key] = str(value)
+                        formatted_rows.append(row)
+                    
+                    client.close()
+                    
+                    return columns, formatted_rows, len(formatted_rows)
                 
-                client.close()
+                # Run the blocking function in a thread pool
+                columns, formatted_rows, row_count = await asyncio.to_thread(execute_mongodb_query)
                 
                 execution_time = int((time.time() - start_time) * 1000)
                 
@@ -872,7 +882,7 @@ async def execute_query(request: QueryRequest):
                     success=True,
                     columns=columns,
                     rows=formatted_rows,
-                    rowCount=len(formatted_rows),
+                    rowCount=row_count,
                     executionTime=execution_time
                 )
                 
@@ -885,6 +895,11 @@ async def execute_query(request: QueryRequest):
                 return QueryResponse(
                     success=False,
                     error=f"MongoDB Error: {str(e)}"
+                )
+            except ValueError as e:
+                return QueryResponse(
+                    success=False,
+                    error=str(e)
                 )
             except Exception as e:
                 return QueryResponse(

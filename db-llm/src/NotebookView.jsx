@@ -299,12 +299,113 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         }
     }
 
-    const handleRunAll = async () => {
-        for (const cell of cells) {
-            if (cell.query.trim()) {
-                await handleExecuteCell(cell.id, cell.query)
+    const handleRunAll = () => {
+        // Get all SQL cells that need to be executed
+        const cellsToExecute = cells.filter(cell => cell.type === 'sql' && cell.query && cell.query.trim())
+
+        if (cellsToExecute.length === 0) return
+
+        // STEP 1: Set ALL cells to executing state in ONE batch update
+        // This prevents state update delays from blocking concurrent execution
+        const cellIdsToExecute = cellsToExecute.map(c => c.id)
+        setCells(prev => prev.map(cell =>
+            cellIdsToExecute.includes(cell.id)
+                ? { ...cell, isExecuting: true, error: null }
+                : cell
+        ))
+
+        // STEP 2: Immediately fire ALL fetch requests concurrently
+        // All network requests start at the same time - no waiting!
+        const executionPromises = cellsToExecute.map(cell => {
+            // Cancel any existing execution for this cell
+            if (abortControllersRef.current[cell.id]) {
+                abortControllersRef.current[cell.id].abort()
             }
-        }
+
+            // Create new controller
+            const controller = new AbortController()
+            abortControllersRef.current[cell.id] = controller
+            const signal = controller.signal
+
+            let queryToExecute = cell.query.trim()
+
+            // Append LIMIT if needed
+            if (selectedLimit.value !== -1) {
+                queryToExecute = queryToExecute.replace(/;\s*$/, '')
+                if (!queryToExecute.toLowerCase().includes('limit')) {
+                    queryToExecute += ` LIMIT ${selectedLimit.value}`
+                }
+            }
+
+            // Fire the fetch request immediately - this is non-blocking!
+            console.log(`🚀 Starting execution for cell ${cell.id} at ${Date.now()}`)
+
+            return fetch('http://localhost:8000/api/execute-query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: queryToExecute,
+                    host: connectionDetails.host,
+                    port: connectionDetails.port,
+                    database: connectionDetails.database,
+                    user: connectionDetails.user,
+                    username: connectionDetails.username,
+                    password: connectionDetails.password,
+                    connectionString: connectionDetails.connectionString,
+                    db_type: database?.id || connectionDetails.db_type || 'mysql'
+                }),
+                signal: signal
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`✅ Cell ${cell.id} completed at ${Date.now()}`)
+                    // Update this specific cell with results
+                    if (data.success) {
+                        setCells(prev => prev.map(c =>
+                            c.id === cell.id
+                                ? {
+                                    ...c,
+                                    results: {
+                                        columns: data.columns,
+                                        rows: data.rows,
+                                        rowCount: data.rowCount
+                                    },
+                                    executionTime: data.executionTime,
+                                    lastRunAt: Date.now(),
+                                    error: null,
+                                    isExecuting: false
+                                }
+                                : c
+                        ))
+                    } else {
+                        setCells(prev => prev.map(c =>
+                            c.id === cell.id
+                                ? { ...c, results: null, error: data.error || 'Query execution failed', isExecuting: false }
+                                : c
+                        ))
+                    }
+                })
+                .catch(error => {
+                    if (error.name === 'AbortError') {
+                        console.log(`❌ Cell ${cell.id} execution aborted`)
+                        return null
+                    }
+                    console.error(`❌ Cell ${cell.id} failed:`, error)
+                    setCells(prev => prev.map(c =>
+                        c.id === cell.id
+                            ? { ...c, results: null, error: `Connection error: ${error.message}`, isExecuting: false }
+                            : c
+                    ))
+                })
+                .finally(() => {
+                    delete abortControllersRef.current[cell.id]
+                })
+        })
+
+        // Wait for all to complete (they're already running concurrently!)
+        Promise.all(executionPromises).then(() => {
+            console.log('🎉 All cell executions completed!')
+        })
     }
 
     const handleClearAll = () => {
