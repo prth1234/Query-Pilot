@@ -70,7 +70,7 @@ function TableSettings({ settings, onSettingsChange, onClose, onReset }) {
 
                 {/* Header Style */}
                 <div className="setting-group">
-                    <label className="setting-label">Header Style</label>
+                    {/* <label className="setting-label">Header Style</label>
                     <div className="radio-group">
                         {['dark', 'light', 'colored'].map(option => (
                             <label key={option} className="radio-option">
@@ -84,7 +84,7 @@ function TableSettings({ settings, onSettingsChange, onClose, onReset }) {
                                 <span>{option.charAt(0).toUpperCase() + option.slice(1)}</span>
                             </label>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Toggle Settings */}
