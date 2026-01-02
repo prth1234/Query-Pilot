@@ -138,7 +138,7 @@
 
 .cell-editor {
     /* Default font settings */
-    --editor-font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    --editor-font-family: var(--font-mono);
     --editor-font-size: 13px;
     font-family: var(--editor-font-family);
     font-size: var(--editor-font-size);

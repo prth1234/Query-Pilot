@@ -293,7 +293,7 @@ input[type=number] {
 
 .connection-string-input {
     width: 100%;
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
 }
 

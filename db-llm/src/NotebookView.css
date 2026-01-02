@@ -362,7 +362,7 @@
 .setting-value {
     font-size: 11px;
     color: var(--fg-default);
-    font-family: monospace;
+    font-family: var(--font-mono);
 }
 
 .dropdown-divider-vertical {
@@ -483,7 +483,7 @@ kbd {
     border: 1px solid var(--border-subtle);
     border-radius: 3px;
     padding: 2px 4px;
-    font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+    font-family: var(--font-mono);
     font-size: 11px;
     color: var(--fg-default);
 }
@@ -637,6 +637,7 @@ kbd {
         transform: translateY(0);
     }
 }
+
 /* Run Button Group - Copied from QueryEditor.css for consistency */
 .run-button-group {
     position: relative;
@@ -661,12 +662,14 @@ kbd {
     box-shadow: none !important;
     color: var(--success-emphasis) !important;
     height: 28px;
-    margin-right: -1px; /* Overlap borders */
+    margin-right: -1px;
+    /* Overlap borders */
     z-index: 1;
 }
 
 .execute-button:hover:not(:disabled) {
-    z-index: 2; /* Bring to front on hover */
+    z-index: 2;
+    /* Bring to front on hover */
 }
 
 .execute-dropdown-trigger {
@@ -682,7 +685,8 @@ kbd {
     cursor: pointer;
     transition: all 0.2s ease !important;
     color: var(--success-emphasis) !important;
-    margin-left: -1px; /* Overlap borders */
+    margin-left: -1px;
+    /* Overlap borders */
 }
 
 .execute-dropdown-trigger svg {

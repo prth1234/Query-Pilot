@@ -29,7 +29,7 @@
 /* Loader Container */
 .loader {
     color: var(--fg-muted);
-    font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-family: var(--font-primary) !important;
     font-weight: 500;
     font-size: 25px;
     box-sizing: content-box;
@@ -63,7 +63,7 @@
     height: 100%;
     padding-left: 6px;
     color: var(--accent-fg);
-    font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    font-family: var(--font-primary) !important;
     animation: spin_once 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
 }
 

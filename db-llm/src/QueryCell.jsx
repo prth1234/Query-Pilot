@@ -273,7 +273,7 @@ function QueryCell({
                     className="cell-editor"
                     style={{
                         '--editor-font-size': `${fontSize || 13}px`,
-                        '--editor-font-family': fontFamily?.family || "'SF Mono', 'Monaco', 'Courier New', monospace"
+                        '--editor-font-family': fontFamily?.family || "var(--font-mono)"
                     }}
                     basicSetup={{
                         lineNumbers: true,

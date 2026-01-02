@@ -6,7 +6,27 @@
   font-style: normal;
 }
 
+/* Import Bricolage Grotesque font from assets */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('./assets/BricolageGrotesque-VariableFont_opsz,wdth,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Sohne';
+  src: url('./assets/TestSohne-Dreiviertelfett-BF663d89ccc5f66.otf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+
 :root {
+  /* Font Variable - Change this to switch fonts easily */
+  --font-primary:  'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Courier New', monospace;
+
   /* Dark Theme Default */
   --bg-canvas: #0d1117;
   --bg-canvas-subtle: #161b22;
@@ -88,7 +108,7 @@
   --syntax-constant: #0550ae;
 }
 
-/* Apply SF-Pro globally - Override Primer's Mona Sans */
+/* Apply Font globally - Override Primer's Mona Sans */
 html,
 body,
 #root {
@@ -96,13 +116,13 @@ body,
   margin: 0;
   background-color: var(--bg-canvas);
   color: var(--fg-default);
-  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-family: var(--font-primary) !important;
   /* No transitions - wave animation handles the visual transition */
 }
 
-/* Apply SF-Pro to all elements to force override Primer CSS */
+/* Apply Font to all elements to force override Primer CSS */
 * {
-  font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-family: var(--font-primary) !important;
 }
 
 /* Disable all transitions during theme change for instant switch behind wave */

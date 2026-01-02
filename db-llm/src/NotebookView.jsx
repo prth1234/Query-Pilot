@@ -1,11 +1,12 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
-import { PlusIcon, PlayIcon, TrashIcon, GearIcon, PaintbrushIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
 import QueryCell from './QueryCell'
 import MarkdownCell from './MarkdownCell'
 import AIGeneratorButton from './AIGeneratorButton'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
 import './NotebookView.css'
+import { RiColorFilterAiLine } from "react-icons/ri";
 
 
 

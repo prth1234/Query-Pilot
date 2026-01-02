@@ -147,7 +147,7 @@
     color: var(--fg-default);
     text-transform: none;
     letter-spacing: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
 }
 
 .editor-actions {
@@ -355,7 +355,7 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--fg-default);
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
 }
 
 .font-family-section {
@@ -404,7 +404,7 @@
     color: var(--fg-default);
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
 }
 
 .dropdown-item:hover {
@@ -448,7 +448,7 @@
 .setting-value {
     font-size: 12px;
     color: var(--fg-muted);
-    font-family: 'SF Mono', monospace;
+    font-family: var(--font-mono);
 }
 
 .slider {
@@ -504,7 +504,7 @@
 .keyboard-hint {
     font-size: 11px;
     color: var(--fg-muted);
-    font-family: 'SF Mono', 'Courier New', monospace;
+    font-family: var(--font-mono);
     padding: 3px 6px;
     background: var(--bg-canvas-subtle);
     border-radius: 3px;
@@ -522,7 +522,7 @@
     height: 100%;
     font-size: 13px;
     /* Default font settings */
-    --editor-font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    --editor-font-family: var(--font-mono);
     --editor-font-size: 13px;
     font-family: var(--editor-font-family);
     font-size: var(--editor-font-size);
@@ -636,7 +636,7 @@
     padding: 2px 0 !important;
     min-width: 240px !important;
     max-width: 400px !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif !important;
+    font-family: var(--font-primary) !important;
     overflow: hidden !important;
 }
 
@@ -703,7 +703,7 @@
     font-size: 10px !important;
     color: var(--fg-muted) !important;
     margin-left: 10px !important;
-    font-family: 'SF Mono', 'Monaco', monospace !important;
+    font-family: var(--font-mono) !important;
     opacity: 0.8;
 }
 

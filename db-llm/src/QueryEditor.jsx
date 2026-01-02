@@ -4,10 +4,11 @@ import { sql } from '@codemirror/lang-sql'
 import { autocompletion } from '@codemirror/autocomplete'
 import { EditorView } from "@codemirror/view"
 import { Box } from '@primer/react-brand'
-import { PlayIcon, ChevronDownIcon, GearIcon, PaintbrushIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon, PlusIcon, StopIcon } from '@primer/octicons-react'
+import { PlayIcon, ChevronDownIcon, GearIcon, DownloadIcon, ClockIcon, TrashIcon, PencilIcon, PlusIcon, StopIcon } from '@primer/octicons-react'
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { TbCancel } from "react-icons/tb"
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
+import { RiColorFilterAiLine } from "react-icons/ri";
 
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import { dracula } from '@uiw/codemirror-theme-dracula'
@@ -35,7 +36,7 @@ export const THEMES = [
 ]
 
 export const FONT_FAMILIES = [
-    { name: 'SF Mono', value: 'sf-mono', family: "'SF Mono', 'Monaco', 'Courier New', monospace" },
+    { name: 'SF Mono (Default)', value: 'sf-mono', family: "var(--font-mono)" },
     { name: 'Fira Code', value: 'fira', family: "'Fira Code', 'Courier New', monospace" },
     { name: 'JetBrains Mono', value: 'jetbrains', family: "'JetBrains Mono', 'Courier New', monospace" },
     { name: 'Consolas', value: 'consolas', family: "'Consolas', 'Courier New', monospace" },
@@ -652,7 +653,7 @@ ORDER BY total_spent DESC;`
                         }}
                         title={`Current Theme: ${selectedTheme.name} (Click to change)`}
                     >
-                        <PaintbrushIcon size={14} />
+                        <RiColorFilterAiLine size={14} />
                     </button>
 
                     {/* Settings Selector */}

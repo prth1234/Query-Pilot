@@ -9,6 +9,8 @@ import ConnectionSettingsModal from './ConnectionSettingsModal'
 import ConnectionFailureModal from './ConnectionFailureModal'
 import Notification from './Notification'
 import './Workspace.css'
+import { MdSettingsInputHdmi } from "react-icons/md";
+
 
 function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateConnection }) {
     const [viewMode, setViewMode] = useState(() => localStorage.getItem('viewMode') || 'editor') // 'editor' or 'notebook'
@@ -282,7 +284,8 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
                         onClick={() => setIsSettingsModalOpen(true)}
                         title="Edit Connection Settings"
                     >
-                        <GrConfigure size={18} />
+                        <MdSettingsInputHdmi size={20} />
+
                     </button>
                     <button
                         className="disconnect-button"

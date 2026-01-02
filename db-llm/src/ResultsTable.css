@@ -91,7 +91,7 @@
     color: var(--fg-default);
     text-transform: none;
     letter-spacing: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
 }
 
 .results-badge {
@@ -244,7 +244,7 @@
     color: var(--fg-default);
     font-size: 12px;
     width: 140px;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
     padding: 0;
     margin: 0;
 }
@@ -300,12 +300,12 @@
 /* Font Family Options - Using !important to ensure override */
 .results-table.font-monospace .table-cell,
 .results-table.font-monospace .cell-content {
-    font-family: 'SF Mono', 'Monaco', monospace !important;
+    font-family: var(--font-mono) !important;
 }
 
 .results-table.font-sans-serif .table-cell,
 .results-table.font-sans-serif .cell-content {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif !important;
+    font-family: var(--font-primary) !important;
 }
 
 .results-table.font-serif .table-cell,
@@ -507,7 +507,7 @@
     font-size: 12px;
     text-transform: none;
     letter-spacing: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
 }
 
 .row-index-header {
@@ -624,7 +624,7 @@
     padding: 12px 16px;
     border-bottom: 1px solid var(--border-subtle);
     color: var(--fg-default);
-    font-family: 'SF Mono', 'Monaco', monospace;
+    font-family: var(--font-mono);
     max-width: 400px;
 }
 
@@ -690,7 +690,7 @@
     box-shadow: none !important;
     color: var(--fg-default);
     font-size: 12px;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    font-family: var(--font-primary);
     outline: none !important;
 }
 
@@ -761,7 +761,7 @@
 .pagination-info {
     font-size: 11px;
     color: var(--fg-muted);
-    font-family: 'SF Mono', monospace;
+    font-family: var(--font-mono);
 }
 
 .pagination-controls {
