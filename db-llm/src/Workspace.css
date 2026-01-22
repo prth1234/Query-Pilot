@@ -193,11 +193,13 @@
 }
 
 .disconnect-button {
-    background: var(--danger-fg);
+    background: transparent;
+    border: 1px solid var(--danger-fg);
 }
 
 .disconnect-button:hover {
-    background: var(--danger-emphasis);
+    background: var(--danger-muted);
+    border-color: var(--danger-emphasis);
     transform: scale(1.08);
 }
 
@@ -206,7 +208,7 @@
 }
 
 .disconnect-button svg {
-    color: white;
+    color: var(--danger-fg);
 }
 
 .workspace-content {

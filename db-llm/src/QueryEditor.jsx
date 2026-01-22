@@ -8,7 +8,6 @@ import { PlayIcon, ChevronDownIcon, GearIcon, DownloadIcon, ClockIcon, TrashIcon
 import { MdFullscreen, MdFullscreenExit } from 'react-icons/md'
 import { TbCancel } from "react-icons/tb"
 import { vscodeDark } from '@uiw/codemirror-theme-vscode'
-import { RiColorFilterAiLine } from "react-icons/ri";
 
 import { githubDark, githubLight } from '@uiw/codemirror-theme-github'
 import { dracula } from '@uiw/codemirror-theme-dracula'
@@ -643,18 +642,7 @@ ORDER BY total_spent DESC;`
                         {isFullscreen ? <MdFullscreenExit size={16} /> : <MdFullscreen size={16} />}
                     </button>
 
-                    {/* Theme Toggle */}
-                    <button
-                        className="notebook-action-button secondary icon-only"
-                        onClick={() => {
-                            const currentIndex = THEMES.findIndex(t => t.value === selectedTheme.value)
-                            const nextIndex = (currentIndex + 1) % THEMES.length
-                            setSelectedTheme(THEMES[nextIndex])
-                        }}
-                        title={`Current Theme: ${selectedTheme.name} (Click to change)`}
-                    >
-                        <RiColorFilterAiLine size={14} />
-                    </button>
+
 
                     {/* Settings Selector */}
                     <div className="theme-selector" ref={themeDropdownRef}>
@@ -707,7 +695,25 @@ ORDER BY total_spent DESC;`
                                         </select>
                                     </div>
 
-                                    {/* Theme section removed */}
+
+
+                                    <div className="dropdown-divider-vertical"></div>
+
+                                    {/* Theme */}
+                                    <div className="setting-group">
+                                        <label className="setting-label">Theme</label>
+                                        <div className="theme-list">
+                                            {THEMES.map(themeOption => (
+                                                <div
+                                                    key={themeOption.value}
+                                                    className={`dropdown-item ${selectedTheme.value === themeOption.value ? 'active' : ''}`}
+                                                    onClick={() => setSelectedTheme(themeOption)}
+                                                >
+                                                    {themeOption.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>
@@ -769,94 +775,98 @@ ORDER BY total_spent DESC;`
                     <div className="keyboard-hint">⌘ + ↵</div>
                 </div>
             </div>
-            {!isCollapsed && (
-                <div
-                    className={`editor-wrapper ${isAiGenerating ? 'ai-analyzing' : ''}`}
-                    onKeyDown={handleKeyDown}
-                >
-                    {aiSuggestion ? (
-                        <div style={{ height: editorHeight, overflow: 'hidden' }}>
-                            <CodeDiffView
-                                originalCode={query}
-                                suggestedCode={aiSuggestion}
-                                onAccept={handleAcceptSuggestion}
-                                onReject={handleRejectSuggestion}
-                                fontSize={fontSize}
-                                fontFamily={fontFamily.family}
+            {
+                !isCollapsed && (
+                    <div
+                        className={`editor-wrapper ${isAiGenerating ? 'ai-analyzing' : ''}`}
+                        onKeyDown={handleKeyDown}
+                    >
+                        {aiSuggestion ? (
+                            <div style={{ height: editorHeight, overflow: 'hidden' }}>
+                                <CodeDiffView
+                                    originalCode={query}
+                                    suggestedCode={aiSuggestion}
+                                    onAccept={handleAcceptSuggestion}
+                                    onReject={handleRejectSuggestion}
+                                    fontSize={fontSize}
+                                    fontFamily={fontFamily.family}
+                                />
+                            </div>
+                        ) : (
+                            <CodeMirror
+                                value={query}
+                                height={editorHeight}
+                                theme={selectedTheme.theme}
+                                extensions={extensions}
+                                onChange={(value) => setQuery(value)}
+                                onCreateEditor={onCreateEditor}
+                                className="code-editor"
+                                style={{
+                                    '--editor-font-size': `${fontSize}px`,
+                                    '--editor-font-family': fontFamily.family
+                                }}
+                                basicSetup={{
+                                    lineNumbers: true,
+                                    highlightActiveLineGutter: true,
+                                    highlightSpecialChars: true,
+                                    foldGutter: true,
+                                    drawSelection: true,
+                                    dropCursor: true,
+                                    allowMultipleSelections: true,
+                                    indentOnInput: true,
+                                    bracketMatching: true,
+                                    closeBrackets: true,
+                                    autocompletion: true,
+                                    rectangularSelection: true,
+                                    crosshairCursor: true,
+                                    highlightActiveLine: true,
+                                    highlightSelectionMatches: true,
+                                    closeBracketsKeymap: true,
+                                    searchKeymap: true,
+                                    foldKeymap: true,
+                                    completionKeymap: true,
+                                    lintKeymap: true,
+                                }}
+                            />
+                        )}
+                    </div>
+                )
+            }
+            {/* Show resizer and results in fullscreen mode */}
+            {
+                isFullscreen && !isCollapsed && (
+                    <>
+                        <div
+                            className={`fullscreen-resizer ${isFullscreenResizing ? 'resizing' : ''}`}
+                            onMouseDown={handleFullscreenResizerMouseDown}
+                        >
+                            <div className="resizer-line"></div>
+                            <div className="resizer-handle">
+                                <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
+                                    <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                    <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div style={{
+                            flex: 1,
+                            overflow: 'hidden',
+                            background: 'var(--bg-canvas)',
+                            minHeight: 0,
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}>
+                            <ResultsTable
+                                results={queryResults}
+                                error={queryError}
+                                isLoading={isExecuting}
+                                executionTime={executionTime}
                             />
                         </div>
-                    ) : (
-                        <CodeMirror
-                            value={query}
-                            height={editorHeight}
-                            theme={selectedTheme.theme}
-                            extensions={extensions}
-                            onChange={(value) => setQuery(value)}
-                            onCreateEditor={onCreateEditor}
-                            className="code-editor"
-                            style={{
-                                '--editor-font-size': `${fontSize}px`,
-                                '--editor-font-family': fontFamily.family
-                            }}
-                            basicSetup={{
-                                lineNumbers: true,
-                                highlightActiveLineGutter: true,
-                                highlightSpecialChars: true,
-                                foldGutter: true,
-                                drawSelection: true,
-                                dropCursor: true,
-                                allowMultipleSelections: true,
-                                indentOnInput: true,
-                                bracketMatching: true,
-                                closeBrackets: true,
-                                autocompletion: true,
-                                rectangularSelection: true,
-                                crosshairCursor: true,
-                                highlightActiveLine: true,
-                                highlightSelectionMatches: true,
-                                closeBracketsKeymap: true,
-                                searchKeymap: true,
-                                foldKeymap: true,
-                                completionKeymap: true,
-                                lintKeymap: true,
-                            }}
-                        />
-                    )}
-                </div>
-            )}
-            {/* Show resizer and results in fullscreen mode */}
-            {isFullscreen && !isCollapsed && (
-                <>
-                    <div
-                        className={`fullscreen-resizer ${isFullscreenResizing ? 'resizing' : ''}`}
-                        onMouseDown={handleFullscreenResizerMouseDown}
-                    >
-                        <div className="resizer-line"></div>
-                        <div className="resizer-handle">
-                            <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
-                                <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                                <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div style={{
-                        flex: 1,
-                        overflow: 'hidden',
-                        background: 'var(--bg-canvas)',
-                        minHeight: 0,
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}>
-                        <ResultsTable
-                            results={queryResults}
-                            error={queryError}
-                            isLoading={isExecuting}
-                            executionTime={executionTime}
-                        />
-                    </div>
-                </>
-            )}
-        </Box>
+                    </>
+                )
+            }
+        </Box >
     )
 }
 
