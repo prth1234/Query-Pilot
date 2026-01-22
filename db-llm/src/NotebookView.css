@@ -164,14 +164,15 @@
 }
 
 .notebook-action-button.secondary {
-    background: var(--bg-canvas-subtle);
-    border: 1px solid var(--border-subtle);
-    color: var(--fg-default);
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--fg-muted);
 }
 
 .notebook-action-button.secondary:hover {
     background: var(--bg-canvas-subtle);
-    border-color: var(--fg-muted);
+    border-color: var(--border-subtle);
+    color: var(--fg-default);
 }
 
 .notebook-action-button.primary {

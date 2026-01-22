@@ -1121,14 +1121,15 @@
 }
 
 .notebook-action-button.secondary {
-    background: rgba(110, 118, 129, 0.1);
-    border: 1px solid rgba(110, 118, 129, 0.2);
-    color: #c9d1d9;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--fg-muted);
 }
 
 .notebook-action-button.secondary:hover {
-    background: rgba(110, 118, 129, 0.2);
-    border-color: #8b949e;
+    background: var(--bg-canvas-subtle);
+    border-color: var(--border-subtle);
+    color: var(--fg-default);
 }
 
 .notebook-action-button.icon-only {
