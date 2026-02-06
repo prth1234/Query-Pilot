@@ -124,7 +124,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
     if (isLoading) {
         return (
-            <Box className="results-container loading">
+            <Box className={`results-container loading ${compact ? 'compact' : ''}`}>
                 <div className="loading-progress-bar"></div>
                 <div className="loading-state">
                     <Text className="loading-text">Executing query...</Text>
@@ -151,7 +151,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
         }
 
         return (
-            <Box className="results-container error">
+            <Box className={`results-container error ${compact ? 'compact' : ''}`}>
                 <div className="error-state">
                     <XCircleIcon size={48} className="error-icon" />
                     <h3 className="error-title">Query Failed</h3>
@@ -186,7 +186,7 @@ function ResultsTable({ results, error, isLoading, executionTime, compact = true
 
     if (!results) {
         return (
-            <Box className="results-container empty">
+            <Box className={`results-container empty ${compact ? 'compact' : ''}`}>
                 <div className="empty-state">
                     <DatabaseIcon size={64} className="empty-icon" />
                     <h3 className="empty-title">Ready to Execute</h3>

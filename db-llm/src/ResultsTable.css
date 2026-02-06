@@ -804,9 +804,8 @@
 
 /* Loading State */
 .results-container.loading {
-    /* Don't use fixed min-height - let the container size be determined by parent */
-    min-height: 80px;
-    max-height: 150px;
+    /* Allow container to fill available space */
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
