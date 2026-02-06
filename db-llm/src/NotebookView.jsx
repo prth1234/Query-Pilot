@@ -16,7 +16,13 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         const saved = localStorage.getItem('notebookCells')
         if (saved) {
             try {
-                return JSON.parse(saved)
+                const parsedCells = JSON.parse(saved)
+                return parsedCells.map(cell => ({
+                    ...cell,
+                    isExecuting: false,
+                    // If it was executing, interrupt it with a message so user knows why it stopped
+                    error: cell.isExecuting ? 'Execution interrupted (page reload)' : cell.error
+                }))
             } catch (e) {
                 console.error('Failed to load notebook cells:', e)
             }
@@ -595,7 +601,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
             id: crypto.randomUUID(),
             name: notebookName,
             savedAt: timestamp,
-            cells: JSON.parse(JSON.stringify(cells)),
+            cells: cells.map(cell => ({ ...cell, isExecuting: false })),
             settings: {
                 theme: selectedTheme.value,
                 fontSize,
@@ -649,7 +655,11 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         }
 
         console.log('Loading notebook...')
-        setCells(notebook.cells)
+        setCells(notebook.cells.map(cell => ({
+            ...cell,
+            isExecuting: false,
+            error: cell.isExecuting ? 'Execution interrupted (saved state)' : cell.error
+        })))
         setNotebookName(notebook.name)
         if (notebook.settings) {
             // Handle both old (object) and new (value) formats
@@ -965,9 +975,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                         >
                             <PlayIcon size={12} />
                             <span className="execute-text">
-                                Run All <span style={{ opacity: 0.7, marginLeft: '4px' }}>
-                                    {selectedLimit.value === -1 ? '(All)' : `(${selectedLimit.value})`}
-                                </span>
+                                {selectedLimit.value === -1 ? 'Run All' : `Run Top ${selectedLimit.value}`}
                             </span>
                         </button>
                         <div className="dropdown-wrapper">

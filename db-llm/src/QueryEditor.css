@@ -4,10 +4,11 @@
     border: 1px solid var(--border-subtle);
     /* overflow: hidden; Removed to allow dropdowns */
     box-shadow: var(--shadow-large);
-    margin-bottom: 12px;
+    margin-bottom: 0;
     /* Reduced gap from 24px */
     transition: all 0.3s ease;
     position: relative;
+    overflow: hidden;
     z-index: 100;
     /* Ensure it's above results table */
 }
@@ -323,9 +324,9 @@
 }
 
 .theme-dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 0;
+    position: fixed;
+    /* Changed from absolute to fixed to escape overflow: hidden */
+    margin-top: 4px;
     width: 320px;
     max-height: 450px;
     background: var(--bg-card);

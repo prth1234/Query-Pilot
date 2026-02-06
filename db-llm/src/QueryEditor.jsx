@@ -509,7 +509,8 @@ ORDER BY total_spent DESC;`
     // In fullscreen, use resizable height
     const editorHeight = isFullscreen
         ? `calc(${fullscreenEditorHeight}vh - 50px)`  // Resizable height minus header
-        : `${Math.max(height - 42, 100)}px`
+        // Subtract more space for header and borders to prevent overflow (was 42)
+        : `${Math.max(height - 52, 100)}px`
 
     // Mouse down handler for fullscreen resizer
     const handleFullscreenResizerMouseDown = (e) => {
@@ -655,69 +656,78 @@ ORDER BY total_spent DESC;`
                         >
                             <GearIcon size={14} />
                         </button>
-                        {showThemeDropdown && (
-                            <div className="dropdown-menu theme-dropdown">
-                                <div className="dropdown-header-title">Editor Settings</div>
-                                <div className="dropdown-content-column">
+                        {showThemeDropdown && (() => {
+                            const rect = themeDropdownRef.current?.getBoundingClientRect();
+                            return (
+                                <div
+                                    className="dropdown-menu theme-dropdown"
+                                    style={{
+                                        top: rect ? `${rect.bottom + 4}px` : '100%',
+                                        left: rect ? `${rect.right - 320}px` : 'auto',
+                                    }}
+                                >
+                                    <div className="dropdown-header-title">Editor Settings</div>
+                                    <div className="dropdown-content-column">
 
-                                    {/* Font Size */}
-                                    <div className="setting-group">
-                                        <div className="setting-label-row">
-                                            <label className="setting-label">Font Size</label>
-                                            <span className="setting-value">{fontSize}px</span>
+                                        {/* Font Size */}
+                                        <div className="setting-group">
+                                            <div className="setting-label-row">
+                                                <label className="setting-label">Font Size</label>
+                                                <span className="setting-value">{fontSize}px</span>
+                                            </div>
+                                            <input
+                                                type="range"
+                                                min="11"
+                                                max="20"
+                                                value={fontSize}
+                                                onChange={(e) => setFontSize(parseInt(e.target.value))}
+                                                className="slider"
+                                            />
                                         </div>
-                                        <input
-                                            type="range"
-                                            min="11"
-                                            max="20"
-                                            value={fontSize}
-                                            onChange={(e) => setFontSize(parseInt(e.target.value))}
-                                            className="slider"
-                                        />
-                                    </div>
 
-                                    {/* Font Family */}
-                                    <div className="setting-group">
-                                        <label className="setting-label">Font Family</label>
-                                        <select
-                                            value={fontFamily.value}
-                                            onChange={(e) => {
-                                                const selected = FONT_FAMILIES.find(f => f.value === e.target.value)
-                                                setFontFamily(selected)
-                                            }}
-                                            className="select-input"
-                                        >
-                                            {FONT_FAMILIES.map(font => (
-                                                <option key={font.value} value={font.value}>
-                                                    {font.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-
-
-                                    <div className="dropdown-divider-vertical"></div>
-
-                                    {/* Theme */}
-                                    <div className="setting-group">
-                                        <label className="setting-label">Theme</label>
-                                        <div className="theme-list">
-                                            {THEMES.map(themeOption => (
-                                                <div
-                                                    key={themeOption.value}
-                                                    className={`dropdown-item ${selectedTheme.value === themeOption.value ? 'active' : ''}`}
-                                                    onClick={() => setSelectedTheme(themeOption)}
-                                                >
-                                                    {themeOption.name}
-                                                </div>
-                                            ))}
+                                        {/* Font Family */}
+                                        <div className="setting-group">
+                                            <label className="setting-label">Font Family</label>
+                                            <select
+                                                value={fontFamily.value}
+                                                onChange={(e) => {
+                                                    const selected = FONT_FAMILIES.find(f => f.value === e.target.value)
+                                                    setFontFamily(selected)
+                                                }}
+                                                className="select-input"
+                                            >
+                                                {FONT_FAMILIES.map(font => (
+                                                    <option key={font.value} value={font.value}>
+                                                        {font.name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
-                                    </div>
 
+
+
+                                        <div className="dropdown-divider-vertical"></div>
+
+                                        {/* Theme */}
+                                        <div className="setting-group">
+                                            <label className="setting-label">Theme</label>
+                                            <div className="theme-list">
+                                                {THEMES.map(themeOption => (
+                                                    <div
+                                                        key={themeOption.value}
+                                                        className={`dropdown-item ${selectedTheme.value === themeOption.value ? 'active' : ''}`}
+                                                        onClick={() => setSelectedTheme(themeOption)}
+                                                    >
+                                                        {themeOption.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
                     </div>
 
                     {/* Run Button Group */}

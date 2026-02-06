@@ -230,6 +230,8 @@
     flex-direction: column;
     overflow: hidden;
     transition: height 0.05s ease-out;
+    position: relative;
+    z-index: 1;
 }
 
 /* Resizer */

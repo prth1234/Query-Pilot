@@ -15,9 +15,11 @@ function MarkdownCell({ cell, onChange, onDelete, isFirst, theme, fontSize, font
         <div className="query-cell markdown-cell">
             <div className="cell-header">
                 <div className="cell-left-actions">
-                    <div className="cell-label" style={{ background: 'transparent', color: 'var(--fg-muted)', border: '1px solid var(--border-default)' }}>
-                        Markdown
-                    </div>
+                    {isEditing && (
+                        <div className="cell-label" style={{ background: 'transparent', color: 'var(--fg-muted)', border: '1px solid var(--border-default)' }}>
+                            Markdown
+                        </div>
+                    )}
                 </div>
                 <div className="cell-right-actions">
                     {isEditing ? (

@@ -444,3 +444,7 @@
 .query-cell.collapsed .collapse-button svg {
     transform: rotate(-90deg);
 }
+
+.markdown-preview {
+    padding: 12px 24px;
+}
