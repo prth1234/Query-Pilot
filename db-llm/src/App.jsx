@@ -11,6 +11,10 @@ import { databases } from './databaseConfig'
 import queryPilotLogo from './assets/query-pilot-logo.png'
 import './App.css'
 
+import ThemeSettings from './ThemeSettings'
+import TargetCursor from './TargetCursor'
+import TextType from './TextType'
+
 function App() {
   const [isLoading, setIsLoading] = useState(() => {
     return !localStorage.getItem('hasSeenLoading')
@@ -31,11 +35,16 @@ function App() {
     const saved = localStorage.getItem('connectionDetails')
     return saved ? JSON.parse(saved) : null
   })
-  const [displayedText, setDisplayedText] = useState('')
-  const [typingComplete, setTypingComplete] = useState(false)
+  // Removed duplicate connectionDetails definitions
+
+  // Removed displayedText and typingComplete as they are replaced by TextType animation
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark'
+  })
+
+  const [themeMode, setThemeMode] = useState(() => {
+    return localStorage.getItem('themeMode') || 'dark'
   })
 
   // Theme transition state
@@ -48,7 +57,7 @@ function App() {
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
     setPendingTheme(newTheme)
     setIsThemeTransitioning(true)
@@ -63,7 +72,37 @@ function App() {
     setTimeout(() => {
       document.documentElement.classList.remove('theme-transitioning')
     }, 50)
-  }
+  }, [theme])
+
+  // System theme detection
+  useEffect(() => {
+    if (themeMode === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e) => {
+        const newTheme = e.matches ? 'dark' : 'light';
+        if (theme !== newTheme) {
+          toggleTheme();
+        }
+      };
+
+      // Set initial theme based on system preference
+      const systemTheme = mediaQuery.matches ? 'dark' : 'light';
+      if (theme !== systemTheme) {
+        toggleTheme();
+      }
+
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else {
+      // Enforce manual mode selection
+      if (themeMode !== theme) {
+        // Only toggle if mismatched (e.g. user selected 'dark' but theme is 'light')
+        if ((themeMode === 'dark' && theme !== 'dark') || (themeMode === 'light' && theme !== 'light')) {
+          toggleTheme();
+        }
+      }
+    }
+  }, [themeMode, theme, toggleTheme]);
 
   const handleThemeTransitionComplete = useCallback(() => {
     setIsThemeTransitioning(false)
@@ -98,21 +137,8 @@ function App() {
   }, [connectionDetails])
 
   useEffect(() => {
-    if (!isLoading && showContent && !typingComplete) {
-      let index = 0
-      const typingInterval = setInterval(() => {
-        if (index < fullText.length) {
-          setDisplayedText(fullText.substring(0, index + 1))
-          index++
-        } else {
-          clearInterval(typingInterval)
-          setTypingComplete(true)
-        }
-      }, 80)
-
-      return () => clearInterval(typingInterval)
-    }
-  }, [isLoading, showContent, typingComplete, fullText])
+    // Animation state managed by TextType component
+  }, [isLoading, showContent])
 
   const handleLoadingComplete = () => {
     setIsLoading(false)
@@ -203,6 +229,13 @@ function App() {
     // The workspace will automatically reconnect since connectionDetails prop changed
   }
 
+  const commonThemeProps = {
+    theme,
+    toggleTheme,
+    themeMode,
+    setThemeMode
+  }
+
   return (
     <>
       {isLoading && <LoadingAnimation onComplete={handleLoadingComplete} />}
@@ -216,46 +249,6 @@ function App() {
 
       <ThemeProvider colorMode={theme}>
         <div className={`app-container ${showContent ? 'fade-in' : ''}`}>
-          {/* Global Theme Toggle */}
-          <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000 }}>
-            <button
-              onClick={toggleTheme}
-              style={{
-                background: 'transparent',
-                border: '1px solid var(--border-default)',
-                borderRadius: '50%',
-                width: '48px',
-                height: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: 'var(--fg-muted)',
-                transition: 'all 0.2s ease',
-                boxShadow: 'var(--shadow-large)',
-                backdropFilter: 'blur(4px)'
-              }}
-              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            >
-              {theme === 'dark' ? (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5"></circle>
-                  <line x1="12" y1="1" x2="12" y2="3"></line>
-                  <line x1="12" y1="21" x2="12" y2="23"></line>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                  <line x1="1" y1="12" x2="3" y2="12"></line>
-                  <line x1="21" y1="12" x2="23" y2="12"></line>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-              ) : (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-              )}
-            </button>
-          </div>
 
           {connectedDatabase ? (
             <Workspace
@@ -263,22 +256,39 @@ function App() {
               connectionDetails={connectionDetails}
               onDisconnect={handleDisconnect}
               onUpdateConnection={handleUpdateConnection}
-              theme={theme}
-              toggleTheme={toggleTheme}
+              {...commonThemeProps}
             />
           ) : !selectedDatabase ? (
-            <Box paddingBlockStart={32} paddingBlockEnd={64} paddingInlineStart={48} paddingInlineEnd={48}>
+            <Box paddingBlockStart={32} paddingBlockEnd={64} paddingInlineStart={48} paddingInlineEnd={48} style={{ position: 'relative' }}>
+              <TargetCursor
+                spinDuration={2}
+                hideDefaultCursor
+                parallaxOn
+                hoverDuration={0.2}
+              />
+
+              {/* Common Settings Button for Selection Screen */}
+              <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 100 }}>
+                <ThemeSettings {...commonThemeProps} />
+              </div>
+
               {/* Logo */}
               <Box className="logo-container" marginBlockEnd={64}>
                 <img src={queryPilotLogo} alt="Query Pilot" className="app-logo" />
               </Box>
 
-              {/* Typewriter Heading */}
-              <Box className="heading-container" marginBlockEnd={64}>
-                <Heading as="h1" size="1" className="typewriter-heading">
-                  {displayedText}
-                  <span className={`cursor ${typingComplete ? 'blink' : ''}`}>|</span>
-                </Heading>
+              {/* TextType Heading - White Normal */}
+              <Box className="heading-container" marginBlockEnd={48}>
+                <TextType
+                  text="Select Your Database"
+                  className="typewriter-heading"
+                  typingSpeed={75}
+                  pauseDuration={1500}
+                  showCursor
+                  cursorCharacter="_"
+                  loop={false}
+                  initialDelay={500}
+                />
               </Box>
 
               {/* Database Grid */}
@@ -286,7 +296,7 @@ function App() {
                 {databases.map((db) => (
                   <div
                     key={db.id}
-                    className={`database-card-wrapper ${!db.available ? 'disabled' : ''}`}
+                    className={`database-card-wrapper ${!db.available ? 'disabled' : 'cursor-target'}`}
                   >
                     <Box
                       className={`database-card ${!db.available ? 'coming-soon' : ''}`}
@@ -323,11 +333,16 @@ function App() {
               />
             </Box>
           ) : (
-            <ConnectionForm
-              database={selectedDatabase}
-              onBack={handleBackToSelection}
-              onConnect={handleConnect}
-            />
+            <>
+              <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 100 }}>
+                <ThemeSettings {...commonThemeProps} />
+              </div>
+              <ConnectionForm
+                database={selectedDatabase}
+                onBack={handleBackToSelection}
+                onConnect={handleConnect}
+              />
+            </>
           )}
         </div>
       </ThemeProvider>

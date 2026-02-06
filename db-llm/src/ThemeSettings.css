@@ -1,0 +1,115 @@
+/* Theme Settings Button */
+.theme-settings-wrapper {
+    position: relative;
+    z-index: 1000;
+}
+
+.theme-settings-button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--fg-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-settings-button:hover,
+.theme-settings-button.active {
+    background-color: var(--bg-canvas-subtle);
+    color: var(--fg-default);
+}
+
+/* Theme Settings Dropdown */
+.theme-settings-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 200px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    box-shadow: var(--shadow-large);
+    z-index: 10000;
+    overflow: hidden;
+    animation: slideDown 0.15s ease-out;
+    transform-origin: top right;
+}
+
+.theme-dropdown-header {
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-default);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.theme-options {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--fg-default);
+    font-size: 14px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.theme-option:hover {
+    background: var(--bg-canvas-subtle);
+}
+
+.theme-option.active {
+    background: var(--accent-muted);
+    color: var(--accent-fg);
+}
+
+.theme-option span {
+    flex: 1;
+    text-align: left;
+}
+
+.theme-option .active-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-fg);
+    animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}

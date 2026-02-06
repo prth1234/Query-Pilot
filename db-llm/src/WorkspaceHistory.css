@@ -27,7 +27,6 @@
 
 .section-header:hover {
     border-bottom-color: var(--border-default);
-    background: linear-gradient(to right, var(--bg-canvas-subtle), transparent);
     padding-left: 8px;
     border-radius: 6px;
 }
@@ -77,166 +76,107 @@
     gap: 16px;
 }
 
-/* Workspace Card - Transparent with clean border */
+/* Workspace Card - Professional & Premium */
 .workspace-card {
-    background: transparent;
-    border: 1px solid var(--border-default);
-    border-radius: 12px;
+    background: #0d1117;
+    /* Darker fixed background */
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    /* Slightly tighter corners */
     padding: 24px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
-    min-height: 160px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .workspace-card:hover {
-    border-color: var(--accent-fg);
-    background: var(--bg-canvas-subtle);
+    border-color: #8b949e;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .workspace-card-header {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 12px;
+    align-items: center;
+    /* Center vertically with name */
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 .workspace-db-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--bg-card);
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    background: #161b22;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid var(--border-subtle);
+    border: 1px solid #30363d;
 }
 
 .db-icon-img {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
 }
 
-.db-icon-text {
-    font-size: 24px;
-}
-
-.workspace-info {
-    flex: 1;
-    min-width: 0;
-}
-
 .workspace-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--fg-default);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 18px;
+    font-weight: 500;
+    /* Medium weight is more professional */
+    color: #f0f6fc;
+    margin: 0;
+    letter-spacing: -0.01em;
 }
 
 .workspace-meta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    margin-top: 4px;
     font-size: 13px;
-    color: var(--fg-muted);
+    color: #8b949e;
 }
 
 .workspace-db-name {
-    font-weight: 500;
-    color: var(--accent-fg);
-}
-
-.workspace-separator {
-    color: var(--fg-subtle);
-}
-
-.workspace-db-label {
     font-family: var(--font-mono);
-    background: var(--bg-canvas-subtle);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
+    color: #58a6ff;
 }
 
-.delete-workspace-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    color: var(--fg-muted);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.delete-workspace-btn:hover {
-    background: var(--danger-muted);
-    border-color: var(--danger-muted);
-    color: var(--danger-fg);
-}
-
+/* Metadata Chips - "SECURE ACCESS" style */
 .workspace-details {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
-/* Pretty Colored Chips - No animations */
 .workspace-detail-item {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 12px;
+    gap: 6px;
+    font-size: 11px;
     font-weight: 600;
-    background: transparent;
-    padding: 4px 10px;
-    border-radius: 16px;
-    transition: background 0.2s ease;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(48, 54, 61, 0.4);
+    padding: 4px 12px;
+    border: 1px solid rgba(240, 246, 252, 0.15);
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
-/* Time Chip - Purple/Accent themed */
-.workspace-detail-item:first-child {
-    color: var(--accent-fg);
-    border: 1.5px solid var(--accent-fg);
+.workspace-detail-item svg {
+    font-size: 13px;
+    opacity: 0.8;
 }
 
-.workspace-detail-item:first-child svg {
-    opacity: 1;
-    color: var(--accent-fg);
-}
-
-/* Host Chip - Green/Success themed */
-.workspace-detail-item:last-child {
-    color: var(--success-fg);
-    border: 1.5px solid var(--success-fg);
-}
-
-.workspace-detail-item:last-child svg {
-    opacity: 1;
-    color: var(--success-fg);
-}
-
-/* Subtle hover effects for chips - Just background, no scaling */
-.workspace-card:hover .workspace-detail-item:first-child {
-    background: var(--accent-muted);
-}
-
-.workspace-card:hover .workspace-detail-item:last-child {
-    background: var(--success-muted);
+.workspace-card:hover .workspace-detail-item {
+    border-color: rgba(240, 246, 252, 0.3);
+    background: rgba(48, 54, 61, 0.8);
 }
 
 /* Responsive */

@@ -101,7 +101,7 @@ function WorkspaceHistory({ onSelectWorkspace, databases }) {
 
     const WorkspaceCard = ({ workspace, showDelete = false }) => (
         <div
-            className="workspace-card"
+            className="workspace-card cursor-target"
             onClick={() => handleWorkspaceClick(workspace)}
         >
             <div className="workspace-card-header">
@@ -116,12 +116,7 @@ function WorkspaceHistory({ onSelectWorkspace, databases }) {
                     <div className="workspace-name">{workspace.name}</div>
                     <div className="workspace-meta">
                         <span className="workspace-db-name">{workspace.database?.name}</span>
-                        {workspace.connectionDetails?.database && (
-                            <>
-                                <span className="workspace-separator">•</span>
-                                <span className="workspace-db-label">{workspace.connectionDetails.database}</span>
-                            </>
-                        )}
+                        {workspace.connectionDetails?.database && ` / ${workspace.connectionDetails.database}`}
                     </div>
                 </div>
                 {showDelete && (

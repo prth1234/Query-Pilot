@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { Box } from '@primer/react-brand'
-import { PlusIcon, PlayIcon, TrashIcon, GearIcon, ChevronDownIcon, ScreenFullIcon, ScreenNormalIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
+import { PlusIcon, PlayIcon, TrashIcon, GearIcon, ChevronDownIcon, TypographyIcon, PencilIcon, UploadIcon, DownloadIcon, ClockIcon } from '@primer/octicons-react'
+import { VscScreenFull, VscScreenNormal } from 'react-icons/vsc'
 import QueryCell from './QueryCell'
 import MarkdownCell from './MarkdownCell'
 import AIGeneratorButton from './AIGeneratorButton'
@@ -846,7 +847,7 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
                             onClick={() => setIsFullScreen(!isFullScreen)}
                             title={isFullScreen ? "Exit Full Screen" : "Full Screen Mode"}
                         >
-                            {isFullScreen ? <ScreenNormalIcon size={14} /> : <ScreenFullIcon size={14} />}
+                            {isFullScreen ? <VscScreenNormal size={14} /> : <VscScreenFull size={14} />}
                         </button>
 
                         <div className="notebook-divider-vertical"></div>

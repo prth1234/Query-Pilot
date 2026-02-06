@@ -126,7 +126,25 @@ function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250,
     const savedQueriesRef = useRef(null)
     const nameInputRef = useRef(null)
 
-    // Click outside to close dropdowns
+    // Fullscreen handling - apply to workspace container
+    useEffect(() => {
+        const workspaceContent = document.querySelector('.workspace-content');
+        if (workspaceContent) {
+            if (isFullscreen) {
+                workspaceContent.classList.add('fullscreen');
+            } else {
+                workspaceContent.classList.remove('fullscreen');
+            }
+        }
+
+        return () => {
+            if (workspaceContent) {
+                workspaceContent.classList.remove('fullscreen');
+            }
+        };
+    }, [isFullscreen]);
+
+    // Click outside to close dropdowns + ESC to exit fullscreen
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (limitDropdownRef.current && !limitDropdownRef.current.contains(event.target)) {
@@ -519,7 +537,7 @@ ORDER BY total_spent DESC;`
     }
 
     return (
-        <Box className={`query-editor-container ${isCollapsed ? 'collapsed' : ''} ${isFullscreen ? 'fullscreen' : ''}`}>
+        <Box className={`query-editor-container ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="editor-header">
                 <div className="editor-title-row">
                     <button
@@ -840,40 +858,6 @@ ORDER BY total_spent DESC;`
                             />
                         )}
                     </div>
-                )
-            }
-            {/* Show resizer and results in fullscreen mode */}
-            {
-                isFullscreen && !isCollapsed && (
-                    <>
-                        <div
-                            className={`fullscreen-resizer ${isFullscreenResizing ? 'resizing' : ''}`}
-                            onMouseDown={handleFullscreenResizerMouseDown}
-                        >
-                            <div className="resizer-line"></div>
-                            <div className="resizer-handle">
-                                <svg width="24" height="8" viewBox="0 0 24 8" fill="none">
-                                    <rect x="8" y="2" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                                    <rect x="8" y="5" width="8" height="1" rx="0.5" fill="currentColor" opacity="0.5" />
-                                </svg>
-                            </div>
-                        </div>
-                        <div style={{
-                            flex: 1,
-                            overflow: 'hidden',
-                            background: 'var(--bg-canvas)',
-                            minHeight: 0,
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}>
-                            <ResultsTable
-                                results={queryResults}
-                                error={queryError}
-                                isLoading={isExecuting}
-                                executionTime={executionTime}
-                            />
-                        </div>
-                    </>
                 )
             }
         </Box >

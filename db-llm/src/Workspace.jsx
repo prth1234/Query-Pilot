@@ -10,9 +10,10 @@ import ConnectionFailureModal from './ConnectionFailureModal'
 import Notification from './Notification'
 import './Workspace.css'
 import { MdSettingsInputHdmi } from "react-icons/md";
+import ThemeSettings from './ThemeSettings'
 
 
-function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateConnection }) {
+function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateConnection, toggleTheme, themeMode, setThemeMode }) {
     const [viewMode, setViewMode] = useState(() => localStorage.getItem('viewMode') || 'editor') // 'editor' or 'notebook'
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
@@ -279,6 +280,17 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
                 </div>
 
                 <div className="header-right">
+                    {/* Theme Settings */}
+                    <div className="settings-dropdown-wrapper">
+                        <ThemeSettings
+                            theme={theme}
+                            toggleTheme={toggleTheme}
+                            themeMode={themeMode}
+                            setThemeMode={setThemeMode}
+                        />
+                    </div>
+
+                    {/* Connection Settings */}
                     <button
                         className="settings-button"
                         onClick={() => setIsSettingsModalOpen(true)}
@@ -348,6 +360,7 @@ function Workspace({ database, connectionDetails, onDisconnect, theme, onUpdateC
                                 error={queryError}
                                 isLoading={isExecuting}
                                 executionTime={executionTime}
+                                compact
                             />
                         </div>
                     </>
