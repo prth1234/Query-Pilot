@@ -58,14 +58,14 @@
     border: none;
     box-shadow: none;
     animation: modalSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Removed overflow: hidden so no clipping happens if we wanted negative margins, but fine to keep logic simple */
+    min-height: 500px;
 }
 
 
 .modal-content {
     padding: 32px;
     position: relative;
-    /* Ensure absolute children position relative to this */
+    min-height: 500px;
 }
 
 .close-button {
@@ -688,13 +688,18 @@
 
 /* Fallback loader when no detailed steps are available */
 .fallback-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 36px 20px;
-    gap: 20px;
+    gap: 24px;
     color: white;
+    pointer-events: none;
+    z-index: 10;
 }
 
 /* Earth Loader */

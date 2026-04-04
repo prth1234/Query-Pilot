@@ -44,6 +44,11 @@ cleanup() {
         echo "   ✓ Frontend stopped"
     fi
     
+    if [ ! -z "$OLLAMA_PID" ] && kill -0 $OLLAMA_PID 2>/dev/null; then
+        kill $OLLAMA_PID 2>/dev/null
+        echo "   ✓ Local LLM engine stopped"
+    fi
+    
     echo ""
     echo "👋 Goodbye!"
     exit 0
@@ -51,6 +56,45 @@ cleanup() {
 
 # Set up trap for cleanup
 trap cleanup INT TERM
+
+# ============================================
+# START LOCAL LLM ENGINE (Ollama)
+# ============================================
+echo "🧠 Starting local LLM backend (Ollama + Llama 3.2)..."
+
+if ! command -v ollama &> /dev/null; then
+    echo "⚠️  Ollama is not installed. AI features will not work."
+    echo "   Please install it from https://ollama.com to use Query Pilot."
+    echo ""
+else
+    # Try testing the API to see if it is already running
+    if curl -s http://localhost:11434/api/tags > /dev/null; then
+        echo "   ✓ Ollama API already running on http://localhost:11434"
+    else
+        echo "   ⏳ Ollama not running. Starting ollama serve..."
+        ollama serve >/dev/null 2>&1 &
+        OLLAMA_PID=$!
+        sleep 3
+        if kill -0 $OLLAMA_PID 2>/dev/null; then
+             echo "   ✓ Ollama started successfully"
+        else
+             echo "❌ Failed to start Ollama!"
+        fi
+    fi
+    
+    # Pre-warm or check Llama 3.2
+    echo "   ⏳ Checking for Llama 3.2 model..."
+    if ! curl -s http://localhost:11434/api/tags | grep -q '"name":"llama3.2:latest"'; then
+        if ! curl -s http://localhost:11434/api/tags | grep -q '"name":"llama3.2'; then
+             echo "   ⏳ Llama 3.2 not found locally. Pulling the model (this may take a while)..."
+             ollama pull llama3.2
+             echo "   ✓ Llama 3.2 is now ready."
+        fi
+    else
+        echo "   ✓ Llama 3.2 is ready."
+    fi
+fi
+echo ""
 
 # ============================================
 # START BACKEND

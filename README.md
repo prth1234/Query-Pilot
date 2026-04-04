@@ -28,6 +28,37 @@ Query Pilot is an AI-powered universal database assistant that delivers intellig
 
 ---
 
+## Query Pilot: The Elite AI Assistant
+
+Query Pilot represents the pinnacle of automated database operations. By integrating seamlessly with your local Llama 3.2 engine, Query Pilot acts as a high-performance, schema-aware SQL architect directly operating within your workspace. It does not merely make suggestions; it intelligently engineers complex schemas into perfectly optimized, production-ready SQL logic.
+
+### Generate From Scratch
+State your intent naturally, and let Query Pilot craft flawless SQL. It leverages robust schema context to ensure correct relationships and absolute syntactical perfection without hallucinations.
+
+![Generate Mode](https://i.ibb.co/WWX0qQZ4/image.png)
+
+### Fix and Optimize In-Place
+Select broken or inefficient queries and instantly receive an optimized replacement. Query Pilot identifies syntax errors, resolves illogical joins, and rewrites operations to guarantee maximum execution efficiency.
+
+![Fix Code Mode](https://i.ibb.co/tP2V0s90/image.png)
+
+### Side-by-Side Diff Resolution
+Maintain absolute control over your code. Query Pilot provides a state-of-the-art diff viewer, highlighting precisely the structural additions and removals. Review the architecture changes and accept with a single click.
+
+![Diff Resolution](https://i.ibb.co/kVZyCnfH/image.png)
+
+### Immersive Workspace Integration
+Query Pilot lives directly within both your standard Query Editor and dynamic Notebook interfaces. Its premium design respects your focus while remaining instantly accessible exactly when needed.
+
+![Workspace Integration](https://i.ibb.co/DXF5wrm/image.png)
+
+### High Performance Execution
+Designed for speed and reliability, Query Pilot enforces strict formatting, indexing best practices, and logical optimizations, ensuring that every generated query performs exceptionally well against your datasets.
+
+![Optimal Execution](https://i.ibb.co/kgVqh7BT/image.png)
+
+---
+
 ## Core Features
 
 ### Query Processing

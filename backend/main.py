@@ -1399,3 +1399,42 @@ async def test_mongodb_connection(request: MongoDBConnectionRequest):
             steps=steps,
             error=str(e)
         )
+
+class QueryPilotRequest(BaseModel):
+    system_prompt: str
+    user_prompt: str
+    model: str = "llama3.2"
+
+@app.post("/api/query-pilot")
+async def query_pilot(request: QueryPilotRequest):
+    """
+    Endpoint for AI SQL generation / fixing.
+    Calls local Ollama API.
+    """
+    try:
+        import urllib.request
+        import urllib.error
+        import json
+        
+        # Assuming Ollama is running on default port 11434
+        ollama_url = "http://localhost:11434/api/generate"
+        
+        payload = {
+            "model": request.model,
+            "prompt": f"{request.system_prompt}\n\n{request.user_prompt}",
+            "stream": False,
+            "options": {
+                "temperature": 0.1
+            }
+        }
+        
+        req = urllib.request.Request(ollama_url, data=json.dumps(payload).encode('utf-8'), headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(req, timeout=60.0) as response:
+            data = json.loads(response.read().decode())
+            return {"success": True, "sql": data.get("response", "")}
+            
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode()
+        raise HTTPException(status_code=500, detail=f"LLM API Error {e.code}: {error_body}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"LLM Error: {str(e)}")

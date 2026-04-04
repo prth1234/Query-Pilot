@@ -1,0 +1,652 @@
+/* ═══════════════════════════════════════════════
+   QUERY PILOT – AI SQL Assistant Panel
+   Premium dark UI inspired by GitHub Copilot
+   ═══════════════════════════════════════════════ */
+
+.qp-panel {
+    display: flex;
+    flex-direction: column;
+    background: #0d1117;
+    border: 1px solid rgba(138, 56, 245, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 1px rgba(138, 56, 245, 0.1),
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(138, 56, 245, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    animation: qp-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 8px;
+}
+
+@keyframes qp-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Header ─────────────────────────────────── */
+.qp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    border-bottom: 1px solid rgba(138, 56, 245, 0.2);
+    flex-shrink: 0;
+}
+
+.qp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qp-logo-wrap {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.qp-logo {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.qp-logo-glow {
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle, rgba(138, 56, 245, 0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 1;
+    animation: qp-logo-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes qp-logo-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+}
+
+.qp-title {
+    font-size: 13px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #d2a8ff, #f0f6fc, #a5f3fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.3px;
+}
+
+.qp-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+    background: rgba(138, 56, 245, 0.25);
+    border: 1px solid rgba(138, 56, 245, 0.5);
+    border-radius: 4px;
+    color: #d2a8ff;
+    letter-spacing: 0.5px;
+}
+
+.qp-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Mode Toggle ─────────────────────────────── */
+.qp-mode-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+}
+
+.qp-mode-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #7d8590;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.qp-mode-btn:hover {
+    color: #e6edf3;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.qp-mode-btn.active {
+    background: rgba(138, 56, 245, 0.25);
+    color: #d2a8ff;
+    border: 1px solid rgba(138, 56, 245, 0.45);
+    box-shadow: 0 0 10px rgba(138, 56, 245, 0.2);
+}
+
+/* ── Close Button ───────────────────────────── */
+.qp-close-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #7d8590;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.qp-close-btn:hover {
+    color: #f85149;
+    border-color: rgba(248, 81, 73, 0.4);
+    background: rgba(248, 81, 73, 0.1);
+}
+
+/* ── Input Section ─────────────────────────── */
+.qp-input-section {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+}
+
+.qp-fix-area,
+.qp-generate-area {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+/* Magic inline input (for Fix mode) */
+.qp-magic-input-wrap {
+    position: relative;
+    flex: 1;
+    border-radius: 8px;
+    overflow: visible;
+}
+
+.qp-magic-glow {
+    position: absolute;
+    inset: -1px;
+    border-radius: 9px;
+    background: conic-gradient(
+        from 0deg,
+        rgba(138, 56, 245, 0.7),
+        rgba(56, 189, 248, 0.7),
+        rgba(52, 211, 153, 0.5),
+        rgba(138, 56, 245, 0.7)
+    );
+    opacity: 0;
+    filter: blur(6px);
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 0;
+    animation: qp-glow-rotate 4s linear infinite;
+}
+
+.qp-magic-input-wrap:focus-within .qp-magic-glow {
+    opacity: 0.8;
+}
+
+@keyframes qp-glow-rotate {
+    from { filter: blur(6px) hue-rotate(0deg); }
+    to   { filter: blur(6px) hue-rotate(360deg); }
+}
+
+.qp-magic-input {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    background: rgba(22, 27, 34, 0.95);
+    border: 1px solid rgba(138, 56, 245, 0.35);
+    border-radius: 8px;
+    color: #e6edf3;
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.qp-magic-input:focus {
+    border-color: rgba(138, 56, 245, 0.7);
+}
+
+.qp-magic-input::placeholder {
+    color: rgba(125, 133, 144, 0.7);
+    font-style: italic;
+}
+
+/* Magic textarea (for Generate mode) */
+.qp-magic-textarea-wrap {
+    position: relative;
+    flex: 1;
+    border-radius: 8px;
+    overflow: visible;
+}
+
+.qp-magic-textarea-glow {
+    position: absolute;
+    inset: -2px;
+    border-radius: 10px;
+    background: conic-gradient(
+        from 0deg,
+        rgba(138, 56, 245, 0.8),
+        rgba(56, 189, 248, 0.8),
+        rgba(52, 211, 153, 0.6),
+        rgba(251, 191, 36, 0.5),
+        rgba(138, 56, 245, 0.8)
+    );
+    opacity: 0;
+    filter: blur(8px);
+    pointer-events: none;
+    z-index: 0;
+    animation: qp-glow-rotate 3s linear infinite;
+    transition: opacity 0.3s;
+}
+
+.qp-magic-textarea-wrap:focus-within .qp-magic-textarea-glow {
+    opacity: 0.9;
+}
+
+.qp-magic-textarea {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(22, 27, 34, 0.96);
+    border: 1px solid rgba(138, 56, 245, 0.4);
+    border-radius: 8px;
+    color: #e6edf3;
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    resize: none;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.qp-magic-textarea:focus {
+    border-color: rgba(138, 56, 245, 0.8);
+    box-shadow: 0 0 0 2px rgba(138, 56, 245, 0.12);
+}
+
+.qp-magic-textarea::placeholder {
+    color: rgba(125, 133, 144, 0.7);
+    font-style: italic;
+}
+
+/* ── Run Button ─────────────────────────────── */
+.qp-run-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    height: 32px;
+    background: linear-gradient(135deg, rgba(138, 56, 245, 0.8), rgba(94, 31, 183, 0.9));
+    border: 1px solid rgba(138, 56, 245, 0.6);
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.qp-run-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(124, 58, 237, 1));
+    box-shadow: 0 4px 16px rgba(138, 56, 245, 0.4);
+    transform: translateY(-1px);
+}
+
+.qp-run-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.qp-run-btn.loading {
+    background: rgba(138, 56, 245, 0.4);
+    border-color: rgba(138, 56, 245, 0.5);
+}
+
+.qp-generate-area .qp-run-btn {
+    align-self: flex-end;
+}
+
+.qp-btn-icon {
+    font-size: 13px;
+}
+
+/* For generate mode, taller button to align with textarea */
+.qp-generate-area .qp-run-btn {
+    height: auto;
+    padding: 7px 14px;
+}
+
+/* ── Spinner ───────────────────────────────── */
+.qp-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: qp-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes qp-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Error ─────────────────────────────────── */
+.qp-error {
+    margin: 0 14px 10px;
+    padding: 8px 12px;
+    background: rgba(248, 81, 73, 0.1);
+    border: 1px solid rgba(248, 81, 73, 0.35);
+    border-radius: 6px;
+    color: #f85149;
+    font-size: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.qp-error-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* ── Result section ────────────────────────── */
+.qp-result {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.qp-result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: rgba(138, 56, 245, 0.08);
+    border-bottom: 1px solid rgba(138, 56, 245, 0.2);
+    border-top: 1px solid rgba(138, 56, 245, 0.15);
+    flex-shrink: 0;
+}
+
+.qp-result-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #d2a8ff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.qp-result-icon {
+    font-size: 14px;
+    color: #a78bfa;
+}
+
+.qp-result-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.qp-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.18s;
+    font-family: inherit;
+    letter-spacing: 0.2px;
+}
+
+.qp-action-btn span {
+    font-size: 12px;
+}
+
+.qp-action-btn.accept {
+    background: #238636;
+    color: white;
+    border-color: #2ea043;
+}
+
+.qp-action-btn.accept:hover {
+    background: #2ea043;
+    box-shadow: 0 3px 10px rgba(46, 160, 67, 0.4);
+    transform: translateY(-1px);
+}
+
+.qp-action-btn.reject {
+    background: rgba(248, 81, 73, 0.1);
+    color: #f85149;
+    border-color: rgba(248, 81, 73, 0.4);
+}
+
+.qp-action-btn.reject:hover {
+    background: rgba(248, 81, 73, 0.2);
+    border-color: #f85149;
+    box-shadow: 0 3px 10px rgba(248, 81, 73, 0.3);
+    transform: translateY(-1px);
+}
+
+/* ── Diff View ─────────────────────────────── */
+.qp-diff-view {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    padding: 8px 0;
+    max-height: 300px;
+    background: #0d1117;
+}
+
+.qp-diff-line {
+    display: flex;
+    align-items: stretch;
+    padding: 0 0;
+    min-height: 20px;
+    transition: background 0.1s;
+}
+
+.qp-diff-line.added {
+    background: rgba(46, 160, 67, 0.13);
+    border-left: 2px solid #3fb950;
+}
+
+.qp-diff-line.removed {
+    background: rgba(248, 81, 73, 0.13);
+    border-left: 2px solid #f85149;
+}
+
+.qp-diff-line.unchanged {
+    background: transparent;
+    border-left: 2px solid transparent;
+}
+
+.qp-diff-line:hover {
+    background-color: rgba(110, 118, 129, 0.07);
+}
+
+.qp-diff-line.added:hover {
+    background: rgba(46, 160, 67, 0.2);
+}
+
+.qp-diff-line.removed:hover {
+    background: rgba(248, 81, 73, 0.2);
+}
+
+.qp-diff-indicator {
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 20px;
+    padding-top: 1px;
+}
+
+.qp-diff-line.added .qp-diff-indicator {
+    color: #3fb950;
+}
+
+.qp-diff-line.removed .qp-diff-indicator {
+    color: #f85149;
+}
+
+.qp-diff-line.unchanged .qp-diff-indicator {
+    color: transparent;
+}
+
+.qp-diff-text {
+    flex: 1;
+    padding: 0 10px;
+    color: #e6edf3;
+    white-space: pre;
+}
+
+.qp-diff-line.removed .qp-diff-text {
+    color: #ffa198;
+    text-decoration: line-through;
+    text-decoration-color: rgba(248, 81, 73, 0.5);
+}
+
+.qp-diff-line.added .qp-diff-text {
+    color: #7ee787;
+}
+
+/* Scrollbar */
+.qp-diff-view::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.qp-diff-view::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.qp-diff-view::-webkit-scrollbar-thumb {
+    background: rgba(110, 118, 129, 0.3);
+    border-radius: 3px;
+}
+
+.qp-diff-view::-webkit-scrollbar-thumb:hover {
+    background: rgba(110, 118, 129, 0.5);
+}
+
+/* ── Legend ────────────────────────────────── */
+.qp-legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    color: #7d8590;
+    flex-shrink: 0;
+}
+
+.qp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.qp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.qp-dot.red {
+    background: #f85149;
+    box-shadow: 0 0 4px rgba(248, 81, 73, 0.5);
+}
+
+.qp-dot.green {
+    background: #3fb950;
+    box-shadow: 0 0 4px rgba(63, 185, 80, 0.5);
+}
+
+.qp-legend-hint {
+    margin-left: auto;
+    font-size: 10px;
+    color: rgba(125, 133, 144, 0.6);
+}
+
+/* ── Skeleton loading ──────────────────────── */
+.qp-skeleton {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.qp-skeleton-bar {
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg,
+        rgba(138, 56, 245, 0.05) 25%,
+        rgba(138, 56, 245, 0.15) 50%,
+        rgba(138, 56, 245, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: qp-shimmer 1.5s infinite;
+}
+
+@keyframes qp-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.qp-skeleton-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: rgba(138, 56, 245, 0.7);
+    margin-top: 4px;
+    font-style: italic;
+}

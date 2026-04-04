@@ -14,7 +14,7 @@ import { dracula } from '@uiw/codemirror-theme-dracula'
 import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night'
 import { createSQLAutocomplete } from './sqlAutocomplete'
 import AIGeneratorButton from './AIGeneratorButton'
-import CodeDiffView from './CodeDiffView'
+import QueryPilot from './QueryPilot'
 import ResultsTable from './ResultsTable'
 import './QueryEditor.css'
 
@@ -45,8 +45,12 @@ export const FONT_FAMILIES = [
 
 function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250, schema, isLoadingSchema, importedQuery, onQueryImported, queryResults, queryError, executionTime, theme }) {
     const [query, setQuery] = useState(() => localStorage.getItem('savedQuery') || 'SELECT * FROM your_table;')
-    const [isAiGenerating, setIsAiGenerating] = useState(false)
-    const [aiSuggestion, setAiSuggestion] = useState(null)
+    const [showQueryPilot, setShowQueryPilot] = useState(false)
+
+    const [selectedTheme, setSelectedTheme] = useState(() => {
+        const saved = localStorage.getItem('editorTheme')
+        return THEMES.find(t => t.value === saved) || THEMES[0]
+    })
 
     useEffect(() => {
         localStorage.setItem('savedQuery', query)
@@ -67,7 +71,7 @@ function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250,
                 if (darkTheme) setSelectedTheme(darkTheme)
             }
         }
-    }, [theme]) // Run when app theme changes
+    }, [theme, selectedTheme.value]) // Run when app theme changes
 
     // Handle imported query from notebook
     useEffect(() => {
@@ -91,11 +95,6 @@ function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250,
 
     const [showLimitDropdown, setShowLimitDropdown] = useState(false)
     const [showThemeDropdown, setShowThemeDropdown] = useState(false)
-
-    const [selectedTheme, setSelectedTheme] = useState(() => {
-        const saved = localStorage.getItem('editorTheme')
-        return THEMES.find(t => t.value === saved) || THEMES[0]
-    })
 
     const [fontSize, setFontSize] = useState(() => {
         return parseInt(localStorage.getItem('editorFontSize')) || 13
@@ -267,34 +266,6 @@ function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250,
         }
     }
 
-    const handleAiGenerate = () => {
-        setIsAiGenerating(true)
-        // Simulate AI generation delay
-        setTimeout(() => {
-            // Mock AI suggestion
-            const suggestion = `SELECT 
-    u.id, 
-    u.username, 
-    COUNT(o.id) as total_orders,
-    SUM(o.amount) as total_spent
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id
-GROUP BY u.id, u.username
-HAVING total_spent > 1000
-ORDER BY total_spent DESC;`
-            setAiSuggestion(suggestion)
-            setIsAiGenerating(false)
-        }, 2000)
-    }
-
-    const handleAcceptSuggestion = () => {
-        setQuery(aiSuggestion)
-        setAiSuggestion(null)
-    }
-
-    const handleRejectSuggestion = () => {
-        setAiSuggestion(null)
-    }
 
     const handleKeyDown = (event) => {
         if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
@@ -647,9 +618,9 @@ ORDER BY total_spent DESC;`
                 <div className="editor-actions">
                     {/* AI Generator Button */}
                     <AIGeneratorButton
-                        onClick={handleAiGenerate}
-                        isGenerating={isAiGenerating}
-                        disabled={true}
+                        onClick={() => setShowQueryPilot(!showQueryPilot)}
+                        disabled={false}
+                        isGenerating={showQueryPilot}
                     />
 
                     {/* Fullscreen Toggle */}
@@ -806,22 +777,23 @@ ORDER BY total_spent DESC;`
             {
                 !isCollapsed && (
                     <div
-                        className={`editor-wrapper ${isAiGenerating ? 'ai-analyzing' : ''}`}
+                        className="editor-wrapper"
                         onKeyDown={handleKeyDown}
                     >
-                        {aiSuggestion ? (
-                            <div style={{ height: editorHeight, overflow: 'hidden' }}>
-                                <CodeDiffView
-                                    originalCode={query}
-                                    suggestedCode={aiSuggestion}
-                                    onAccept={handleAcceptSuggestion}
-                                    onReject={handleRejectSuggestion}
-                                    fontSize={fontSize}
-                                    fontFamily={fontFamily.family}
+                        {showQueryPilot && (
+                            <Box sx={{ padding: '0 10px 10px 10px' }}>
+                                <QueryPilot 
+                                    currentQuery={query}
+                                    schema={schema}
+                                    onAccept={(newSql) => {
+                                        setQuery(newSql)
+                                        setShowQueryPilot(false)
+                                    }}
+                                    onClose={() => setShowQueryPilot(false)}
                                 />
-                            </div>
-                        ) : (
-                            <CodeMirror
+                            </Box>
+                        )}
+                        <CodeMirror
                                 value={query}
                                 height={editorHeight}
                                 theme={selectedTheme.theme}
@@ -856,7 +828,6 @@ ORDER BY total_spent DESC;`
                                     lintKeymap: true,
                                 }}
                             />
-                        )}
                     </div>
                 )
             }

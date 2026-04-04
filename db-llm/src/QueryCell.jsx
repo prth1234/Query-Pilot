@@ -9,6 +9,7 @@ import { PlayIcon, TrashIcon, ScreenFullIcon, ScreenNormalIcon, ChevronDownIcon,
 import { TbCancel } from "react-icons/tb"
 import { createSQLAutocomplete } from './sqlAutocomplete'
 import AIGeneratorButton from './AIGeneratorButton'
+import QueryPilot from './QueryPilot'
 import ResultsTable from './ResultsTable'
 import './QueryCell.css'
 
@@ -30,6 +31,7 @@ function QueryCell({
     const isExecuting = cell.isExecuting || false
     const [isFullScreen, setIsFullScreen] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
+    const [showQueryPilot, setShowQueryPilot] = useState(false)
     const viewRef = useRef(null)
     const queryRef = useRef(cell.query)
     const editorContainerRef = useRef(null)
@@ -237,9 +239,9 @@ function QueryCell({
                 <div className="cell-right-actions">
                     {/* Query Pilot Button */}
                     <AIGeneratorButton
-                        onClick={() => { }}
-                        isGenerating={false}
-                        disabled={true}
+                        onClick={() => setShowQueryPilot(!showQueryPilot)}
+                        isGenerating={showQueryPilot}
+                        disabled={false}
                     />
                     <button
                         className="cell-action-button"
@@ -261,6 +263,19 @@ function QueryCell({
             </div>
 
             <div className="cell-editor-wrapper" ref={editorContainerRef}>
+                {showQueryPilot && (
+                    <div style={{ padding: '0 10px 10px 10px' }}>
+                        <QueryPilot 
+                            currentQuery={cell.query}
+                            schema={schema}
+                            onAccept={(newSql) => {
+                                onQueryChange(cell.id, newSql)
+                                setShowQueryPilot(false)
+                            }}
+                            onClose={() => setShowQueryPilot(false)}
+                        />
+                    </div>
+                )}
                 <CodeMirror
                     value={cell.query}
                     height={isFullScreen ? "100%" : (hasManuallyResized ? `${editorHeight}px` : "auto")}
