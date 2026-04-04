@@ -158,77 +158,65 @@ ${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
     }
 
     return (
-        <BorderGlow
-            className="qp-panel-wrapper"
-            edgeSensitivity={30}
-            glowColor="40 80 80"
-            backgroundColor="#0d1117"
-            borderRadius={10}
-            glowRadius={60}
-            glowIntensity={1}
-            coneSpread={25}
-            animated={true}
-            colors={['#c084fc', '#f472b6', '#38bdf8']}
-        >
-            <div className="qp-panel" style={{ marginTop: 0, border: 'none', background: 'transparent' }}>
-                {/* Header */}
-                <div className="qp-header">
-                    <div className="qp-header-left">
-                        <div className="qp-logo-wrap">
-                            <img src={queryPilotLogo} alt="Query Pilot" className="qp-logo" />
-                            <div className="qp-logo-glow" />
-                        </div>
-                        <span className="qp-title">Query Pilot</span>
-                        <span className="qp-badge">AI</span>
+        <div className="qp-panel">
+            {/* Header */}
+            <div className="qp-header">
+                <div className="qp-header-left">
+                    <div className="qp-logo-wrap">
+                        <img src={queryPilotLogo} alt="Query Pilot" className="qp-logo" />
+                        <div className="qp-logo-glow" />
                     </div>
-                    <div className="qp-header-right">
-                        <button className="qp-close-btn" onClick={onClose} title="Close Query Pilot">✕</button>
-                    </div>
+                    <span className="qp-title">Query Pilot</span>
+                    <span className="qp-badge">AI</span>
                 </div>
+                <div className="qp-header-right">
+                    <button className="qp-close-btn" onClick={onClose} title="Close Query Pilot">✕</button>
+                </div>
+            </div>
 
-                {/* Input area */}
-                <div className="qp-input-section">
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <div className="qp-magic-textarea-wrap" style={{ flex: 1 }}>
-                            <div className="qp-magic-textarea-glow" />
-                            <textarea
-                                ref={textareaRef}
-                                className="qp-magic-textarea"
-                                placeholder={currentQuery && currentQuery.trim() ? "Describe how to optimize or fix the current query..." : "Describe the SQL to generate (e.g., Get all active users)..."}
-                                value={prompt}
-                                onChange={e => setPrompt(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                rows={1}
-                            />
-                        </div>
-                        <button
-                            onClick={handleRun}
-                            disabled={isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim()))}
-                            style={{
-                                background: 'transparent',
-                                color: '#3fb950',
-                                border: 'none',
-                                width: '32px',
-                                height: '32px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '28px',
-                                cursor: isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim())) ? 'not-allowed' : 'pointer',
-                                padding: 0,
-                                margin: 0,
-                                flexShrink: 0,
-                                transition: 'transform 0.1s, opacity 0.2s',
-                                opacity: isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim())) ? 0.3 : 1
-                            }}
-                            title="Run Query Pilot"
-                            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.92)'}
-                            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                            {isLoading ? <span className="qp-spinner" style={{width: 16, height: 16, borderTopColor: '#3fb950', borderColor: 'rgba(63, 185, 80, 0.3)'}} /> : <FaArrowCircleUp />}
-                        </button>
+            {/* Input area */}
+            <div className="qp-input-section">
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div className="qp-magic-textarea-wrap" style={{ flex: 1 }}>
+                        <div className="qp-magic-textarea-glow" />
+                        <textarea
+                            ref={textareaRef}
+                            className="qp-magic-textarea"
+                            placeholder={currentQuery && currentQuery.trim() ? "Describe how to optimize or fix the current query..." : "Describe the SQL to generate (e.g., Get all active users)..."}
+                            value={prompt}
+                            onChange={e => setPrompt(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            rows={1}
+                        />
                     </div>
+                    <button
+                        onClick={handleRun}
+                        disabled={isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim()))}
+                        style={{
+                            background: 'transparent',
+                            color: '#3fb950',
+                            border: 'none',
+                            width: '32px',
+                            height: '32px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '28px',
+                            cursor: isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim())) ? 'not-allowed' : 'pointer',
+                            padding: 0,
+                            margin: 0,
+                            flexShrink: 0,
+                            transition: 'transform 0.1s, opacity 0.2s',
+                            opacity: isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim())) ? 0.3 : 1
+                        }}
+                        title="Run Query Pilot"
+                        onMouseDown={e => e.currentTarget.style.transform = 'scale(0.92)'}
+                        onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        {isLoading ? <span className="qp-spinner" style={{width: 16, height: 16, borderTopColor: '#3fb950', borderColor: 'rgba(63, 185, 80, 0.3)'}} /> : <FaArrowCircleUp />}
+                    </button>
                 </div>
+            </div>
 
             {/* Error */}
             {error && (
@@ -288,20 +276,19 @@ ${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
                 </div>
             )}
 
-                {/* Loading skeleton */}
-                {isLoading && !suggestion && (
-                    <div className="qp-skeleton">
-                        <div className="qp-skeleton-bar" style={{ width: '80%' }} />
-                        <div className="qp-skeleton-bar" style={{ width: '60%' }} />
-                        <div className="qp-skeleton-bar" style={{ width: '70%' }} />
-                        <div className="qp-skeleton-bar" style={{ width: '50%' }} />
-                        <div className="qp-skeleton-label">
-                            <span className="qp-spinner" /> Llama 3.2 is thinking…
-                        </div>
+            {/* Loading skeleton */}
+            {isLoading && !suggestion && (
+                <div className="qp-skeleton">
+                    <div className="qp-skeleton-bar" style={{ width: '80%' }} />
+                    <div className="qp-skeleton-bar" style={{ width: '60%' }} />
+                    <div className="qp-skeleton-bar" style={{ width: '70%' }} />
+                    <div className="qp-skeleton-bar" style={{ width: '50%' }} />
+                    <div className="qp-skeleton-label">
+                        <span className="qp-spinner" /> Llama 3.2 is thinking…
                     </div>
-                )}
-            </div>
-        </BorderGlow>
+                </div>
+            )}
+        </div>
     )
 }
 
