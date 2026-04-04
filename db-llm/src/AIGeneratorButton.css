@@ -36,58 +36,8 @@
     font-weight: 600;
 }
 
-/* The 256-color cycling glow */
-.ai-button-glow {
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(from 0deg,
-            #ff0000,
-            #ff8000,
-            #ffff00,
-            #80ff00,
-            #00ff00,
-            #00ff80,
-            #00ffff,
-            #0080ff,
-            #0000ff,
-            #8000ff,
-            #ff00ff,
-            #ff0080,
-            #ff0000);
-    opacity: 0.15;
-    /* Subtle glow */
-    filter: blur(10px);
-    animation: ai-pulse 2s ease-in-out infinite;
-    z-index: 1;
-}
-
-/* Disabled state */
-.ai-generator-button.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: rgba(139, 92, 246, 0.1);
-}
-
-.ai-generator-button.disabled:hover {
-    transform: none;
-    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2);
-}
-
-.ai-generator-button.disabled .ai-button-glow {
-    display: none;
-}
-
 .ai-generator-button:hover {
-    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(138, 56, 245, 0.25);
-    border-color: rgba(138, 56, 245, 0.8);
-}
-
-.ai-generator-button:hover .ai-button-glow {
-    opacity: 0.3;
 }
 
 .ai-generator-button.generating {

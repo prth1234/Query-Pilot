@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import queryPilotLogo from './assets/query-pilot-logo.png'
+import BorderGlow from './BorderGlow'
+import { FaArrowCircleUp } from "react-icons/fa"
 import './QueryPilot.css'
 
 const API_BASE = 'http://localhost:8000'
@@ -14,7 +16,6 @@ const API_BASE = 'http://localhost:8000'
  *   onClose()      – called to dismiss the panel
  */
 function QueryPilot({ currentQuery, schema, onAccept, onClose }) {
-    const [mode, setMode] = useState('fix')   // 'fix' | 'generate'
     const [prompt, setPrompt] = useState('')
     const [suggestion, setSuggestion] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -22,12 +23,12 @@ function QueryPilot({ currentQuery, schema, onAccept, onClose }) {
     const [diffLines, setDiffLines] = useState([])
     const textareaRef = useRef(null)
 
-    // Auto-focus the textarea when switching to generate mode
+    // Auto-focus the textarea
     useEffect(() => {
-        if (mode === 'generate' && textareaRef.current) {
+        if (textareaRef.current) {
             textareaRef.current.focus()
         }
-    }, [mode])
+    }, [])
 
     // Build schema context string
     const buildSchemaContext = () => {
@@ -98,68 +99,36 @@ function QueryPilot({ currentQuery, schema, onAccept, onClose }) {
         return result
     }
 
-    const handleFix = async () => {
-        setError(null)
-        setIsLoading(true)
-        setSuggestion(null)
-
-        try {
-            const schemaCtx = buildSchemaContext()
-            const systemPrompt = `You are an elite SQL Database Architect and Query Optimization Expert.
-Your purpose is to debug, fix, and optimize SQL queries with absolute precision and high performance.
-Ensure strict adherence to best practices, robust indexing conventions, and execution efficiency.
-
-${schemaCtx ? `STRICT SCHEMA CONTEXT:\n${schemaCtx}` : ''}
-CRITICAL RULES:
-1. ONLY return the raw, executable SQL query.
-2. DO NOT wrap the SQL in markdown blocks (e.g., no \`\`\`sql).
-3. DO NOT include any conversational text, prose, or formatting before or after the SQL block.
-4. Fix syntax errors and resolve illogical joins, but otherwise maintain the valid structure of the query.
-5. Format the resulting string with clean, readable indentation and uppercase SQL keywords.`
-            
-            const userPrompt = `TASK: FIX AND OPTIMIZE QUERY
-${prompt.trim() ? `USER INSTRUCTIONS: ${prompt}\n` : ''}
-CURRENT QUERY:
-${currentQuery}`
-
-            const raw = await callLLM(systemPrompt, userPrompt)
-            const sql = extractSQL(raw)
-            setSuggestion(sql)
-            setDiffLines(computeDiff(currentQuery, sql))
-        } catch (e) {
-            setError(e.message)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    const handleGenerate = async () => {
+    const handleRun = async () => {
         if (!prompt.trim()) return
         setError(null)
         setIsLoading(true)
         setSuggestion(null)
 
         try {
+            const hasQuery = Boolean(currentQuery && currentQuery.trim())
             const schemaCtx = buildSchemaContext()
-            const systemPrompt = `You are an elite SQL Database Architect and Query Optimization Expert.
-Your purpose is to generate high-performance, complex SQL queries from natural language requests.
-Ensure strict adherence to best practices, robust indexing conventions, and execution efficiency.
+            
+            const systemPrompt = `You are an elite SQL Database Architect and helpful Query Pilot AI advisor.
+Your goal is to assist with SQL tasks—debugging, generation, and optimizing—while also answering general technical questions about databases.
 
 ${schemaCtx ? `STRICT SCHEMA CONTEXT:\n${schemaCtx}` : ''}
+
 CRITICAL RULES:
-1. ONLY return the raw, executable SQL query.
-2. DO NOT wrap the SQL in markdown blocks (e.g., no \`\`\`sql).
-3. DO NOT include any conversational text, prose, or formatting before or after the SQL block.
-4. Ensure the query is perfectly optimized and fully functional out-of-the-box.
-5. Format the resulting string with clean, readable indentation and uppercase SQL keywords.`
+1. ALWAYS prioritize answering the User's explicit intent. 
+2. If the user asks a general question, provides advice, or says hi, answer them first.
+3. ALL conversational text MUST be prefixed with '# ' (standard SQL comment).
+4. If providing code, only return raw, executable SQL (e.g., SELECT ...).
+5. DO NOT use markdown code blocks (\`\`\`). Only return plain text (where comments start with #).
+6. IF you are fixing/optimizing a query, only return the corrected SQL (plus any advice as '#' comments).`
             
-            const userPrompt = `TASK: GENERATE SQL QUERY
-INTENT: ${prompt}`
+            const userPrompt = `USER INTENT: ${prompt}
+${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
 
             const raw = await callLLM(systemPrompt, userPrompt)
             const sql = extractSQL(raw)
             setSuggestion(sql)
-            setDiffLines(computeDiff('', sql))
+            setDiffLines(computeDiff(currentQuery || '', sql))
         } catch (e) {
             setError(e.message)
         } finally {
@@ -181,97 +150,85 @@ INTENT: ${prompt}`
     }
 
     const handleKeyDown = (e) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        // Enter sends, Shift + Enter creates new line
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
-            if (mode === 'fix') handleFix()
-            else handleGenerate()
+            handleRun()
         }
     }
 
     return (
-        <div className="qp-panel">
-            {/* Header */}
-            <div className="qp-header">
-                <div className="qp-header-left">
-                    <div className="qp-logo-wrap">
-                        <img src={queryPilotLogo} alt="Query Pilot" className="qp-logo" />
-                        <div className="qp-logo-glow" />
-                    </div>
-                    <span className="qp-title">Query Pilot</span>
-                    <span className="qp-badge">AI</span>
-                </div>
-                <div className="qp-header-right">
-                    <div className="qp-mode-toggle">
-                        <button
-                            className={`qp-mode-btn ${mode === 'fix' ? 'active' : ''}`}
-                            onClick={() => { setMode('fix'); setSuggestion(null); setError(null) }}
-                        >
-                            ✦ Fix Code
-                        </button>
-                        <button
-                            className={`qp-mode-btn ${mode === 'generate' ? 'active' : ''}`}
-                            onClick={() => { setMode('generate'); setSuggestion(null); setError(null) }}
-                        >
-                            ✦ Generate
-                        </button>
-                    </div>
-                    <button className="qp-close-btn" onClick={onClose} title="Close Query Pilot">✕</button>
-                </div>
-            </div>
-
-            {/* Input area */}
-            <div className="qp-input-section">
-                {mode === 'fix' ? (
-                    <div className="qp-fix-area">
-                        <div className="qp-magic-input-wrap">
-                            <div className="qp-magic-glow" />
-                            <input
-                                type="text"
-                                className="qp-magic-input"
-                                placeholder="Optional: describe what to fix, or leave blank to auto-improve…"
-                                value={prompt}
-                                onChange={e => setPrompt(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                            />
+        <BorderGlow
+            className="qp-panel-wrapper"
+            edgeSensitivity={30}
+            glowColor="40 80 80"
+            backgroundColor="#0d1117"
+            borderRadius={10}
+            glowRadius={60}
+            glowIntensity={1}
+            coneSpread={25}
+            animated={true}
+            colors={['#c084fc', '#f472b6', '#38bdf8']}
+        >
+            <div className="qp-panel" style={{ marginTop: 0, border: 'none', background: 'transparent' }}>
+                {/* Header */}
+                <div className="qp-header">
+                    <div className="qp-header-left">
+                        <div className="qp-logo-wrap">
+                            <img src={queryPilotLogo} alt="Query Pilot" className="qp-logo" />
+                            <div className="qp-logo-glow" />
                         </div>
-                        <button
-                            className={`qp-run-btn ${isLoading ? 'loading' : ''}`}
-                            onClick={handleFix}
-                            disabled={isLoading}
-                        >
-                            {isLoading
-                                ? <><span className="qp-spinner" /> Thinking…</>
-                                : <><span className="qp-btn-icon"></span> Fix Query</>
-                            }
-                        </button>
+                        <span className="qp-title">Query Pilot</span>
+                        <span className="qp-badge">AI</span>
                     </div>
-                ) : (
-                    <div className="qp-generate-area">
-                        <div className="qp-magic-textarea-wrap">
+                    <div className="qp-header-right">
+                        <button className="qp-close-btn" onClick={onClose} title="Close Query Pilot">✕</button>
+                    </div>
+                </div>
+
+                {/* Input area */}
+                <div className="qp-input-section">
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <div className="qp-magic-textarea-wrap" style={{ flex: 1 }}>
                             <div className="qp-magic-textarea-glow" />
                             <textarea
                                 ref={textareaRef}
                                 className="qp-magic-textarea"
-                                placeholder="Describe the SQL you want… e.g. 'Get all users who placed more than 3 orders last month'"
+                                placeholder={currentQuery && currentQuery.trim() ? "Describe how to optimize or fix the current query..." : "Describe the SQL to generate (e.g., Get all active users)..."}
                                 value={prompt}
                                 onChange={e => setPrompt(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                rows={2}
+                                rows={1}
                             />
                         </div>
                         <button
-                            className={`qp-run-btn ${isLoading ? 'loading' : ''}`}
-                            onClick={handleGenerate}
-                            disabled={isLoading || !prompt.trim()}
+                            onClick={handleRun}
+                            disabled={isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim()))}
+                            style={{
+                                background: 'transparent',
+                                color: '#3fb950',
+                                border: 'none',
+                                width: '32px',
+                                height: '32px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '28px',
+                                cursor: isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim())) ? 'not-allowed' : 'pointer',
+                                padding: 0,
+                                margin: 0,
+                                flexShrink: 0,
+                                transition: 'transform 0.1s, opacity 0.2s',
+                                opacity: isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim())) ? 0.3 : 1
+                            }}
+                            title="Run Query Pilot"
+                            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.92)'}
+                            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
                         >
-                            {isLoading
-                                ? <><span className="qp-spinner" /> Generating…</>
-                                : <><span className="qp-btn-icon"></span> Generate SQL</>
-                            }
+                            {isLoading ? <span className="qp-spinner" style={{width: 16, height: 16, borderTopColor: '#3fb950', borderColor: 'rgba(63, 185, 80, 0.3)'}} /> : <FaArrowCircleUp />}
                         </button>
                     </div>
-                )}
-            </div>
+                </div>
 
             {/* Error */}
             {error && (
@@ -281,56 +238,70 @@ INTENT: ${prompt}`
                 </div>
             )}
 
-            {/* Diff / Result */}
+            {/* Diff / Result / Chat Bubble */}
             {suggestion && (
                 <div className="qp-result">
-                    <div className="qp-result-header">
-                        <div className="qp-result-title">
-                            <span className="qp-result-icon">◈</span>
-                            AI Suggestion
-                        </div>
-                        <div className="qp-result-actions">
-                            <button className="qp-action-btn reject" onClick={handleReject}>
-                                <span>✕</span> Reject
-                            </button>
-                            <button className="qp-action-btn accept" onClick={handleAccept}>
-                                <span>✓</span> Accept
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="qp-diff-view">
-                        {diffLines.map((line, idx) => (
-                            <div key={idx} className={`qp-diff-line ${line.type}`}>
-                                <span className="qp-diff-indicator">
-                                    {line.type === 'added' ? '+' : line.type === 'removed' ? '-' : ' '}
-                                </span>
-                                <span className="qp-diff-text">{line.text || ' '}</span>
+                    {/* If more than 50% lines are comments or has no SQL keywords, treat as message */}
+                    {suggestion && (suggestion.split('\n').filter(l => l.trim().startsWith('#')).length / suggestion.split('\n').filter(l => l.trim() !== '').length > 0.5 || !suggestion.match(/SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP/i)) ? (
+                        <div className="qp-chat-bubble">
+                            <div className="qp-chat-content">
+                                {suggestion.split('\n').map((l, idx) => (
+                                    <div key={idx} style={{ marginBottom: idx === suggestion.split('\n').length - 1 ? 0 : 2 }}>
+                                        {l.replace(/^#\s*/, '')}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-
-                    <div className="qp-legend">
-                        <span className="qp-legend-item removed"><span className="qp-dot red" />Removed</span>
-                        <span className="qp-legend-item added"><span className="qp-dot green" />Added</span>
-                        <span className="qp-legend-hint">⌘ + Enter to accept</span>
-                    </div>
+                            <div className="qp-chat-actions">
+                                <button className="qp-action-btn reject" onClick={handleReject}>Dismiss</button>
+                                <button className="qp-action-btn accept" onClick={handleAccept}>Add to Editor</button>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="qp-result-header">
+                                <div className="qp-result-title">
+                                    <span className="qp-result-icon">◈</span>
+                                    AI Suggestion
+                                </div>
+                                <div className="qp-result-actions">
+                                    <button className="qp-action-btn reject" onClick={handleReject}>✕ Reject</button>
+                                    <button className="qp-action-btn accept" onClick={handleAccept}>✓ Accept</button>
+                                </div>
+                            </div>
+                            <div className="qp-diff-view">
+                                {diffLines.map((line, idx) => (
+                                    <div key={idx} className={`qp-diff-line ${line.type}`}>
+                                        <div className="qp-diff-indicator">
+                                            {line.type === 'added' ? '+' : line.type === 'removed' ? '-' : ' '}
+                                        </div>
+                                        <div className="qp-diff-text">{line.text}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="qp-legend">
+                                <span className="qp-legend-item removed"><span className="qp-dot red" />Removed</span>
+                                <span className="qp-legend-item added"><span className="qp-dot green" />Added</span>
+                                <span className="qp-legend-hint">⌘ + Enter to accept</span>
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
 
-            {/* Loading skeleton */}
-            {isLoading && !suggestion && (
-                <div className="qp-skeleton">
-                    <div className="qp-skeleton-bar" style={{ width: '80%' }} />
-                    <div className="qp-skeleton-bar" style={{ width: '60%' }} />
-                    <div className="qp-skeleton-bar" style={{ width: '70%' }} />
-                    <div className="qp-skeleton-bar" style={{ width: '50%' }} />
-                    <div className="qp-skeleton-label">
-                        <span className="qp-spinner" /> Llama 3.2 is thinking…
+                {/* Loading skeleton */}
+                {isLoading && !suggestion && (
+                    <div className="qp-skeleton">
+                        <div className="qp-skeleton-bar" style={{ width: '80%' }} />
+                        <div className="qp-skeleton-bar" style={{ width: '60%' }} />
+                        <div className="qp-skeleton-bar" style={{ width: '70%' }} />
+                        <div className="qp-skeleton-bar" style={{ width: '50%' }} />
+                        <div className="qp-skeleton-label">
+                            <span className="qp-spinner" /> Llama 3.2 is thinking…
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </BorderGlow>
     )
 }
 

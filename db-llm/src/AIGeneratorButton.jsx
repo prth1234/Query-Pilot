@@ -10,7 +10,6 @@ function AIGeneratorButton({ onClick, isGenerating, disabled = true }) {
             disabled={disabled || isGenerating}
             title={disabled ? "Query Pilot - Coming Soon" : "Generate SQL with AI"}
         >
-            <div className="ai-button-glow"></div>
             <div className="ai-button-content">
                 <img src={queryPilotLogo} alt="Query Pilot" style={{ width: 16, height: 16, opacity: disabled ? 0.5 : 1 }} />
                 <span className="ai-button-text">Query Pilot</span>

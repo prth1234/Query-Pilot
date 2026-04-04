@@ -247,35 +247,35 @@
 
 .qp-magic-textarea-glow {
     position: absolute;
-    inset: -2px;
-    border-radius: 10px;
+    inset: -1px;
+    border-radius: 9px;
     background: conic-gradient(
         from 0deg,
-        rgba(138, 56, 245, 0.8),
-        rgba(56, 189, 248, 0.8),
-        rgba(52, 211, 153, 0.6),
-        rgba(251, 191, 36, 0.5),
-        rgba(138, 56, 245, 0.8)
+        rgba(138, 56, 245, 0.5),
+        rgba(56, 189, 248, 0.5),
+        rgba(52, 211, 153, 0.3),
+        rgba(251, 191, 36, 0.2),
+        rgba(138, 56, 245, 0.5)
     );
     opacity: 0;
-    filter: blur(8px);
+    filter: blur(4px);
     pointer-events: none;
     z-index: 0;
-    animation: qp-glow-rotate 3s linear infinite;
+    animation: qp-glow-rotate 4s linear infinite;
     transition: opacity 0.3s;
 }
 
 .qp-magic-textarea-wrap:focus-within .qp-magic-textarea-glow {
-    opacity: 0.9;
+    opacity: 0.5;
 }
 
 .qp-magic-textarea {
     position: relative;
     z-index: 1;
     width: 100%;
-    padding: 8px 12px;
+    padding: 6px 12px;
     background: rgba(22, 27, 34, 0.96);
-    border: 1px solid rgba(138, 56, 245, 0.4);
+    border: 1px solid rgba(138, 56, 245, 0.3);
     border-radius: 8px;
     color: #e6edf3;
     font-size: 12px;
@@ -283,7 +283,7 @@
     outline: none;
     resize: none;
     transition: border-color 0.2s;
-    line-height: 1.5;
+    line-height: 1.4;
     box-sizing: border-box;
 }
 
@@ -649,4 +649,33 @@
     color: rgba(138, 56, 245, 0.7);
     margin-top: 4px;
     font-style: italic;
+}
+/* ── Chat Bubble (Conversational) ─────────── */
+.qp-chat-bubble {
+    padding: 12px 14px;
+    background: rgba(138, 56, 245, 0.05);
+    border-top: 1px solid rgba(138, 56, 245, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: qp-fade-in 0.3s ease;
+}
+
+@keyframes qp-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.qp-chat-content {
+    font-size: 12.5px;
+    color: #e6edf3;
+    line-height: 1.6;
+    font-family: inherit;
+    white-space: pre-wrap;
+}
+
+.qp-chat-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
 }
