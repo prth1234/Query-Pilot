@@ -11,20 +11,20 @@ Query Pilot is an AI-powered universal database assistant that delivers intellig
 ### Dashboard Overview
 ![Dashboard Overview](https://i.ibb.co/84Y3qYbW/Screenshot-2025-12-25-at-2-05-31-PM.png)
 
-### Query Workspace
+### Query Workspace (Editor View)
 ![Query Workspace](https://i.ibb.co/TMjG0Xpk/Screenshot-2025-12-25-at-2-05-42-PM.png)
 
-### AI SQL Generation
+### AI SQL Generation (Query Pilot)
 ![AI SQL Generation](https://i.ibb.co/zHLD6HLB/Screenshot-2025-12-25-at-2-05-45-PM.png)
 
+### Interactive Notebook View
+![Notebook View](https://i.ibb.co/pB19MDzF/Screenshot-2025-12-25-at-2-05-56-PM.png)
+
+### Real-Time Query Execution
+![Real-Time Execution](https://i.ibb.co/HLjCGBXh/Screenshot-2025-12-25-at-2-06-00-PM.png)
+
 ### Database Connections
-![Database Connections](https://i.ibb.co/pB19MDzF/Screenshot-2025-12-25-at-2-05-56-PM.png)
-
-### Query Results
-![Query Results](https://i.ibb.co/HLjCGBXh/Screenshot-2025-12-25-at-2-06-00-PM.png)
-
-### Performance Analytics
-![Performance Analytics](https://i.ibb.co/hxLKN6gL/Screenshot-2025-12-25-at-2-06-12-PM.png)
+![Database Connections](https://i.ibb.co/hxLKN6gL/Screenshot-2025-12-25-at-2-06-12-PM.png)
 
 ---
 
@@ -32,30 +32,30 @@ Query Pilot is an AI-powered universal database assistant that delivers intellig
 
 Query Pilot represents the pinnacle of automated database operations. By integrating seamlessly with your local Llama 3.2 engine, Query Pilot acts as a high-performance, schema-aware SQL architect directly operating within your workspace. It does not merely make suggestions; it intelligently engineers complex schemas into perfectly optimized, production-ready SQL logic.
 
-### Generate From Scratch
-State your intent naturally, and let Query Pilot craft flawless SQL. It leverages robust schema context to ensure correct relationships and absolute syntactical perfection without hallucinations.
+### Rich SQL Editor Workspace
+Operate within a powerful, deeply integrated query environment perfectly suited for handling complex operations and rendering large analytical datasets seamlessly.
 
-![Generate Mode](https://i.ibb.co/WWX0qQZ4/image.png)
+![Rich Workspace](https://i.ibb.co/WWX0qQZ4/image.png)
 
-### Fix and Optimize In-Place
-Select broken or inefficient queries and instantly receive an optimized replacement. Query Pilot identifies syntax errors, resolves illogical joins, and rewrites operations to guarantee maximum execution efficiency.
+### Context-Aware Assistance
+Ask the Query Pilot for advanced optimization strategies, restructuring, or complex refactoring directly within your editor. It analyzes your current SQL architecture and figures out the best way forward.
 
-![Fix Code Mode](https://i.ibb.co/tP2V0s90/image.png)
+![Context-Aware AI](https://i.ibb.co/tP2V0s90/image.png)
 
-### Side-by-Side Diff Resolution
-Maintain absolute control over your code. Query Pilot provides a state-of-the-art diff viewer, highlighting precisely the structural additions and removals. Review the architecture changes and accept with a single click.
+### Side-by-Side Diff Viewer
+Maintain absolute control over your code before accepting changes. Query Pilot features a state-of-the-art diff viewer that highlights precise structural additions (green) and removals (red).
 
-![Diff Resolution](https://i.ibb.co/kVZyCnfH/image.png)
+![Diff Viewer](https://i.ibb.co/kVZyCnfH/image.png)
 
-### Immersive Workspace Integration
-Query Pilot lives directly within both your standard Query Editor and dynamic Notebook interfaces. Its premium design respects your focus while remaining instantly accessible exactly when needed.
+### Natural Language to Built SQL
+Translate complex business questions directly into optimized logic. Just describe what you need—like asking for high-value customers with pending orders—and the Pilot handles the precise dataset mapping and JOINs.
 
-![Workspace Integration](https://i.ibb.co/DXF5wrm/image.png)
+![Natural Language Query](https://i.ibb.co/DXF5wrm/image.png)
 
-### High Performance Execution
-Designed for speed and reliability, Query Pilot enforces strict formatting, indexing best practices, and logical optimizations, ensuring that every generated query performs exceptionally well against your datasets.
+### Intelligent Error Resolution
+When an execution fails or a column is unknown, Query Pilot acts as an active debugger. It analyzes the exact database error emitted and instantly provides the corrected SQL logic to get your query running correctly.
 
-![Optimal Execution](https://i.ibb.co/kgVqh7BT/image.png)
+![Error Resolution](https://i.ibb.co/kgVqh7BT/image.png)
 
 ---
 
