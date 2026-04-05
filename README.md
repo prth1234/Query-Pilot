@@ -1,5 +1,57 @@
 # Query Pilot
 
+---
+
+## Architecture Diagrams
+
+```mermaid
+flowchart LR
+	A["Users / Clients"] --> B["Frontend (Streamlit UI)"]
+
+	B --> C1["API Layer / App Logic"]
+	B --> C2["API Layer / App Logic"]
+	B --> C3["API Layer / App Logic"]
+
+	C1 --> LLM["LLM Engine (Gemini API)"]
+	C2 --> LLM
+	C3 --> LLM
+
+	LLM --> SQLGen["SQL Generation Layer"]
+
+	SQLGen --> DB1["SQLite / DB Instance 1"]
+	SQLGen --> DB2["SQLite / DB Instance 2"]
+	SQLGen --> DBN["DB Instance N"]
+
+	DB1 --> RES["Result Formatter"]
+	DB2 --> RES
+	DBN --> RES
+
+	RES --> B
+```
+
+```mermaid
+sequenceDiagram
+	participant U as User
+	participant UI as Streamlit UI
+	participant APP as App Backend
+	participant LLM as Gemini API
+	participant DB as SQLite DB
+
+	U->>UI: Enter natural language query
+	UI->>APP: Send input
+
+	APP->>LLM: Generate SQL query
+	LLM-->>APP: SQL output
+
+	APP->>APP: Validate / sanitize SQL
+
+	APP->>DB: Execute query (read-only)
+	DB-->>APP: Query result
+
+	APP->>UI: Format + return result
+	UI-->>U: Display table output
+```
+
 ## Database Intelligence Platform
 
 Query Pilot is an AI-powered universal database assistant that delivers intelligent SQL generation, schema-aware reasoning, cross-database compatibility, and automatic query correction. Designed for engineers who want to accelerate database workflows with next-gen AI and high-performance execution.
