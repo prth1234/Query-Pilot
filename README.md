@@ -2,61 +2,86 @@
 
 ---
 
-## Architecture Diagrams
-
-```mermaid
-flowchart LR
-  A[Users/Clients] --> B[Streamlit UI]
-
-  B --> C1[API Layer - App Logic]
-  B --> C2[API Layer - App Logic]
-  B --> C3[API Layer - App Logic]
-
-  C1 --> LLM[Gemini LLM Engine]
-  C2 --> LLM
-  C3 --> LLM
-
-  LLM --> SQLGen[SQL Generation Layer]
-
-  SQLGen --> DB1[(SQLite DB 1)]
-  SQLGen --> DB2[(SQLite DB 2)]
-  SQLGen --> DBN[(DB Instance N)]
-
-  DB1 --> RES[Result Formatter]
-  DB2 --> RES
-  DBN --> RES
-
-  RES --> B
-```
-
-```mermaid
-sequenceDiagram
-  participant U as User
-  participant UI as Streamlit UI
-  participant APP as App Backend
-  participant LLM as Gemini API
-  participant DB as SQLite DB
-
-  U->>UI: Enter natural language query
-  UI->>APP: Send input
-
-  APP->>LLM: Generate SQL query
-  LLM-->>APP: SQL output
-
-  APP->>APP: Validate / sanitize SQL
-
-  APP->>DB: Execute query (read-only)
-  DB-->>APP: Query result
-
-  APP->>UI: Format + return result
-  UI-->>U: Display table output
-```
-
 ## Database Intelligence Platform
 
 Query Pilot is an AI-powered universal database assistant that delivers intelligent SQL generation, schema-aware reasoning, cross-database compatibility, and automatic query correction. Designed for engineers who want to accelerate database workflows with next-gen AI and high-performance execution.
 
 ---
+
+## Core Features
+
+### Query Processing
+
+* **Schema-aware SQL generation:** Cross-database compatibility powered by optimized transformer models.
+* **Natural language conversion:** High-accuracy intent parsing into optimized SQL blocks.
+* **Automatic SQL correction:** Self-healing "fix-and-retry" execution cycle for semantic and syntax errors.
+* **Intelligent Debugging:** Real-time AI analysis of execution plans and error logs.
+* **Cross-Dialect Rewriting:** Automatic translation between MySQL, PostgreSQL, Snowflake, and BigQuery syntax.
+
+### Performance & Optimization
+
+* **Multi-Threaded Execution Engine:** Offloads heavy query processing to background worker threads, preventing UI blocking and allowing simultaneous job handling.
+* **Asynchronous Concurrency:** Implements Python's `asyncio` and FastAPI's concurrent request handling to manage hundreds of active database connections with minimal overhead.
+* **Intelligent Result Caching:** Signature-based caching mechanism that stores frequently accessed query results with adaptive TTL policies.
+* **Parallel Query Execution:** Automatically splits large, independent analytical tasks into parallel sub-tasks to maximize multi-core CPU utilization.
+* **Connection Pooling Optimization:** Employs adaptive pooling that adjusts connection counts based on real-time traffic, reducing handshake latency.
+* **Batch Processing & Payload Compression:** Optimizes data transfer for large result sets through GZIP compression and parameterized batch grouping.
+
+---
+
+## Architecture Diagrams
+
+### Flowchart
+
+```mermaid
+graph LR
+	A[Users] --> B[Streamlit UI]
+
+	B --> C1[API Layer - App Logic]
+	B --> C2[API Layer - App Logic]
+	B --> C3[API Layer - App Logic]
+
+	C1 --> LLM[Gemini LLM Engine]
+	C2 --> LLM
+	C3 --> LLM
+
+	LLM --> SQLGen[SQL Generation Layer]
+
+	SQLGen --> DB1[SQLite DB 1]
+	SQLGen --> DB2[SQLite DB 2]
+	SQLGen --> DBN[DB Instance N]
+
+	DB1 --> RES[Result Formatter]
+	DB2 --> RES
+	DBN --> RES
+
+	RES --> B
+```
+
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+	participant U as User
+	participant UI as Streamlit_UI
+	participant APP as App_Backend
+	participant LLM as Gemini_API
+	participant DB as SQLite_DB
+
+	U->>UI: Enter natural language query
+	UI->>APP: Send input
+
+	APP->>LLM: Generate SQL query
+	LLM-->>APP: SQL output
+
+	APP->>APP: Validate / sanitize SQL
+
+	APP->>DB: Execute query (read-only)
+	DB-->>APP: Query result
+
+	APP->>UI: Format + return result
+	UI-->>U: Display table output
+```
 
 ## Application Screenshots
 
@@ -108,28 +133,6 @@ Translate complex business questions directly into optimized logic. Just describ
 When an execution fails or a column is unknown, Query Pilot acts as an active debugger. It analyzes the exact database error emitted and instantly provides the corrected SQL logic to get your query running correctly.
 
 ![Error Resolution](https://i.ibb.co/kgVqh7BT/image.png)
-
----
-
-## Core Features
-
-### Query Processing
-
-* **Schema-aware SQL generation:** Cross-database compatibility powered by optimized transformer models.
-* **Natural language conversion:** High-accuracy intent parsing into optimized SQL blocks.
-* **Automatic SQL correction:** Self-healing "fix-and-retry" execution cycle for semantic and syntax errors.
-* **Intelligent Debugging:** Real-time AI analysis of execution plans and error logs.
-* **Cross-Dialect Rewriting:** Automatic translation between MySQL, PostgreSQL, Snowflake, and BigQuery syntax.
-
-### Performance & Optimization
-
-* **Multi-Threaded Execution Engine:** Offloads heavy query processing to background worker threads, preventing UI blocking and allowing simultaneous job handling.
-* **Asynchronous Concurrency:** Implements Python's `asyncio` and FastAPI's concurrent request handling to manage hundreds of active database connections with minimal overhead.
-* **Intelligent Result Caching:** Signature-based caching mechanism that stores frequently accessed query results with adaptive TTL policies.
-* **Parallel Query Execution:** Automatically splits large, independent analytical tasks into parallel sub-tasks to maximize multi-core CPU utilization.
-* **Connection Pooling Optimization:** Employs adaptive pooling that adjusts connection counts based on real-time traffic, reducing handshake latency.
-* **Batch Processing & Payload Compression:** Optimizes data transfer for large result sets through GZIP compression and parameterized batch grouping.
-
 ---
 
 ## Supported Databases
@@ -215,55 +218,3 @@ Content-Type: application/json
 MIT License - See LICENSE file for details.
 
 Would you like me to add a more detailed section on how the **Batch Processing** handles large-scale NoSQL migrations?
-
----
-
-## Architecture Diagrams
-
-```mermaid
-flowchart LR
-	A[Users / Clients] --> B[Frontend (Streamlit UI)]
-
-	B --> C1[API Layer / App Logic]
-	B --> C2[API Layer / App Logic]
-	B --> C3[API Layer / App Logic]
-
-	C1 --> LLM[LLM Engine (Gemini API)]
-	C2 --> LLM
-	C3 --> LLM
-
-	LLM --> SQLGen[SQL Generation Layer]
-
-	SQLGen --> DB1[(SQLite / DB Instance 1)]
-	SQLGen --> DB2[(SQLite / DB Instance 2)]
-	SQLGen --> DBN[(DB Instance N)]
-
-	DB1 --> RES[Result Formatter]
-	DB2 --> RES
-	DBN --> RES
-
-	RES --> B
-```
-
-```mermaid
-sequenceDiagram
-	participant U as User
-	participant UI as Streamlit UI
-	participant APP as App Backend
-	participant LLM as Gemini API
-	participant DB as SQLite DB
-
-	U->>UI: Enter natural language query
-	UI->>APP: Send input
-
-	APP->>LLM: Generate SQL query
-	LLM-->>APP: SQL output
-
-	APP->>APP: Validate / sanitize SQL
-
-	APP->>DB: Execute query (read-only)
-	DB-->>APP: Query result
-
-	APP->>UI: Format + return result
-	UI-->>U: Display table output
-```
