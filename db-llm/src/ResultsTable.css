@@ -228,8 +228,8 @@
 }
 
 .global-search:focus-within {
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 2px var(--accent-muted);
 }
 
 .global-search svg {
@@ -673,8 +673,8 @@
 }
 
 .filter-input-wrapper:focus-within {
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 2px var(--accent-muted);
 }
 
 .filter-icon {
@@ -787,7 +787,7 @@
 
 .pagination-button:hover:not(:disabled) {
     background: rgba(110, 118, 129, 0.1);
-    color: #e6edf3;
+    color: var(--fg-default);
 }
 
 .pagination-button:disabled {

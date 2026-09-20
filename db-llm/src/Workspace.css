@@ -22,7 +22,7 @@
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 500;
 }
 
 .header-right {
@@ -154,7 +154,7 @@
 
 .view-toggle-button.active {
     background: transparent;
-    color: var(--fg-default);
+    color: var(--accent-fg);
     border-bottom: 2px solid var(--accent-fg);
     box-shadow: none;
 }
@@ -194,13 +194,13 @@
 
 .disconnect-button {
     background: transparent;
-    border: 1px solid var(--danger-fg);
+    border: none;
+    border-radius: 6px;
 }
 
 .disconnect-button:hover {
-    background: var(--danger-muted);
-    border-color: var(--danger-emphasis);
-    transform: scale(1.08);
+    background: var(--bg-canvas-subtle);
+    transform: none;
 }
 
 .disconnect-button:active {
@@ -208,6 +208,10 @@
 }
 
 .disconnect-button svg {
+    color: var(--fg-muted);
+}
+
+.disconnect-button:hover svg {
     color: var(--danger-fg);
 }
 

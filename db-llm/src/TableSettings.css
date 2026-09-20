@@ -65,6 +65,15 @@
     padding: 12px;
     overflow-y: auto;
     flex: 1;
+    /* Hide scrollbar (wheel / touch / keyboard scroll still work) */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.settings-content::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
 }
 
 .setting-group {

@@ -10,31 +10,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    /* Above the Settings modal (z 10000) so Test always paints on top */
+    z-index: 20000;
     animation: fadeIn 0.3s ease-out;
 }
 
 /* Light Mode Specific - Darker overlay for visibility */
-:root[data-theme="light"] .modal-overlay {
+:root[data-color-mode="light"] .modal-overlay {
     background: rgba(0, 0, 0, 0.85);
 }
 
 /* Ensure success text is visible on dark overlay in light mode */
-:root[data-theme="light"] .result-section.success .result-title {
+:root[data-color-mode="light"] .result-section.success .result-title {
     color: #3fb950 !important;
     /* Force bright green (dark mode green) */
 }
 
 /* Ensure invisible/secondary buttons are white in light mode on dark overlay */
-:root[data-theme="light"] .modal-content .action-button:not(.primary) {
+:root[data-color-mode="light"] .modal-content .action-button:not(.primary) {
     color: white !important;
 }
 
-:root[data-theme="light"] .modal-content .action-button:not(.primary) span {
+:root[data-color-mode="light"] .modal-content .action-button:not(.primary) span {
     color: white !important;
 }
 
-:root[data-theme="light"] .modal-content .action-button:not(.primary):hover {
+:root[data-color-mode="light"] .modal-content .action-button:not(.primary):hover {
     color: rgba(255, 255, 255, 0.8) !important;
     background: rgba(255, 255, 255, 0.1) !important;
 }
@@ -110,11 +111,6 @@
         transform: scale(1) translateY(0);
         opacity: 1;
     }
-}
-
-/* Genie effect hidden */
-.genie-effect {
-    display: none;
 }
 
 /* Timeline Step */
@@ -314,218 +310,77 @@
     }
 }
 
-/* Result Icon Container */
+/* Result Icon Container — compact, professional */
 .result-icon-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto 32px;
-    height: 180px;
-    width: 180px;
+    margin: 0 auto 24px;
+    height: 96px;
+    width: 96px;
     position: relative;
-    /* Ensure sparkles don't clip */
     z-index: 10;
 }
 
-/* Success/Error Animation Wrapper */
-.success-animation,
-.error-animation {
-    width: 100%;
-    height: 100%;
+/* Professional static result badge — no rings, no sparkles, no glow */
+.pro-result-icon {
+    width: 84px;
+    height: 84px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     border-radius: 50%;
+    animation: proIconIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-/* --- Ripple Rings --- */
-.ripple-ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid var(--success-emphasis);
-    opacity: 0;
-    animation: rippleEffect 2s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-    z-index: -1;
+.pro-result-icon.success {
+    background: var(--success-muted);
+    border: 1px solid color-mix(in srgb, var(--success-fg) 35%, transparent);
 }
 
-.ripple-ring.delay {
-    animation-delay: 0.6s;
+.pro-result-icon.error {
+    background: var(--danger-muted);
+    border: 1px solid color-mix(in srgb, var(--danger-fg) 35%, transparent);
 }
 
-.ripple-ring.error-ring {
-    border-color: var(--danger-emphasis);
-}
-
-@keyframes rippleEffect {
-    0% {
-        width: 72%;
-        height: 72%;
+@keyframes proIconIn {
+    from {
         opacity: 0;
-        border-width: 4px;
+        transform: scale(0.9);
     }
 
-    30% {
-        opacity: 0.2;
-    }
-
-    100% {
-        width: 150%;
-        height: 150%;
-        opacity: 0;
-        border-width: 0px;
-    }
-}
-
-/* --- Sparkles (Particles) --- */
-.sparkles {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none;
-}
-
-.sparkles span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    background-color: var(--success-fg);
-    border-radius: 50%;
-    opacity: 0;
-    /* Individual animations will be applied via nth-child */
-}
-
-.sparkles.error-sparks span {
-    background-color: var(--danger-fg);
-}
-
-/* Sparkle Explosion Keyframes */
-@keyframes sparklePop {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-    }
-
-    40% {
+    to {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.5);
-    }
-
-    100% {
-        /* Ends at its specific translation */
-        transform: translate(var(--tx), var(--ty)) scale(0);
-        opacity: 0;
+        transform: scale(1);
     }
 }
 
-/* Position particles radially */
-.sparkles span:nth-child(1) {
-    --tx: 0px;
-    --ty: -110px;
-    animation: sparklePop 1.5s ease-out 0.4s infinite;
-}
-
-.sparkles span:nth-child(2) {
-    --tx: 80px;
-    --ty: -80px;
-    animation: sparklePop 1.8s ease-out 0.6s infinite;
-}
-
-.sparkles span:nth-child(3) {
-    --tx: 110px;
-    --ty: 0px;
-    animation: sparklePop 1.4s ease-out 0.3s infinite;
-}
-
-.sparkles span:nth-child(4) {
-    --tx: 80px;
-    --ty: 80px;
-    animation: sparklePop 1.6s ease-out 0.7s infinite;
-}
-
-.sparkles span:nth-child(5) {
-    --tx: 0px;
-    --ty: 110px;
-    animation: sparklePop 1.9s ease-out 0.5s infinite;
-}
-
-.sparkles span:nth-child(6) {
-    --tx: -80px;
-    --ty: 80px;
-    animation: sparklePop 1.5s ease-out 0.8s infinite;
-}
-
-.sparkles span:nth-child(7) {
-    --tx: -110px;
-    --ty: 0px;
-    animation: sparklePop 1.3s ease-out 0.2s infinite;
-}
-
-.sparkles span:nth-child(8) {
-    --tx: -80px;
-    --ty: -80px;
-    animation: sparklePop 1.7s ease-out 0.5s infinite;
-}
+/* Ripple rings + sparkles removed — the result badge is intentionally static. */
 
 
 /* --- Main Icons --- */
+/* --- Main Icons (calm stroke-draw, no bounce, no glow) --- */
 .checkmark {
-    width: 130px;
-    height: 130px;
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
     display: block;
     stroke-width: 6;
     stroke: var(--success-fg);
     stroke-miterlimit: 10;
-    box-shadow: inset 0px 0px 0px var(--success-fg);
-    /* Vibrant Pop Entrance */
-    animation:
-        fillSuccess .4s ease-in-out .4s forwards,
-        iconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
+    animation: fillSuccess .5s ease-in-out .5s forwards;
 }
 
 .crossmark {
-    width: 130px;
-    height: 130px;
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
     display: block;
     stroke-width: 6;
     stroke: var(--danger-fg);
     stroke-miterlimit: 10;
-    box-shadow: inset 0px 0px 0px var(--danger-fg);
-    animation:
-        fillError .4s ease-in-out .4s forwards,
-        iconBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
-}
-
-/* Bouncy Entrance */
-@keyframes iconBounce {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    60% {
-        transform: scale(1.1);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+    animation: fillError .5s ease-in-out .5s forwards;
 }
 
 /* Circle Draw */
@@ -686,153 +541,52 @@
     transform: translateY(-1px);
 }
 
-/* Fallback loader when no detailed steps are available */
-.fallback-loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+/* Ticker progress readout (Magic UI NumberTicker + slim progress bar) */
+.ticker-loader {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 24px;
+    gap: 12px;
+    padding: 4px 0 6px;
+    margin-bottom: 12px;
+}
+
+.ticker-value {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
     color: white;
-    pointer-events: none;
-    z-index: 10;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
 }
 
-/* Earth Loader */
-.earth-loader {
-    --watercolor: #3344c1;
-    --landcolor: #7CC133;
-    font-size: 10px;
-    /* Scales down the entire loader (7.5em * 10px = 75px) */
-    width: 7.5em;
-    height: 7.5em;
-    background-color: var(--watercolor);
-    position: relative;
+.ticker-pct {
+    font-size: 20px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: 2px;
+}
+
+.ticker-track {
+    width: min(320px, 80%);
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.12);
     overflow: hidden;
-    border-radius: 50%;
-    box-shadow:
-        inset 0em 0.5em rgb(255, 255, 255, 0.25),
-        inset 0em -0.5em rgb(0, 0, 0, 0.25);
-    border: solid 0.15em white;
 }
 
-.earth-loader svg:nth-child(1) {
-    position: absolute;
-    bottom: -2em;
-    width: 7em;
-    height: auto;
-    animation: round1 5s infinite linear -0.75s;
+.ticker-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--success-emphasis);
+    transition: width 0.3s ease;
 }
 
-.earth-loader svg:nth-child(2) {
-    position: absolute;
-    top: -3em;
-    width: 7em;
-    height: auto;
-    animation: round1 5s infinite linear;
-}
-
-.earth-loader svg:nth-child(3) {
-    position: absolute;
-    top: -2.5em;
-    width: 7em;
-    height: auto;
-    animation: round2 5s infinite linear;
-}
-
-.earth-loader svg:nth-child(4) {
-    position: absolute;
-    bottom: -2.2em;
-    width: 7em;
-    height: auto;
-    animation: round2 5s infinite linear -0.75s;
-}
-
-
-
-@keyframes round1 {
-    0% {
-        left: -2em;
-        opacity: 100%;
-        transform: skewX(0deg) rotate(0deg);
-    }
-
-    30% {
-        left: -6em;
-        opacity: 100%;
-        transform: skewX(-25deg) rotate(25deg);
-    }
-
-    31% {
-        left: -6em;
-        opacity: 0%;
-        transform: skewX(-25deg) rotate(25deg);
-    }
-
-    35% {
-        left: 7em;
-        opacity: 0%;
-        transform: skewX(25deg) rotate(-25deg);
-    }
-
-    45% {
-        left: 7em;
-        opacity: 100%;
-        transform: skewX(25deg) rotate(-25deg);
-    }
-
-    100% {
-        left: -2em;
-        opacity: 100%;
-        transform: skewX(0deg) rotate(0deg);
-    }
-}
-
-@keyframes round2 {
-    0% {
-        left: 5em;
-        opacity: 100%;
-        transform: skewX(0deg) rotate(0deg);
-    }
-
-    75% {
-        left: -7em;
-        opacity: 100%;
-        transform: skewX(-25deg) rotate(25deg);
-    }
-
-    76% {
-        left: -7em;
-        opacity: 0%;
-        transform: skewX(-25deg) rotate(25deg);
-    }
-
-    77% {
-        left: 8em;
-        opacity: 0%;
-        transform: skewX(25deg) rotate(-25deg);
-    }
-
-    80% {
-        left: 8em;
-        opacity: 100%;
-        transform: skewX(25deg) rotate(-25deg);
-    }
-
-    100% {
-        left: 5em;
-        opacity: 100%;
-        transform: skewX(0deg) rotate(0deg);
-    }
-}
-
-.testing-text {
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.8);
+.ticker-status {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
 }
 
 /* Responsive */

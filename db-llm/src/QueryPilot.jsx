@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import queryPilotLogo from './assets/query-pilot-logo.png'
-import BorderGlow from './BorderGlow'
 import { FaArrowCircleUp } from "react-icons/fa"
 import './QueryPilot.css'
 
@@ -164,7 +163,6 @@ ${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
                 <div className="qp-header-left">
                     <div className="qp-logo-wrap">
                         <img src={queryPilotLogo} alt="Query Pilot" className="qp-logo" />
-                        <div className="qp-logo-glow" />
                     </div>
                     <span className="qp-title">Query Pilot</span>
                     <span className="qp-badge">AI</span>
@@ -194,7 +192,7 @@ ${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
                         disabled={isLoading || (!prompt.trim() && (!currentQuery || !currentQuery.trim()))}
                         style={{
                             background: 'transparent',
-                            color: '#3fb950',
+                            color: 'var(--success-fg)',
                             border: 'none',
                             width: '32px',
                             height: '32px',
@@ -213,7 +211,7 @@ ${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
                         onMouseDown={e => e.currentTarget.style.transform = 'scale(0.92)'}
                         onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
                     >
-                        {isLoading ? <span className="qp-spinner" style={{width: 16, height: 16, borderTopColor: '#3fb950', borderColor: 'rgba(63, 185, 80, 0.3)'}} /> : <FaArrowCircleUp />}
+                        {isLoading ? <span className="qp-spinner" style={{ width: 16, height: 16 }} /> : <FaArrowCircleUp />}
                     </button>
                 </div>
             </div>
@@ -284,7 +282,7 @@ ${hasQuery ? `\nCURRENT SQL IN EDITOR:\n${currentQuery}` : ''}`
                     <div className="qp-skeleton-bar" style={{ width: '70%' }} />
                     <div className="qp-skeleton-bar" style={{ width: '50%' }} />
                     <div className="qp-skeleton-label">
-                        <span className="qp-spinner" /> Llama 3.2 is thinking…
+                        <span className="qp-spinner" /> Thinking
                     </div>
                 </div>
             )}

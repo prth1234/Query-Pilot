@@ -14,6 +14,7 @@ import './App.css'
 import ThemeSettings from './ThemeSettings'
 import TargetCursor from './TargetCursor'
 import TextType from './TextType'
+import { SYSTEM_THEME_ID, getPrimerMode, normalizeStoredTheme, applyTheme, normalizeCustomColors } from './themes'
 
 function App() {
   const [isLoading, setIsLoading] = useState(() => {
@@ -39,70 +40,89 @@ function App() {
 
   // Removed displayedText and typingComplete as they are replaced by TextType animation
 
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'dark'
+  const [themeMode, setThemeMode] = useState(() => {
+    // Migrate legacy keys: prefer new 'themeId', fall back to old 'themeMode'/'theme'
+    const stored = localStorage.getItem('themeId')
+      || localStorage.getItem('themeMode')
+      || localStorage.getItem('theme')
+      || 'dark'
+    return normalizeStoredTheme(stored)
   })
 
-  const [themeMode, setThemeMode] = useState(() => {
-    return localStorage.getItem('themeMode') || 'dark'
+  const [systemPrefersDark, setSystemPrefersDark] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : true
+  )
+
+  // Resolved theme id (expands 'system') + Primer colorMode
+  const resolvedThemeId = themeMode === SYSTEM_THEME_ID
+    ? (systemPrefersDark ? 'dark' : 'light')
+    : themeMode
+  const primerMode = getPrimerMode(themeMode, systemPrefersDark)
+  // Back-compat: many children expect `theme` to be 'light' | 'dark' or a theme id.
+  // We pass the resolved theme id; editor mapping uses getAppTheme().
+  const theme = resolvedThemeId
+
+  // Persist selection
+  useEffect(() => {
+    localStorage.setItem('themeId', themeMode)
+    localStorage.setItem('themeMode', themeMode)
+    localStorage.setItem('theme', resolvedThemeId)
+  }, [themeMode, resolvedThemeId])
+
+  // User custom primary / secondary / tertiary overrides (persisted)
+  const [customColors, setCustomColors] = useState(() => {
+    try {
+      return normalizeCustomColors(JSON.parse(localStorage.getItem('qp-custom-colors')))
+    } catch {
+      return normalizeCustomColors(null)
+    }
   })
+
+  useEffect(() => {
+    localStorage.setItem('qp-custom-colors', JSON.stringify(customColors))
+  }, [customColors])
+
+  const handleCustomColor = useCallback((role, hex) => {
+    setCustomColors((prev) => ({ ...prev, [role]: hex }))
+  }, [])
+
+  const handleResetCustomColors = useCallback(() => {
+    setCustomColors(normalizeCustomColors(null))
+  }, [])
+
+  // Apply theme tokens + custom accent overrides to the document
+  useEffect(() => {
+    applyTheme(resolvedThemeId, customColors)
+  }, [resolvedThemeId, customColors])
 
   // Theme transition state
   const [isThemeTransitioning, setIsThemeTransitioning] = useState(false)
   const [pendingTheme, setPendingTheme] = useState(null)
 
-  // Apply theme to document
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
-
-  const toggleTheme = useCallback(() => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'
-    setPendingTheme(newTheme)
+  const applyThemeWithTransition = useCallback((nextThemeId) => {
+    setPendingTheme(nextThemeId)
     setIsThemeTransitioning(true)
-
-    // Disable all CSS transitions so everything changes at once
     document.documentElement.classList.add('theme-transitioning')
-
-    // Change theme immediately
-    setTheme(newTheme)
-
-    // Re-enable transitions after a brief moment
+    setThemeMode(nextThemeId)
     setTimeout(() => {
       document.documentElement.classList.remove('theme-transitioning')
     }, 50)
-  }, [theme])
+  }, [])
 
-  // System theme detection
+  // Back-compat toggle (light <-> dark defaults)
+  const toggleTheme = useCallback(() => {
+    const next = primerMode === 'dark' ? 'light' : 'dark'
+    applyThemeWithTransition(next)
+  }, [primerMode, applyThemeWithTransition])
+
+  // Track OS preference (drives 'system' mode + Primer mapping)
   useEffect(() => {
-    if (themeMode === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = (e) => {
-        const newTheme = e.matches ? 'dark' : 'light';
-        if (theme !== newTheme) {
-          toggleTheme();
-        }
-      };
-
-      // Set initial theme based on system preference
-      const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-      if (theme !== systemTheme) {
-        toggleTheme();
-      }
-
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      // Enforce manual mode selection
-      if (themeMode !== theme) {
-        // Only toggle if mismatched (e.g. user selected 'dark' but theme is 'light')
-        if ((themeMode === 'dark' && theme !== 'dark') || (themeMode === 'light' && theme !== 'light')) {
-          toggleTheme();
-        }
-      }
-    }
-  }, [themeMode, theme, toggleTheme]);
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e) => setSystemPrefersDark(e.matches)
+    setSystemPrefersDark(mediaQuery.matches)
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
   const handleThemeTransitionComplete = useCallback(() => {
     setIsThemeTransitioning(false)
@@ -231,9 +251,16 @@ function App() {
 
   const commonThemeProps = {
     theme,
+    primerMode,
+    resolvedThemeId,
     toggleTheme,
+    applyTheme: applyThemeWithTransition,
     themeMode,
-    setThemeMode
+    setThemeMode: applyThemeWithTransition,
+    setThemeModeInstant: setThemeMode,
+    customColors,
+    onCustomColor: handleCustomColor,
+    onResetCustomColors: handleResetCustomColors,
   }
 
   return (
@@ -243,11 +270,11 @@ function App() {
       {/* Theme Transition Wave Overlay */}
       <ThemeTransition
         isTransitioning={isThemeTransitioning}
-        targetTheme={pendingTheme || theme}
+        targetTheme={pendingTheme || primerMode}
         onComplete={handleThemeTransitionComplete}
       />
 
-      <ThemeProvider colorMode={theme}>
+      <ThemeProvider colorMode={primerMode}>
         <div className={`app-container ${showContent ? 'fade-in' : ''}`}>
 
           {connectedDatabase ? (

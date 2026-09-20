@@ -1,0 +1,66 @@
+/* Magic UI–style text effects, wired to the active theme.
+   AuroraText consumes the primary / secondary / tertiary accents;
+   LineShadowText draws its moving line shadow from --line-shadow-color. */
+
+.magic-aurora-text {
+    display: inline-block;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: magic-aurora 8s ease-in-out infinite alternate;
+}
+
+@keyframes magic-aurora {
+    from {
+        background-position: 0% 50%;
+    }
+
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+.magic-line-shadow-text {
+    position: relative;
+    z-index: 0;
+    font-style: italic;
+    display: inline-block;
+}
+
+.magic-line-shadow-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0.045em;
+    top: 0.045em;
+    z-index: -1;
+    white-space: nowrap;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(-45deg,
+            var(--line-shadow-color) 0,
+            var(--line-shadow-color) 1px,
+            transparent 1px,
+            transparent 5px);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: magic-line-shadow 12s linear infinite;
+}
+
+@keyframes magic-line-shadow {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 60px 60px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .magic-aurora-text,
+    .magic-line-shadow-text::after {
+        animation: none;
+    }
+}

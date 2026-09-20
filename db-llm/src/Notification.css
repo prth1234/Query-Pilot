@@ -45,10 +45,10 @@
     }
 }
 
-:root[data-theme="dark"] .notification-card {
-    background: #1f2228;
+:root[data-color-mode="dark"] .notification-card {
+    background: var(--bg-overlay);
     /* Darker bg */
-    border-color: #30363d;
+    border-color: var(--border-default);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
@@ -97,8 +97,8 @@
     line-height: 1.4;
 }
 
-:root[data-theme="dark"] .notification-title {
-    color: #f0f6fc;
+:root[data-color-mode="dark"] .notification-title {
+    color: var(--fg-default);
 }
 
 /* Actions (Chevron, Close) */
@@ -122,8 +122,8 @@
     justify-content: center;
 }
 
-:root[data-theme="dark"] .icon-button {
-    color: #8b949e;
+:root[data-color-mode="dark"] .icon-button {
+    color: var(--fg-muted);
 }
 
 .icon-button:hover {
@@ -131,9 +131,9 @@
     color: var(--fg-default, #24292f);
 }
 
-:root[data-theme="dark"] .icon-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #f0f6fc;
+:root[data-color-mode="dark"] .icon-button:hover {
+    background: var(--bg-canvas-subtle);
+    color: var(--fg-default);
 }
 
 .chevron {
@@ -171,9 +171,9 @@
     }
 }
 
-:root[data-theme="dark"] .notification-footer {
-    background: #161b22;
-    border-top-color: #30363d;
+:root[data-color-mode="dark"] .notification-footer {
+    background: var(--bg-canvas-subtle);
+    border-top-color: var(--border-default);
 }
 
 .notification-timer {
@@ -187,8 +187,8 @@
     color: var(--fg-default, #24292f);
 }
 
-:root[data-theme="dark"] .action-link {
-    color: #c9d1d9;
+:root[data-color-mode="dark"] .action-link {
+    color: var(--fg-default);
 }
 
 /* Progress Bar */

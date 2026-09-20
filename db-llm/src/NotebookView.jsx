@@ -6,6 +6,7 @@ import QueryCell from './QueryCell'
 import MarkdownCell from './MarkdownCell'
 import AIGeneratorButton from './AIGeneratorButton'
 import { RUN_OPTIONS, THEMES, FONT_FAMILIES } from './QueryEditor'
+import { getAppTheme } from './themes'
 import './NotebookView.css'
 import { RiColorFilterAiLine } from "react-icons/ri";
 
@@ -48,17 +49,13 @@ function NotebookView({ onExecuteQuery, schema, connectionDetails, database, onI
         return THEMES.find(t => t.value === saved) || THEMES[0]
     })
 
-    // Sync editor theme with app theme
+    // Sync editor theme with app theme (maps each app theme to a CodeMirror theme)
     useLayoutEffect(() => {
-        if (theme === 'light') {
-            const lightTheme = THEMES.find(t => t.value === 'github-light')
-            if (lightTheme) setSelectedTheme(lightTheme)
-        } else {
-            // Revert to dark theme if currently on light theme
-            if (selectedTheme.value === 'github-light') {
-                const darkTheme = THEMES.find(t => t.value === 'vscode')
-                if (darkTheme) setSelectedTheme(darkTheme)
-            }
+        const appTheme = getAppTheme(theme)
+        const mappedId = appTheme.editorTheme || (appTheme.primerMode === 'light' ? 'github-light' : 'vscode')
+        const target = THEMES.find(t => t.value === mappedId)
+        if (target && selectedTheme.value !== target.value) {
+            setSelectedTheme(target)
         }
     }, [theme])
 

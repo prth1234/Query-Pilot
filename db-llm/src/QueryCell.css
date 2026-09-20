@@ -65,10 +65,10 @@
 }
 
 .cell-run-button:hover:not(:disabled) {
-    background: rgba(46, 160, 67, 0.1);
+    background: var(--success-muted);
     color: var(--success-fg);
     border-color: var(--success-fg);
-    box-shadow: 0 0 8px rgba(46, 160, 67, 0.2);
+    box-shadow: 0 0 8px var(--success-muted);
 }
 
 .cell-run-button:active:not(:disabled) {
@@ -90,7 +90,7 @@
     width: 28px;
     height: 28px;
     padding: 0;
-    background: rgba(209, 36, 47, 0.1);
+    background: var(--danger-muted);
     border: 1px solid var(--danger-emphasis);
     border-radius: 50%;
     cursor: pointer;
@@ -99,7 +99,7 @@
 }
 
 .cell-cancel-button:hover {
-    background: rgba(209, 36, 47, 0.2);
+    background: color-mix(in srgb, var(--danger-fg) 20%, transparent);
     border-color: var(--danger-fg);
     color: var(--danger-fg);
     transform: scale(1.05);

@@ -16,6 +16,7 @@ import { createSQLAutocomplete } from './sqlAutocomplete'
 import AIGeneratorButton from './AIGeneratorButton'
 import QueryPilot from './QueryPilot'
 import ResultsTable from './ResultsTable'
+import { getAppTheme } from './themes'
 import './QueryEditor.css'
 
 export const RUN_OPTIONS = [
@@ -56,22 +57,15 @@ function QueryEditor({ onExecuteQuery, onCancelQuery, isExecuting, height = 250,
         localStorage.setItem('savedQuery', query)
     }, [query])
 
-    // Sync editor theme with app theme
+    // Sync editor theme with app theme (maps each app theme to a CodeMirror theme)
     useLayoutEffect(() => {
-        if (theme === 'light') {
-            const lightTheme = THEMES.find(t => t.value === 'github-light')
-            if (lightTheme) setSelectedTheme(lightTheme)
-        } else {
-            // Default to VS Code Dark if in dark mode, unless already on a dark theme
-            // But for simplicity/consistency, let's revert to a standard dark theme or last saved?
-            // If the current theme is light, switch to default dark.
-            // If it's already a dark theme (vscode, github-dark, dracula, tokyo), keep it.
-            if (selectedTheme.value === 'github-light') {
-                const darkTheme = THEMES.find(t => t.value === 'vscode')
-                if (darkTheme) setSelectedTheme(darkTheme)
-            }
+        const appTheme = getAppTheme(theme)
+        const mappedId = appTheme.editorTheme || (appTheme.primerMode === 'light' ? 'github-light' : 'vscode')
+        const target = THEMES.find(t => t.value === mappedId)
+        if (target && selectedTheme.value !== target.value) {
+            setSelectedTheme(target)
         }
-    }, [theme, selectedTheme.value]) // Run when app theme changes
+    }, [theme]) // Run when app theme changes
 
     // Handle imported query from notebook
     useEffect(() => {

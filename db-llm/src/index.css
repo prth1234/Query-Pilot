@@ -27,7 +27,8 @@
   --font-primary:  'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'SF Mono', 'Monaco', 'Courier New', monospace;
 
-  /* Dark Theme Default */
+  /* Dark Theme Default (GitHub Dark). Per-theme tokens live in
+     src/themes/*.js and are painted at runtime via applyTheme(). */
   --bg-canvas: #0d1117;
   --bg-canvas-subtle: #161b22;
   --bg-canvas-inset: #010409;
@@ -46,6 +47,14 @@
   --accent-fg: #58a6ff;
   --accent-emphasis: #1f6feb;
   --accent-muted: rgba(88, 166, 255, 0.15);
+
+  /* Secondary / tertiary accents — every theme defines its own set,
+     and the user can override them from Theme Settings. */
+  --accent-secondary: #a371f7;
+  --accent-secondary-muted: rgba(163, 113, 247, 0.15);
+
+  --accent-tertiary: #d2a8ff;
+  --accent-tertiary-muted: rgba(210, 168, 255, 0.15);
 
   --success-fg: #3fb950;
   --success-emphasis: #238636;
@@ -68,7 +77,7 @@
 }
 
 [data-theme="light"] {
-  /* Light Theme Overrides */
+  /* Light Theme Overrides (fallback — runtime tokens win when applied) */
   --bg-canvas: #ffffff;
   --bg-canvas-subtle: #f6f8fa;
   --bg-canvas-inset: #eaeef2;
@@ -88,6 +97,12 @@
   --accent-emphasis: #0969da;
   --accent-muted: rgba(9, 105, 218, 0.15);
 
+  --accent-secondary: #8250df;
+  --accent-secondary-muted: rgba(130, 80, 223, 0.15);
+
+  --accent-tertiary: #b35900;
+  --accent-tertiary-muted: rgba(179, 89, 0, 0.15);
+
   --success-fg: #1a7f37;
   --success-emphasis: #1f883d;
   --success-muted: rgba(31, 136, 61, 0.15);
@@ -106,6 +121,19 @@
   --syntax-string: #0a3069;
   --syntax-variable: #953800;
   --syntax-constant: #0550ae;
+}
+
+/* ---------- Primer Brand bridge ----------
+   Primer's Heading/Text/Button components use their own brand tokens
+   (driven only by light/dark colorMode), so without this they ignore
+   custom themes. This maps them onto our theme + user custom colors.
+   `:root[data-theme]` beats Primer's `[data-color-mode]` selectors and
+   this file loads after Primer's CSS, so the bridge always wins. */
+:root[data-theme] {
+  --brand-color-text-default: var(--fg-default);
+  --brand-color-text-muted: var(--fg-muted);
+  --brand-color-text-subtle: var(--fg-subtle);
+  --brand-color-text-onEmphasis: var(--fg-on-emphasis);
 }
 
 /* Apply Font globally - Override Primer's Mona Sans */

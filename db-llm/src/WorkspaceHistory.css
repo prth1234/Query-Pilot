@@ -78,9 +78,8 @@
 
 /* Workspace Card - Professional & Premium */
 .workspace-card {
-    background: #0d1117;
-    /* Darker fixed background */
-    border: 1px solid #30363d;
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--fg-default) 22%, transparent);
     border-radius: 8px;
     /* Slightly tighter corners */
     padding: 24px;
@@ -95,8 +94,9 @@
 }
 
 .workspace-card:hover {
-    border-color: #8b949e;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent-fg);
+    background: color-mix(in srgb, var(--accent-fg) 8%, transparent);
+    box-shadow: var(--shadow-medium);
 }
 
 .workspace-card-header {
@@ -110,13 +110,13 @@
 .workspace-db-icon {
     width: 40px;
     height: 40px;
-    background: #161b22;
+    background: var(--bg-canvas-subtle);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid #30363d;
+    border: 1px solid var(--border-default);
 }
 
 .db-icon-img {
@@ -129,7 +129,7 @@
     font-size: 18px;
     font-weight: 500;
     /* Medium weight is more professional */
-    color: #f0f6fc;
+    color: var(--fg-default);
     margin: 0;
     letter-spacing: -0.01em;
 }
@@ -137,12 +137,12 @@
 .workspace-meta {
     margin-top: 4px;
     font-size: 13px;
-    color: #8b949e;
+    color: var(--fg-muted);
 }
 
 .workspace-db-name {
     font-family: var(--font-mono);
-    color: #58a6ff;
+    color: var(--accent-fg);
 }
 
 /* Metadata Chips - "SECURE ACCESS" style */
@@ -159,7 +159,7 @@
     gap: 6px;
     font-size: 11px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--fg-default);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     background: rgba(48, 54, 61, 0.4);

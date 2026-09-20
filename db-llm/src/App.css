@@ -19,7 +19,7 @@
 .typewriter-heading {
   font-size: 56px !important;
   font-weight: 700 !important;
-  color: #ffffff !important;
+  color: var(--fg-default) !important;
   letter-spacing: -0.02em;
 }
 
@@ -86,9 +86,8 @@
 
 /* Database Card */
 .database-card {
-  background: var(--bg-canvas);
-  border-bottom: 1px solid var(--border-subtle);
-  border: 1px solid var(--border-default);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--fg-default) 22%, transparent);
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
@@ -102,7 +101,7 @@
 
 .database-card:hover {
   border-color: var(--accent-fg);
-  background: var(--bg-canvas);
+  background: color-mix(in srgb, var(--accent-fg) 8%, transparent);
   /* Subtle hover effect */
   box-shadow: var(--shadow-medium);
 }
@@ -116,7 +115,7 @@
 .database-card.coming-soon:hover {
   transform: none;
   border-color: var(--border-muted);
-  background: var(--bg-canvas);
+  background: transparent;
   box-shadow: none;
 }
 

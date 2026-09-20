@@ -205,8 +205,8 @@
     align-items: center;
     gap: 6px;
     padding: 4px 12px !important;
-    background: rgba(46, 160, 67, 0.1) !important;
-    border: 1px solid var(--success-emphasis) !important;
+    background: var(--success-muted) !important;
+    border: 1px dotted var(--success-emphasis) !important;
     border-radius: 50px !important;
     font-weight: 600 !important;
     font-size: 11px !important;
@@ -227,8 +227,8 @@
     width: 24px;
     height: 24px;
     padding: 0 !important;
-    background: rgba(46, 160, 67, 0.1) !important;
-    border: 1px solid var(--success-emphasis) !important;
+    background: var(--success-muted) !important;
+    border: 1px dotted var(--success-emphasis) !important;
     border-radius: 50% !important;
     cursor: pointer;
     transition: all 0.2s ease !important;
@@ -242,10 +242,10 @@
 
 .execute-button:hover:not(:disabled),
 .execute-dropdown-trigger:hover:not(:disabled) {
-    background: rgba(46, 160, 67, 0.15) !important;
+    background: color-mix(in srgb, var(--success-fg) 15%, transparent) !important;
     border-color: var(--success-fg) !important;
     color: var(--success-fg) !important;
-    box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.2) !important;
+    box-shadow: 0 0 0 1px var(--success-muted) !important;
 }
 
 .execute-button:hover:not(:disabled) svg,
@@ -284,7 +284,7 @@
     width: 24px;
     height: 24px;
     padding: 0 !important;
-    background: rgba(209, 36, 47, 0.1) !important;
+    background: var(--danger-muted) !important;
     border: 1px solid var(--danger-emphasis) !important;
     border-radius: 50% !important;
     cursor: pointer;
@@ -294,7 +294,7 @@
 }
 
 .cancel-button:hover {
-    background: rgba(209, 36, 47, 0.2) !important;
+    background: color-mix(in srgb, var(--danger-fg) 20%, transparent) !important;
     border-color: var(--danger-fg) !important;
     color: var(--danger-fg) !important;
     transform: scale(1.05);
@@ -872,8 +872,8 @@
 
 /* Match CodeMirror panel styling */
 .cm-panels {
-    background: #161b22 !important;
-    color: #e6edf3 !important;
+    background: var(--bg-card) !important;
+    color: var(--fg-default) !important;
 }
 
 /* ==========================================
@@ -951,26 +951,26 @@
 }
 
 .query-save-button {
-    background: rgba(163, 113, 247, 0.15);
-    border-color: rgba(163, 113, 247, 0.4);
-    color: #a371f7;
+    background: var(--accent-secondary-muted);
+    border-color: color-mix(in srgb, var(--accent-secondary) 40%, transparent);
+    color: var(--accent-secondary);
 }
 
 .query-save-button:hover {
-    background: #8957e5;
-    color: white;
-    border-color: #8957e5;
+    background: var(--accent-secondary);
+    color: var(--fg-on-emphasis);
+    border-color: var(--accent-secondary);
 }
 
 .query-saved-button {
     background: rgba(110, 118, 129, 0.1);
     border-color: rgba(110, 118, 129, 0.2);
-    color: #c9d1d9;
+    color: var(--fg-muted);
 }
 
 .query-saved-button:hover {
     background: rgba(110, 118, 129, 0.2);
-    border-color: #8b949e;
+    border-color: var(--fg-muted);
 }
 
 /* Saved count badge */
@@ -978,8 +978,8 @@
     position: absolute;
     top: -4px;
     right: -4px;
-    background: #a371f7;
-    color: white;
+    background: var(--accent-secondary);
+    color: var(--fg-on-emphasis);
     font-size: 9px;
     font-weight: 600;
     padding: 2px 5px;
@@ -1148,28 +1148,28 @@
 
 /* New Notebook/Query Button */
 .notebook-action-button.new {
-    background: rgba(46, 160, 67, 0.15);
-    border: 1px solid rgba(46, 160, 67, 0.4);
-    color: #3fb950;
+    background: var(--success-muted);
+    border: 1px solid color-mix(in srgb, var(--success-fg) 40%, transparent);
+    color: var(--success-fg);
 }
 
 .notebook-action-button.new:hover {
-    background: #238636;
-    color: white;
-    border-color: #238636;
+    background: var(--success-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--success-emphasis);
 }
 
 /* Save Notebook/Query Button */
 .notebook-action-button.save {
-    background: rgba(163, 113, 247, 0.15);
-    border: 1px solid rgba(163, 113, 247, 0.4);
-    color: #a371f7;
+    background: var(--accent-secondary-muted);
+    border: 1px solid color-mix(in srgb, var(--accent-secondary) 40%, transparent);
+    color: var(--accent-secondary);
 }
 
 .notebook-action-button.save:hover {
-    background: #8957e5;
-    color: white;
-    border-color: #8957e5;
+    background: var(--accent-secondary);
+    color: var(--fg-on-emphasis);
+    border-color: var(--accent-secondary);
 }
 
 

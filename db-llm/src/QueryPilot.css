@@ -6,14 +6,14 @@
 .qp-panel {
     display: flex;
     flex-direction: column;
-    background: #0d1117;
-    border: 1px solid rgba(138, 56, 245, 0.3);
+    background: var(--bg-card);
+    border: 1px solid color-mix(in srgb, var(--accent-tertiary) 30%, transparent);
     border-radius: 10px;
     overflow: hidden;
     box-shadow:
-        0 0 0 1px rgba(138, 56, 245, 0.1),
+        0 0 0 1px color-mix(in srgb, var(--accent-tertiary) 10%, transparent),
         0 8px 32px rgba(0, 0, 0, 0.6),
-        0 0 60px rgba(138, 56, 245, 0.06);
+        0 0 60px color-mix(in srgb, var(--accent-tertiary) 6%, transparent);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     animation: qp-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     margin-top: 8px;
@@ -36,8 +36,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 14px;
-    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-    border-bottom: 1px solid rgba(138, 56, 245, 0.2);
+    background: linear-gradient(135deg, var(--bg-canvas-subtle) 0%, var(--bg-card) 100%);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-tertiary) 20%, transparent);
     flex-shrink: 0;
 }
 
@@ -61,24 +61,10 @@
     z-index: 2;
 }
 
-.qp-logo-glow {
-    position: absolute;
-    inset: -4px;
-    background: radial-gradient(circle, rgba(138, 56, 245, 0.6) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: 1;
-    animation: qp-logo-pulse 2.5s ease-in-out infinite;
-}
-
-@keyframes qp-logo-pulse {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.15); }
-}
-
 .qp-title {
     font-size: 13px;
     font-weight: 700;
-    background: linear-gradient(90deg, #d2a8ff, #f0f6fc, #a5f3fc);
+    background: linear-gradient(90deg, var(--accent-tertiary), var(--fg-default), var(--accent-secondary));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -89,10 +75,10 @@
     font-size: 9px;
     font-weight: 700;
     padding: 2px 5px;
-    background: rgba(138, 56, 245, 0.25);
-    border: 1px solid rgba(138, 56, 245, 0.5);
+    background: color-mix(in srgb, var(--accent-tertiary) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent-tertiary) 50%, transparent);
     border-radius: 4px;
-    color: #d2a8ff;
+    color: var(--accent-tertiary);
     letter-spacing: 0.5px;
 }
 
@@ -105,8 +91,8 @@
 /* ── Mode Toggle ─────────────────────────────── */
 .qp-mode-toggle {
     display: flex;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-canvas-subtle);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 2px;
     gap: 2px;
@@ -117,7 +103,7 @@
     border-radius: 6px;
     border: none;
     background: transparent;
-    color: #7d8590;
+    color: var(--fg-muted);
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
@@ -127,15 +113,15 @@
 }
 
 .qp-mode-btn:hover {
-    color: #e6edf3;
-    background: rgba(255, 255, 255, 0.06);
+    color: var(--fg-default);
+    background: var(--bg-canvas-subtle);
 }
 
 .qp-mode-btn.active {
-    background: rgba(138, 56, 245, 0.25);
-    color: #d2a8ff;
-    border: 1px solid rgba(138, 56, 245, 0.45);
-    box-shadow: 0 0 10px rgba(138, 56, 245, 0.2);
+    background: color-mix(in srgb, var(--accent-tertiary) 25%, transparent);
+    color: var(--accent-tertiary);
+    border: 1px solid color-mix(in srgb, var(--accent-tertiary) 45%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent-tertiary) 20%, transparent);
 }
 
 /* ── Close Button ───────────────────────────── */
@@ -143,9 +129,9 @@
     width: 22px;
     height: 22px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-subtle);
     background: transparent;
-    color: #7d8590;
+    color: var(--fg-muted);
     font-size: 11px;
     cursor: pointer;
     display: flex;
@@ -156,15 +142,15 @@
 }
 
 .qp-close-btn:hover {
-    color: #f85149;
-    border-color: rgba(248, 81, 73, 0.4);
-    background: rgba(248, 81, 73, 0.1);
+    color: var(--danger-fg);
+    border-color: color-mix(in srgb, var(--danger-fg) 40%, transparent);
+    background: var(--danger-muted);
 }
 
 /* ── Input Section ─────────────────────────── */
 .qp-input-section {
     padding: 10px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-subtle);
     flex-shrink: 0;
 }
 
@@ -189,10 +175,10 @@
     border-radius: 9px;
     background: conic-gradient(
         from 0deg,
-        rgba(138, 56, 245, 0.7),
-        rgba(56, 189, 248, 0.7),
-        rgba(52, 211, 153, 0.5),
-        rgba(138, 56, 245, 0.7)
+        color-mix(in srgb, var(--accent-tertiary) 70%, transparent),
+        color-mix(in srgb, var(--accent-secondary) 70%, transparent),
+        color-mix(in srgb, var(--success-fg) 50%, transparent),
+        color-mix(in srgb, var(--accent-tertiary) 70%, transparent)
     );
     opacity: 0;
     filter: blur(6px);
@@ -217,10 +203,10 @@
     width: 100%;
     height: 32px;
     padding: 0 12px;
-    background: rgba(22, 27, 34, 0.95);
-    border: 1px solid rgba(138, 56, 245, 0.35);
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
-    color: #e6edf3;
+    color: var(--fg-default);
     font-size: 12px;
     font-family: inherit;
     outline: none;
@@ -229,11 +215,12 @@
 }
 
 .qp-magic-input:focus {
-    border-color: rgba(138, 56, 245, 0.7);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 3px var(--accent-muted);
 }
 
 .qp-magic-input::placeholder {
-    color: rgba(125, 133, 144, 0.7);
+    color: var(--fg-subtle);
     font-style: italic;
 }
 
@@ -251,11 +238,10 @@
     border-radius: 9px;
     background: conic-gradient(
         from 0deg,
-        rgba(138, 56, 245, 0.5),
-        rgba(56, 189, 248, 0.5),
-        rgba(52, 211, 153, 0.3),
-        rgba(251, 191, 36, 0.2),
-        rgba(138, 56, 245, 0.5)
+        color-mix(in srgb, var(--accent-tertiary) 50%, transparent),
+        color-mix(in srgb, var(--accent-secondary) 50%, transparent),
+        color-mix(in srgb, var(--success-fg) 30%, transparent),
+        color-mix(in srgb, var(--accent-tertiary) 50%, transparent)
     );
     opacity: 0;
     filter: blur(4px);
@@ -274,10 +260,10 @@
     z-index: 1;
     width: 100%;
     padding: 6px 12px;
-    background: rgba(22, 27, 34, 0.96);
-    border: 1px solid rgba(138, 56, 245, 0.3);
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-default);
     border-radius: 8px;
-    color: #e6edf3;
+    color: var(--fg-default);
     font-size: 12px;
     font-family: inherit;
     outline: none;
@@ -288,12 +274,12 @@
 }
 
 .qp-magic-textarea:focus {
-    border-color: rgba(138, 56, 245, 0.8);
-    box-shadow: 0 0 0 2px rgba(138, 56, 245, 0.12);
+    border-color: var(--accent-fg);
+    box-shadow: 0 0 0 3px var(--accent-muted);
 }
 
 .qp-magic-textarea::placeholder {
-    color: rgba(125, 133, 144, 0.7);
+    color: var(--fg-subtle);
     font-style: italic;
 }
 
@@ -304,10 +290,10 @@
     gap: 6px;
     padding: 0 14px;
     height: 32px;
-    background: linear-gradient(135deg, rgba(138, 56, 245, 0.8), rgba(94, 31, 183, 0.9));
-    border: 1px solid rgba(138, 56, 245, 0.6);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent-tertiary) 80%, transparent), color-mix(in srgb, var(--accent-secondary) 90%, transparent));
+    border: 1px solid color-mix(in srgb, var(--accent-tertiary) 60%, transparent);
     border-radius: 8px;
-    color: white;
+    color: var(--fg-on-emphasis);
     font-size: 12px;
     font-weight: 600;
     font-family: inherit;
@@ -318,8 +304,8 @@
 }
 
 .qp-run-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.9), rgba(124, 58, 237, 1));
-    box-shadow: 0 4px 16px rgba(138, 56, 245, 0.4);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent-tertiary) 90%, transparent), color-mix(in srgb, var(--accent-secondary) 100%, transparent));
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-tertiary) 40%, transparent);
     transform: translateY(-1px);
 }
 
@@ -330,8 +316,8 @@
 }
 
 .qp-run-btn.loading {
-    background: rgba(138, 56, 245, 0.4);
-    border-color: rgba(138, 56, 245, 0.5);
+    background: color-mix(in srgb, var(--accent-tertiary) 40%, transparent);
+    border-color: color-mix(in srgb, var(--accent-tertiary) 50%, transparent);
 }
 
 .qp-generate-area .qp-run-btn {
@@ -353,8 +339,8 @@
     display: inline-block;
     width: 12px;
     height: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
+    border: 2px solid var(--border-default);
+    border-top-color: var(--accent-tertiary);
     border-radius: 50%;
     animation: qp-spin 0.7s linear infinite;
     flex-shrink: 0;
@@ -368,10 +354,10 @@
 .qp-error {
     margin: 0 14px 10px;
     padding: 8px 12px;
-    background: rgba(248, 81, 73, 0.1);
-    border: 1px solid rgba(248, 81, 73, 0.35);
+    background: var(--danger-muted);
+    border: 1px solid color-mix(in srgb, var(--danger-fg) 35%, transparent);
     border-radius: 6px;
-    color: #f85149;
+    color: var(--danger-fg);
     font-size: 12px;
     display: flex;
     align-items: flex-start;
@@ -398,9 +384,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 8px 14px;
-    background: rgba(138, 56, 245, 0.08);
-    border-bottom: 1px solid rgba(138, 56, 245, 0.2);
-    border-top: 1px solid rgba(138, 56, 245, 0.15);
+    background: color-mix(in srgb, var(--accent-tertiary) 8%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-tertiary) 20%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--accent-tertiary) 15%, transparent);
     flex-shrink: 0;
 }
 
@@ -410,14 +396,14 @@
     gap: 6px;
     font-size: 11px;
     font-weight: 700;
-    color: #d2a8ff;
+    color: var(--accent-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .qp-result-icon {
     font-size: 14px;
-    color: #a78bfa;
+    color: var(--accent-secondary);
 }
 
 .qp-result-actions {
@@ -445,27 +431,27 @@
 }
 
 .qp-action-btn.accept {
-    background: #238636;
-    color: white;
-    border-color: #2ea043;
+    background: var(--success-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--success-fg);
 }
 
 .qp-action-btn.accept:hover {
-    background: #2ea043;
-    box-shadow: 0 3px 10px rgba(46, 160, 67, 0.4);
+    background: var(--success-fg);
+    box-shadow: 0 3px 10px var(--success-muted);
     transform: translateY(-1px);
 }
 
 .qp-action-btn.reject {
-    background: rgba(248, 81, 73, 0.1);
-    color: #f85149;
-    border-color: rgba(248, 81, 73, 0.4);
+    background: var(--danger-muted);
+    color: var(--danger-fg);
+    border-color: color-mix(in srgb, var(--danger-fg) 40%, transparent);
 }
 
 .qp-action-btn.reject:hover {
-    background: rgba(248, 81, 73, 0.2);
-    border-color: #f85149;
-    box-shadow: 0 3px 10px rgba(248, 81, 73, 0.3);
+    background: color-mix(in srgb, var(--danger-fg) 20%, transparent);
+    border-color: var(--danger-fg);
+    box-shadow: 0 3px 10px var(--danger-muted);
     transform: translateY(-1px);
 }
 
@@ -479,7 +465,7 @@
     line-height: 1.6;
     padding: 8px 0;
     max-height: 300px;
-    background: #0d1117;
+    background: var(--bg-canvas-inset);
 }
 
 .qp-diff-line {
@@ -491,13 +477,13 @@
 }
 
 .qp-diff-line.added {
-    background: rgba(46, 160, 67, 0.13);
-    border-left: 2px solid #3fb950;
+    background: var(--success-muted);
+    border-left: 2px solid var(--success-fg);
 }
 
 .qp-diff-line.removed {
-    background: rgba(248, 81, 73, 0.13);
-    border-left: 2px solid #f85149;
+    background: var(--danger-muted);
+    border-left: 2px solid var(--danger-fg);
 }
 
 .qp-diff-line.unchanged {
@@ -510,11 +496,11 @@
 }
 
 .qp-diff-line.added:hover {
-    background: rgba(46, 160, 67, 0.2);
+    background: color-mix(in srgb, var(--success-fg) 20%, transparent);
 }
 
 .qp-diff-line.removed:hover {
-    background: rgba(248, 81, 73, 0.2);
+    background: color-mix(in srgb, var(--danger-fg) 20%, transparent);
 }
 
 .qp-diff-indicator {
@@ -528,11 +514,11 @@
 }
 
 .qp-diff-line.added .qp-diff-indicator {
-    color: #3fb950;
+    color: var(--success-fg);
 }
 
 .qp-diff-line.removed .qp-diff-indicator {
-    color: #f85149;
+    color: var(--danger-fg);
 }
 
 .qp-diff-line.unchanged .qp-diff-indicator {
@@ -542,18 +528,18 @@
 .qp-diff-text {
     flex: 1;
     padding: 0 10px;
-    color: #e6edf3;
+    color: var(--fg-default);
     white-space: pre;
 }
 
 .qp-diff-line.removed .qp-diff-text {
-    color: #ffa198;
+    color: var(--danger-fg);
     text-decoration: line-through;
-    text-decoration-color: rgba(248, 81, 73, 0.5);
+    text-decoration-color: color-mix(in srgb, var(--danger-fg) 50%, transparent);
 }
 
 .qp-diff-line.added .qp-diff-text {
-    color: #7ee787;
+    color: var(--success-fg);
 }
 
 /* Scrollbar */
@@ -581,9 +567,9 @@
     align-items: center;
     gap: 14px;
     padding: 6px 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border-subtle);
     font-size: 11px;
-    color: #7d8590;
+    color: var(--fg-muted);
     flex-shrink: 0;
 }
 
@@ -601,19 +587,19 @@
 }
 
 .qp-dot.red {
-    background: #f85149;
-    box-shadow: 0 0 4px rgba(248, 81, 73, 0.5);
+    background: var(--danger-fg);
+    box-shadow: 0 0 4px var(--danger-muted);
 }
 
 .qp-dot.green {
-    background: #3fb950;
-    box-shadow: 0 0 4px rgba(63, 185, 80, 0.5);
+    background: var(--success-fg);
+    box-shadow: 0 0 4px var(--success-muted);
 }
 
 .qp-legend-hint {
     margin-left: auto;
     font-size: 10px;
-    color: rgba(125, 133, 144, 0.6);
+    color: var(--fg-subtle);
 }
 
 /* ── Skeleton loading ──────────────────────── */
@@ -628,9 +614,9 @@
     height: 14px;
     border-radius: 4px;
     background: linear-gradient(90deg,
-        rgba(138, 56, 245, 0.05) 25%,
-        rgba(138, 56, 245, 0.15) 50%,
-        rgba(138, 56, 245, 0.05) 75%
+        color-mix(in srgb, var(--accent-tertiary) 5%, transparent) 25%,
+        color-mix(in srgb, var(--accent-tertiary) 15%, transparent) 50%,
+        color-mix(in srgb, var(--accent-tertiary) 5%, transparent) 75%
     );
     background-size: 200% 100%;
     animation: qp-shimmer 1.5s infinite;
@@ -646,15 +632,15 @@
     align-items: center;
     gap: 8px;
     font-size: 11px;
-    color: rgba(138, 56, 245, 0.7);
+    color: color-mix(in srgb, var(--accent-tertiary) 70%, transparent);
     margin-top: 4px;
     font-style: italic;
 }
 /* ── Chat Bubble (Conversational) ─────────── */
 .qp-chat-bubble {
     padding: 12px 14px;
-    background: rgba(138, 56, 245, 0.05);
-    border-top: 1px solid rgba(138, 56, 245, 0.15);
+    background: color-mix(in srgb, var(--accent-tertiary) 5%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--accent-tertiary) 15%, transparent);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -668,7 +654,7 @@
 
 .qp-chat-content {
     font-size: 12.5px;
-    color: #e6edf3;
+    color: var(--fg-default);
     line-height: 1.6;
     font-family: inherit;
     white-space: pre-wrap;

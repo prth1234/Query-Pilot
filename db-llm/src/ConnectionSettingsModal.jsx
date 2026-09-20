@@ -133,8 +133,13 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
     if (!isOpen) return null
 
     return (
-        <div className="settings-modal-overlay" onClick={onClose}>
-            <div className="settings-modal-content" onClick={(e) => e.stopPropagation()}>
+        <>
+            {/* Hide Edit while the Test modal runs so Test is the only
+                modal on screen. Settings stays mounted, so unsaved edits
+                are preserved and restored when the Test modal closes. */}
+            {!showTestModal && (
+                <div className="settings-modal-overlay" onClick={onClose}>
+                    <div className="settings-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="settings-modal-header">
                     <div className="settings-header-info">
                         <h2 style={{ marginBottom: '10px' }}>Edit Connection Settings</h2>
@@ -294,7 +299,9 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
                         </button>
                     </div>
                 </form>
+                </div>
             </div>
+            )}
 
             <ConnectionTestModal
                 isOpen={showTestModal}
@@ -302,12 +309,9 @@ function ConnectionSettingsModal({ isOpen, onClose, database, connectionDetails,
                 steps={testSteps}
                 isSuccess={testSuccess}
                 errorMessage={testError}
-                onRetry={() => {
-                    setShowTestModal(false)
-                    handleTestConnection()
-                }}
+                onRetry={() => handleTestConnection()}
             />
-        </div>
+        </>
     )
 }
 

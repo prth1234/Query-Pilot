@@ -3,7 +3,7 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-    background: #0d1117;
+    background: var(--bg-card);
     position: relative;
     overflow: hidden;
 }
@@ -20,7 +20,7 @@
     flex-direction: column;
     overflow: hidden;
     position: relative;
-    border-right: 1px solid #30363d;
+    border-right: 1px solid var(--border-default);
     min-height: 0;
 }
 
@@ -30,11 +30,11 @@
 
 .diff-pane-header {
     padding: 10px 16px;
-    background: #161b22;
-    border-bottom: 1px solid #30363d;
+    background: var(--bg-canvas-subtle);
+    border-bottom: 1px solid var(--border-default);
     font-size: 12px;
     font-weight: 600;
-    color: #7d8590;
+    color: var(--fg-muted);
     flex-shrink: 0;
     font-family: var(--font-primary);
     display: flex;
@@ -43,8 +43,8 @@
 }
 
 .suggested-header {
-    background: rgba(138, 56, 245, 0.1);
-    color: #d2a8ff;
+    background: var(--accent-tertiary-muted);
+    color: var(--accent-tertiary);
 }
 
 .diff-pane-content {
@@ -94,7 +94,7 @@
     width: 50px;
     padding: 0 10px;
     text-align: right;
-    color: #7d8590;
+    color: var(--fg-muted);
     user-select: none;
     flex-shrink: 0;
     font-size: 11px;
@@ -110,11 +110,11 @@
 }
 
 .diff-line.added .line-indicator {
-    color: #3fb950;
+    color: var(--success-fg);
 }
 
 .diff-line.removed .line-indicator {
-    color: #f85149;
+    color: var(--danger-fg);
 }
 
 .diff-line.unchanged .line-indicator {
@@ -124,7 +124,7 @@
 .line-content {
     flex: 1;
     padding: 0 12px;
-    color: #e6edf3;
+    color: var(--fg-default);
     white-space: pre;
     overflow-x: auto;
 }
@@ -135,7 +135,7 @@
 }
 
 .ai-suggestion-glow .diff-pane-content {
-    box-shadow: inset 0 0 40px rgba(138, 56, 245, 0.15);
+    box-shadow: inset 0 0 40px var(--accent-tertiary-muted);
     animation: contentPulse 3s ease-in-out infinite;
 }
 
@@ -147,36 +147,36 @@
     right: 0;
     bottom: 0;
     pointer-events: none;
-    box-shadow: inset 0 0 20px rgba(138, 56, 245, 0.2);
+    box-shadow: inset 0 0 20px color-mix(in srgb, var(--accent-tertiary) 20%, transparent);
     z-index: 10;
     animation: borderPulse 3s ease-in-out infinite;
 }
 
 @keyframes contentPulse {
     0% {
-        box-shadow: inset 0 0 30px rgba(138, 56, 245, 0.1);
+        box-shadow: inset 0 0 30px color-mix(in srgb, var(--accent-tertiary) 10%, transparent);
     }
 
     50% {
-        box-shadow: inset 0 0 60px rgba(138, 56, 245, 0.25);
+        box-shadow: inset 0 0 60px color-mix(in srgb, var(--accent-tertiary) 25%, transparent);
     }
 
     100% {
-        box-shadow: inset 0 0 30px rgba(138, 56, 245, 0.1);
+        box-shadow: inset 0 0 30px color-mix(in srgb, var(--accent-tertiary) 10%, transparent);
     }
 }
 
 @keyframes borderPulse {
     0% {
-        box-shadow: inset 0 0 10px rgba(138, 56, 245, 0.1);
+        box-shadow: inset 0 0 10px color-mix(in srgb, var(--accent-tertiary) 10%, transparent);
     }
 
     50% {
-        box-shadow: inset 0 0 25px rgba(138, 56, 245, 0.3);
+        box-shadow: inset 0 0 25px color-mix(in srgb, var(--accent-tertiary) 30%, transparent);
     }
 
     100% {
-        box-shadow: inset 0 0 10px rgba(138, 56, 245, 0.1);
+        box-shadow: inset 0 0 10px color-mix(in srgb, var(--accent-tertiary) 10%, transparent);
     }
 }
 
@@ -205,26 +205,26 @@
 }
 
 .diff-action-btn.accept {
-    background: #238636;
-    color: white;
-    border-color: #2ea043;
+    background: var(--success-emphasis);
+    color: var(--fg-on-emphasis);
+    border-color: var(--success-fg);
 }
 
 .diff-action-btn.accept:hover {
-    background: #2ea043;
-    box-shadow: 0 2px 8px rgba(46, 160, 67, 0.3);
+    background: var(--success-fg);
+    box-shadow: 0 2px 8px var(--success-muted);
 }
 
 .diff-action-btn.reject {
-    background: rgba(248, 81, 73, 0.1);
-    color: #f85149;
-    border-color: rgba(248, 81, 73, 0.4);
+    background: var(--danger-muted);
+    color: var(--danger-fg);
+    border-color: color-mix(in srgb, var(--danger-fg) 40%, transparent);
 }
 
 .diff-action-btn.reject:hover {
-    background: rgba(248, 81, 73, 0.2);
-    border-color: #f85149;
-    box-shadow: 0 2px 8px rgba(248, 81, 73, 0.3);
+    background: color-mix(in srgb, var(--danger-fg) 20%, transparent);
+    border-color: var(--danger-fg);
+    box-shadow: 0 2px 8px var(--danger-muted);
 }
 
 /* Scrollbar styling */
@@ -234,14 +234,14 @@
 }
 
 .diff-pane-content::-webkit-scrollbar-track {
-    background: #0d1117;
+    background: var(--bg-canvas-inset);
 }
 
 .diff-pane-content::-webkit-scrollbar-thumb {
-    background: #30363d;
+    background: var(--border-default);
     border-radius: 5px;
 }
 
 .diff-pane-content::-webkit-scrollbar-thumb:hover {
-    background: #484f58;
+    background: var(--fg-subtle);
 }

@@ -1,5 +1,7 @@
 import React from 'react'
 import queryPilotLogo from './assets/query-pilot-logo.png'
+import AuroraText from './magic/AuroraText'
+import LineShadowText from './magic/LineShadowText'
 import './AIGeneratorButton.css'
 
 function AIGeneratorButton({ onClick, isGenerating, disabled = true }) {
@@ -12,7 +14,10 @@ function AIGeneratorButton({ onClick, isGenerating, disabled = true }) {
         >
             <div className="ai-button-content">
                 <img src={queryPilotLogo} alt="Query Pilot" style={{ width: 16, height: 16, opacity: disabled ? 0.5 : 1 }} />
-                <span className="ai-button-text">Query Pilot</span>
+                <span className="ai-button-words">
+                    <AuroraText>Query</AuroraText>
+                    <LineShadowText>Pilot</LineShadowText>
+                </span>
             </div>
         </button>
     )
