@@ -128,8 +128,19 @@ echo ""
 # ============================================
 echo "🎨 Starting Vite frontend..."
 
+# Kill process on port 5173 if it exists (stale dev server),
+# so Vite reuses 5173 instead of drifting to 5174/5175/...
+if lsof -ti:5173 >/dev/null; then
+    echo "⚠️  Port 5173 is occupied. Killing the process..."
+    lsof -ti:5173 | xargs kill -9
+    echo "   ✓ Process killed"
+    # Give the OS a moment to release the port
+    sleep 1
+fi
+
 cd "$SCRIPT_DIR/db-llm"
-npm run dev &
+# --strictPort: fail loudly instead of silently moving to another port
+npm run dev -- --strictPort --port 5173 &
 FRONTEND_PID=$!
 
 # Wait a moment and check if frontend started

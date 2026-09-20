@@ -190,14 +190,15 @@
     /* Subtle hover effect */
 }
 
-/* Run Button Group */
+/* Run Button Group — plain container; Run + dropdown are separate buttons */
 .run-button-group {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 6px;
-    /* Added gap */
     gap: 8px;
+    background: transparent;
+    border: none;
+    padding: 0;
 }
 
 .execute-button {
@@ -205,8 +206,8 @@
     align-items: center;
     gap: 6px;
     padding: 4px 12px !important;
-    background: var(--success-muted) !important;
-    border: 1px dotted var(--success-emphasis) !important;
+    background: transparent !important;
+    border: 1.5px dashed var(--success-emphasis) !important;
     border-radius: 50px !important;
     font-weight: 600 !important;
     font-size: 11px !important;
@@ -227,8 +228,8 @@
     width: 24px;
     height: 24px;
     padding: 0 !important;
-    background: var(--success-muted) !important;
-    border: 1px dotted var(--success-emphasis) !important;
+    background: transparent !important;
+    border: 1.5px dashed var(--success-emphasis) !important;
     border-radius: 50% !important;
     cursor: pointer;
     transition: all 0.2s ease !important;
@@ -242,10 +243,10 @@
 
 .execute-button:hover:not(:disabled),
 .execute-dropdown-trigger:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--success-fg) 15%, transparent) !important;
+    background: transparent !important;
     border-color: var(--success-fg) !important;
     color: var(--success-fg) !important;
-    box-shadow: 0 0 0 1px var(--success-muted) !important;
+    box-shadow: none !important;
 }
 
 .execute-button:hover:not(:disabled) svg,
