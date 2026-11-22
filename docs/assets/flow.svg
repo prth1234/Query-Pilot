@@ -1,62 +1,108 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 150" width="900" height="150" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 156" width="900" height="156" role="img" aria-labelledby="qp-flow-t qp-flow-d">
+<title id="qp-flow-t">Query Pilot Execution Flow</title>
+<desc id="qp-flow-d">React UI to FastAPI, Local LLM (Ollama), DB Pool, and Results with Auto-debug.</desc>
 <defs>
-<marker id="qp-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1L8 5L0 9z" class="sky"/></marker>
+<marker id="qp-flow-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 1L8 5L0 9z" class="sky"/></marker>
+<path id="qp-flow-track" d="M 85 75 L 818 75" fill="none"/>
+<path id="qp-retry-track" d="M 818 118 L 818 138 L 453 138 L 453 118" fill="none"/>
 </defs>
 <style>
-
 text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Segoe UI',Helvetica,Arial,sans-serif}
 .m{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
 .fg{fill:#E6EDF3} .mut{fill:#8B949E} .dim{fill:#7D8590}
 .sky{fill:#38BDF8} .sky-s{stroke:#38BDF8}
 .amb{fill:#FBBF24} .amb-s{stroke:#FBBF24}
 .bd{fill:none;stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}
-.ln{stroke:#E6EDF3;stroke-opacity:.15;stroke-width:1.2}
-.g1{stop-color:#E6EDF3} .g2{stop-color:#38BDF8} .g3{stop-color:#FBBF24}
+.qp-fl{stroke-dasharray:5 5;animation:qp-f 1.1s linear infinite}
+.qp-fl-rev{stroke-dasharray:4 5;animation:qp-fr 1.2s linear infinite}
+@keyframes qp-f{to{stroke-dashoffset:-10}}
+@keyframes qp-fr{to{stroke-dashoffset:9}}
+
+.qp-n1{animation:qp-nb1 5s ease-in-out infinite}
+.qp-n2{animation:qp-nb2 5s ease-in-out infinite}
+.qp-n3{animation:qp-nb3 5s ease-in-out infinite}
+.qp-n4{animation:qp-nb4 5s ease-in-out infinite}
+.qp-n5{animation:qp-nb5 5s ease-in-out infinite}
+.qp-t1{animation:qp-nt1 5s ease-in-out infinite}
+.qp-t2{animation:qp-nt2 5s ease-in-out infinite}
+.qp-t3{animation:qp-nt3 5s ease-in-out infinite}
+.qp-t4{animation:qp-nt4 5s ease-in-out infinite}
+.qp-t5{animation:qp-nt5 5s ease-in-out infinite}
+
+@keyframes qp-nb1{0%,16%{stroke:#38BDF8;stroke-opacity:1;stroke-width:1.8}22%,94%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}100%{stroke:#38BDF8;stroke-opacity:1;stroke-width:1.8}}
+@keyframes qp-nb2{0%,14%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}20%,36%{stroke:#38BDF8;stroke-opacity:1;stroke-width:1.8}42%,100%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}}
+@keyframes qp-nb3{0%,34%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}40%,56%{stroke:#FBBF24;stroke-opacity:1;stroke-width:1.8}62%,100%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}}
+@keyframes qp-nb4{0%,54%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}60%,76%{stroke:#38BDF8;stroke-opacity:1;stroke-width:1.8}82%,100%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}}
+@keyframes qp-nb5{0%,74%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}80%,96%{stroke:#FBBF24;stroke-opacity:1;stroke-width:1.8}100%{stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}}
+
+@keyframes qp-nt1{0%,16%{fill:#38BDF8}22%,94%{fill:#E6EDF3}100%{fill:#38BDF8}}
+@keyframes qp-nt2{0%,14%{fill:#E6EDF3}20%,36%{fill:#38BDF8}42%,100%{fill:#E6EDF3}}
+@keyframes qp-nt3{0%,34%{fill:#E6EDF3}40%,56%{fill:#FBBF24}62%,100%{fill:#E6EDF3}}
+@keyframes qp-nt4{0%,54%{fill:#E6EDF3}60%,76%{fill:#38BDF8}82%,100%{fill:#E6EDF3}}
+@keyframes qp-nt5{0%,74%{fill:#E6EDF3}80%,96%{fill:#FBBF24}100%{fill:#E6EDF3}}
+
 @media (prefers-color-scheme:light){
  .fg{fill:#24292F} .mut{fill:#57606A} .dim{fill:#6E7781}
  .sky{fill:#0284C7} .sky-s{stroke:#0284C7}
  .amb{fill:#D97706} .amb-s{stroke:#D97706}
- .bd{stroke:#24292F;stroke-opacity:.2} .ln{stroke:#24292F;stroke-opacity:.16}
- .g1{stop-color:#24292F} .g2{stop-color:#0284C7} .g3{stop-color:#D97706}
+ .bd{stroke:#24292F;stroke-opacity:.2}
+ @keyframes qp-nb1{0%,16%{stroke:#0284C7;stroke-opacity:1;stroke-width:1.8}22%,94%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}100%{stroke:#0284C7;stroke-opacity:1;stroke-width:1.8}}
+ @keyframes qp-nb2{0%,14%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}20%,36%{stroke:#0284C7;stroke-opacity:1;stroke-width:1.8}42%,100%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}}
+ @keyframes qp-nb3{0%,34%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}40%,56%{stroke:#D97706;stroke-opacity:1;stroke-width:1.8}62%,100%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}}
+ @keyframes qp-nb4{0%,54%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}60%,76%{stroke:#0284C7;stroke-opacity:1;stroke-width:1.8}82%,100%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}}
+ @keyframes qp-nb5{0%,74%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}80%,96%{stroke:#D97706;stroke-opacity:1;stroke-width:1.8}100%{stroke:#24292F;stroke-opacity:.2;stroke-width:1.2}}
+ @keyframes qp-nt1{0%,16%{fill:#0284C7}22%,94%{fill:#24292F}100%{fill:#0284C7}}
+ @keyframes qp-nt2{0%,14%{fill:#24292F}20%,36%{fill:#0284C7}42%,100%{fill:#24292F}}
+ @keyframes qp-nt3{0%,34%{fill:#24292F}40%,56%{fill:#D97706}62%,100%{fill:#24292F}}
+ @keyframes qp-nt4{0%,54%{fill:#24292F}60%,76%{fill:#0284C7}82%,100%{fill:#24292F}}
+ @keyframes qp-nt5{0%,74%{fill:#24292F}80%,96%{fill:#D97706}100%{fill:#24292F}}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
-
-.qp-fl{stroke-dasharray:5 5;animation:qp-f 1.3s linear infinite}
-@keyframes qp-f{to{stroke-dashoffset:-10}}
-
+@media (prefers-reduced-motion:reduce){
+ *{animation:none!important}
+ .motion-only{display:none}
+}
 </style>
 
-<rect x="10" y="32" width="150" height="86" rx="6" class="bd"/>
-<text x="85" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg">React UI</text>
+<rect x="10" y="32" width="150" height="86" rx="6" class="bd qp-n1"/>
+<text x="85" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg qp-t1">React UI</text>
 <text x="85" y="86" text-anchor="middle" font-size="12.5" class="mut m">db-llm/</text>
 <text x="85" y="104" text-anchor="middle" font-size="12.5" class="dim">Editor &amp; Diff</text>
 
-<line x1="160" y1="75" x2="190" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-arr)"/>
+<line x1="160" y1="75" x2="190" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-flow-arr)"/>
 
-<rect x="194" y="32" width="150" height="86" rx="6" class="bd"/>
-<text x="269" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg">FastAPI</text>
+<rect x="194" y="32" width="150" height="86" rx="6" class="bd qp-n2"/>
+<text x="269" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg qp-t2">FastAPI</text>
 <text x="269" y="86" text-anchor="middle" font-size="12.5" class="mut m">backend/</text>
 <text x="269" y="104" text-anchor="middle" font-size="12.5" class="dim">Async &amp; Cache</text>
 
-<line x1="344" y1="75" x2="374" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-arr)"/>
+<line x1="344" y1="75" x2="374" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-flow-arr)"/>
 
-<rect x="378" y="32" width="150" height="86" rx="6" class="bd"/>
-<text x="453" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg">Local LLM</text>
+<rect x="378" y="32" width="150" height="86" rx="6" class="bd qp-n3"/>
+<text x="453" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg qp-t3">Local LLM</text>
 <text x="453" y="86" text-anchor="middle" font-size="12.5" class="mut m">Ollama</text>
 <text x="453" y="104" text-anchor="middle" font-size="12.5" class="dim">Llama 3.2 SQL</text>
 
-<line x1="528" y1="75" x2="558" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-arr)"/>
+<line x1="528" y1="75" x2="558" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-flow-arr)"/>
 
-<rect x="562" y="32" width="150" height="86" rx="6" class="bd"/>
-<text x="637" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg">DB Pool</text>
+<rect x="562" y="32" width="150" height="86" rx="6" class="bd qp-n4"/>
+<text x="637" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg qp-t4">DB Pool</text>
 <text x="637" y="86" text-anchor="middle" font-size="12.5" class="mut m">Multi-DB</text>
 <text x="637" y="104" text-anchor="middle" font-size="12.5" class="dim">MySQL/PG/Mongo</text>
 
-<line x1="712" y1="75" x2="742" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-arr)"/>
+<line x1="712" y1="75" x2="742" y2="75" class="sky-s qp-fl" stroke-width="1.8" marker-end="url(#qp-flow-arr)"/>
 
-<rect x="746" y="32" width="144" height="86" rx="6" class="bd"/>
-<text x="818" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg">Results</text>
+<rect x="746" y="32" width="144" height="86" rx="6" class="bd qp-n5"/>
+<text x="818" y="64" text-anchor="middle" font-size="16" font-weight="650" class="fg qp-t5">Results</text>
 <text x="818" y="86" text-anchor="middle" font-size="12.5" class="mut">Table &amp; Fix</text>
 <text x="818" y="104" text-anchor="middle" font-size="12.5" class="dim">Auto-debug</text>
 
+<path d="M 818 118 L 818 138 L 453 138 L 453 118" fill="none" class="amb-s qp-fl-rev" stroke-width="1.4" stroke-opacity=".55"/>
+<text x="635" y="133" text-anchor="middle" font-size="12.5" class="m amb">fix-and-retry loop</text>
+
+<circle r="4.5" class="sky motion-only">
+  <animateMotion dur="5s" repeatCount="indefinite"><mpath href="#qp-flow-track"/></animateMotion>
+</circle>
+<circle r="3.5" class="amb motion-only">
+  <animateMotion dur="5s" begin="2.5s" repeatCount="indefinite"><mpath href="#qp-retry-track"/></animateMotion>
+</circle>
 </svg>
