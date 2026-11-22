@@ -1,52 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 176" width="900" height="176" role="img">
-<defs>
-
-</defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 180" width="900" height="180" role="img" aria-labelledby="qp-pil-t qp-pil-d">
+<title id="qp-pil-t">Query Pilot Core Capabilities</title>
+<desc id="qp-pil-d">Schema-Aware SQL, Fix-and-Retry, Concurrent Cells, and Side-by-Side Diff.</desc>
 <style>
-
 text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Segoe UI',Helvetica,Arial,sans-serif}
 .m{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
 .fg{fill:#E6EDF3} .mut{fill:#8B949E} .dim{fill:#7D8590}
 .sky{fill:#38BDF8} .sky-s{stroke:#38BDF8}
 .amb{fill:#FBBF24} .amb-s{stroke:#FBBF24}
 .bd{fill:none;stroke:#E6EDF3;stroke-opacity:.2;stroke-width:1.2}
-.ln{stroke:#E6EDF3;stroke-opacity:.15;stroke-width:1.2}
-.g1{stop-color:#E6EDF3} .g2{stop-color:#38BDF8} .g3{stop-color:#FBBF24}
+
+.qp-c1{animation:qp-cw-s 8s ease-in-out infinite 0s}
+.qp-c2{animation:qp-cw-a 8s ease-in-out infinite 2s}
+.qp-c3{animation:qp-cw-s 8s ease-in-out infinite 4s}
+.qp-c4{animation:qp-cw-a 8s ease-in-out infinite 6s}
+@keyframes qp-cw-s{0%,100%{stroke-opacity:.2;stroke:#E6EDF3}10%,22%{stroke-opacity:1;stroke:#38BDF8}}
+@keyframes qp-cw-a{0%,100%{stroke-opacity:.2;stroke:#E6EDF3}10%,22%{stroke-opacity:1;stroke:#FBBF24}}
+
+.qp-draw{stroke-dasharray:80;stroke-dashoffset:80;animation:qp-dr 3s ease-in-out infinite alternate}
+.qp-d1{animation-delay:.4s} .qp-d2{animation-delay:.8s} .qp-d3{animation-delay:1.2s}
+@keyframes qp-dr{0%{stroke-dashoffset:80}45%,100%{stroke-dashoffset:0}}
+
+.qp-sql-p{animation:qp-sp 8s ease-in-out infinite 0s}
+@keyframes qp-sp{0%,100%{opacity:.75}10%,22%{opacity:1}}
+
+.qp-bar-bg{stroke:#E6EDF3;stroke-opacity:.12;stroke-width:2;stroke-linecap:round}
+.qp-prog{stroke-dasharray:162;stroke-dashoffset:162;stroke-width:2;stroke-linecap:round}
+.qp-p1{animation:qp-pg 8s ease-in-out infinite 0s}
+.qp-p2{animation:qp-pg 8s ease-in-out infinite 2s}
+.qp-p3{animation:qp-pg 8s ease-in-out infinite 4s}
+.qp-p4{animation:qp-pg 8s ease-in-out infinite 6s}
+@keyframes qp-pg{0%{stroke-dashoffset:162;opacity:.4}15%,25%{stroke-dashoffset:0;opacity:1}32%,100%{stroke-dashoffset:162;opacity:.2}}
+
 @media (prefers-color-scheme:light){
  .fg{fill:#24292F} .mut{fill:#57606A} .dim{fill:#6E7781}
  .sky{fill:#0284C7} .sky-s{stroke:#0284C7}
  .amb{fill:#D97706} .amb-s{stroke:#D97706}
- .bd{stroke:#24292F;stroke-opacity:.2} .ln{stroke:#24292F;stroke-opacity:.16}
- .g1{stop-color:#24292F} .g2{stop-color:#0284C7} .g3{stop-color:#D97706}
+ .bd{stroke:#24292F;stroke-opacity:.2}
+ .qp-bar-bg{stroke:#24292F;stroke-opacity:.12}
+ @keyframes qp-cw-s{0%,100%{stroke-opacity:.2;stroke:#24292F}10%,22%{stroke-opacity:1;stroke:#0284C7}}
+ @keyframes qp-cw-a{0%,100%{stroke-opacity:.2;stroke:#24292F}10%,22%{stroke-opacity:1;stroke:#D97706}}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
-
+@media (prefers-reduced-motion:reduce){
+ *{animation:none!important;transition:none!important}
+ .qp-draw,.qp-prog{stroke-dashoffset:0!important;opacity:.8!important}
+}
 </style>
 
-<rect x="2" y="12" width="206" height="152" rx="6" class="bd"/>
-<text x="22" y="54" font-size="18" font-weight="700" class="m sky">SQL</text>
+<rect x="2" y="12" width="206" height="156" rx="6" class="bd qp-c1"/>
+<text x="22" y="54" font-size="18" font-weight="700" class="m sky qp-sql-p">SQL</text>
 <text x="22" y="94" font-size="18" font-weight="650" class="fg">Schema-Aware</text>
 <text x="22" y="118" font-size="13" class="mut">Natural language to JOINs</text>
 <text x="22" y="137" font-size="13" class="mut">across SQL &amp; MongoDB.</text>
+<line x1="22" y1="154" x2="184" y2="154" class="qp-bar-bg"/>
+<line x1="22" y1="154" x2="184" y2="154" class="sky-s qp-prog qp-p1"/>
 
-<rect x="232" y="12" width="206" height="152" rx="6" class="bd"/>
-<path d="M254 52L262 42L270 50L280 38" fill="none" class="amb-s" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="232" y="12" width="206" height="156" rx="6" class="bd qp-c2"/>
+<path d="M254 52L262 42L270 50L280 38" fill="none" class="amb-s qp-draw qp-d1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="254" y="94" font-size="18" font-weight="650" class="fg">Fix-and-Retry</text>
 <text x="254" y="118" font-size="13" class="mut">Reads DB errors and</text>
 <text x="254" y="137" font-size="13" class="mut">repairs broken queries.</text>
+<line x1="254" y1="154" x2="416" y2="154" class="qp-bar-bg"/>
+<line x1="254" y1="154" x2="416" y2="154" class="amb-s qp-prog qp-p2"/>
 
-<rect x="462" y="12" width="206" height="152" rx="6" class="bd"/>
-<rect x="484" y="38" width="10" height="22" rx="2" fill="none" class="sky-s" stroke-width="1.8"/>
-<rect x="498" y="38" width="10" height="22" rx="2" fill="none" class="sky-s" stroke-width="1.8"/>
-<rect x="512" y="38" width="10" height="22" rx="2" fill="none" class="sky-s" stroke-width="1.8"/>
+<rect x="462" y="12" width="206" height="156" rx="6" class="bd qp-c3"/>
+<rect x="484" y="38" width="10" height="22" rx="2" fill="none" class="sky-s qp-draw qp-d2" stroke-width="1.8"/>
+<rect x="498" y="38" width="10" height="22" rx="2" fill="none" class="sky-s qp-draw qp-d2" stroke-width="1.8"/>
+<rect x="512" y="38" width="10" height="22" rx="2" fill="none" class="sky-s qp-draw qp-d2" stroke-width="1.8"/>
 <text x="484" y="94" font-size="18" font-weight="650" class="fg">Concurrent Cells</text>
 <text x="484" y="118" font-size="13" class="mut">Multi-threaded execution</text>
 <text x="484" y="137" font-size="13" class="mut">with signature caching.</text>
+<line x1="484" y1="154" x2="646" y2="154" class="qp-bar-bg"/>
+<line x1="484" y1="154" x2="646" y2="154" class="sky-s qp-prog qp-p3"/>
 
-<rect x="692" y="12" width="206" height="152" rx="6" class="bd"/>
-<path d="M714 44H742M714 54H734" fill="none" class="amb-s" stroke-width="2" stroke-linecap="round"/>
+<rect x="692" y="12" width="206" height="156" rx="6" class="bd qp-c4"/>
+<path d="M714 44H742M714 54H734" fill="none" class="amb-s qp-draw qp-d3" stroke-width="2" stroke-linecap="round"/>
 <text x="714" y="94" font-size="18" font-weight="650" class="fg">Side-by-Side Diff</text>
 <text x="714" y="118" font-size="13" class="mut">Inspect AI rewrites line</text>
 <text x="714" y="137" font-size="13" class="mut">by line before running.</text>
-
+<line x1="714" y1="154" x2="876" y2="154" class="qp-bar-bg"/>
+<line x1="714" y1="154" x2="876" y2="154" class="amb-s qp-prog qp-p4"/>
 </svg>

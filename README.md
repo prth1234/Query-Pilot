@@ -34,6 +34,13 @@
 
 ## Supported databases
 
+Ready out of the box for **MySQL**, **PostgreSQL**, **SQLite**, and **MongoDB**.
+
+<details>
+<summary><b>Full SQL &amp; NoSQL compatibility matrix</b></summary>
+
+<br/>
+
 | SQL Databases | Status | NoSQL Databases | Status |
 | :--- | :--- | :--- | :--- |
 | MySQL | Ready | MongoDB | Ready |
@@ -42,6 +49,8 @@
 | Databricks | Coming soon | Amazon DynamoDB | Coming soon |
 | Snowflake | Coming soon | Apache Cassandra | Coming soon |
 | BigQuery | Coming soon | -- | -- |
+
+</details>
 
 ## Backend API
 
